@@ -15,6 +15,10 @@ Trunk Based Development makes it easier to have a team of people working togethe
 As of 10/13/2023 we have <sub>around</sub> 6 programmers, which may not seem like a big deal, but it's literally double from how much we had last year. Because of this, we'll try and enforce Trunk Based more.
 
 ## The Art of Not Pissing Off The Other Programmers, by [Pickle_Face5](https://github.com/PickleFace5)
+> "Um... I don't even know where to start with you. I mean, do you even know who you're talkin' to?"
+
+As a senior-ish programmer for this team, it's my job to make sure you guys don't annoy us too much.
+
 These are the 3 main ideas of Trunk Based programming that you need to follow. If you don't you'll likely be exiled from the Coding Plateau until you pay the hefty fine of 1 12-pack of coke.
 
 ### Rule #1: Don't Commit or Push to The Main Branch. Please.
@@ -22,7 +26,7 @@ These are the 3 main ideas of Trunk Based programming that you need to follow. I
 
 Double check before commiting or pushing anything it's not going to main.
 
-### Rule #2: Name Your Branches Something Good and Keep Them<sub>small.</sub>
+### Rule #2: Name Your Branches Something Good and Keep Them <sub>small.</sub>
 When creating a feature branch (the branch that you write code on then later push everything to main), make sure you're being *specific, clear, and concise* what your branch will add. Being general and broad confuses other programmers and makes branches take longer to complete. (which we'll elaborate more on in Rule #3)
 
 #### Example Branch Names (Featuring Palpatine)
