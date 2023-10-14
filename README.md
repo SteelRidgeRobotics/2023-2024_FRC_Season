@@ -1,4 +1,4 @@
-# 2023 2024 FRC Season
+# 2023-2024 FRC Season
 All of our code for the 2023-2024 FIRST® Robotics Competition CRESCENDO, Presented by HAAS and projects in the offseason.
 
 # Programming Convention
@@ -12,14 +12,14 @@ This repository includes the following:
 ## The Basics
 Trunk Based Development makes it easier to have a team of people working together on one project. It works by seperating everyone's work into seperate branches that can be committed and pushed to independently without having to update every change thats made in main.
 
-As of 10/13/2023 we have <sub>around</sub> 6 programmers, which may not seem like a big deal, but it's literally double from how much we had last year. Because of this, we'll try and enforce Trunk Based more.
+As of `10/13/2023` we have ~7 programmers, which may not seem like a big deal, but it's literally more than double from how much we had last year. Because of this, we'll try and enforce Trunk Based more.
 
 ## The Art of Not Pissing Off The Other Programmers, by [Pickle_Face5](https://github.com/PickleFace5)
 > "Um... I don't even know where to start with you. I mean, do you even know who you're talkin' to?"
 
 As a senior-ish programmer for this team, it's my job to make sure you guys don't annoy us too much.
 
-These are the 3 main ideas of Trunk Based programming that you need to follow. If you don't you'll likely be exiled from the Coding Plateau until you pay the hefty fine of 1 12-pack of coke.
+This section's role is to teach you our workflow so nothing catches fire and burns us to death. Programming's only fun if nothing breaks, so we try to break stuff less often than normal. Aside from that, these are the 3 main ideas of Trunk Based programming that you need to follow. Please follow these.
 
 ### Rule #1: Don't Commit or Push to The Main Branch. Please.
 ***PLEASE PLEASE PLEASE*** don't do this. This ends up having everyone having to redo their branches to match the pushed code, which just slows us down. (and during build season, we NEED time)
@@ -47,6 +47,9 @@ Basically, when creating your branch, ask yourself the following:
 + "Is this a stupid idea?"
 + "Why the hell did I think I would enjoy this?"
 
+> [!IMPORTANT]
+> NAME YOUR COMMITS WELL TOO, I'M TIRED OF SEEING "code" AND "fixed something" AND "forgot to push this last time" PLEASE NAME THEM WELL AND REMEMBER TO PUSH YOUR CODE 😭
+
 ### Rule #3: Merge Branches ASAP
 Sitting on a branch for a month will probably be uncomfortable and cause issues when merging your branch. This is why we enforce Rule 2; to give your branch a small amount of time to finish.
 
@@ -61,3 +64,4 @@ To avoid this, finish your current branch before working on a new one. __DON'T M
 1. Don't push code to `main`, create a branch and merge it instead.
 2. Name your branches something easy to understand.
 3. Get your crap done on time.
+4. Please bring me a coke during build season, it would make my week.
