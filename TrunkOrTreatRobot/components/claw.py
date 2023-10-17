@@ -5,18 +5,28 @@ import magicbot
 from guitar.guitar import Guitar
 from robot import Guitar
 
-class Claw(StateMachine):
+class Claw:
 
     grabberSolenoid: wpilib.DoubleSolenoid
 
-if Guitar.getGreenButtonPressed(): #Green button opens claw
-    pass
+    closed = 0
 
-if Guitar.getRedButtonPressed(): #Red button closes claw
-    pass
+    def move(self, greenButton, redButton):
 
-if Guitar.getBlueButtonPressed(): #Blue button moves arm up
-    pass
+        self.green = greenButton
+        self.red = redButton
 
-if Guitar.getOrangeButtonPressed(): #Orange button moves arm down
-    pass
+        if self.green:
+            self.closed = 1
+        elif self.red:
+            self.closed = -1
+        else:
+            self.closed = 0
+    
+    def execute(self):
+        if self.closed==1:
+            self.grabberSolenoid.set(wpilib.DoubleSolenoid.Value.kForward)
+        elif self.closed==-1:
+            self.grabberSolenoid.set(wpilib.DoubleSolenoid.Value.kReverse)
+        else:
+            self.grabberSolenoid.set(wpilib.DoubleSolenoid.Value.kOff)
