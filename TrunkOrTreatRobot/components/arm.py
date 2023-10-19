@@ -1,8 +1,7 @@
 import constants
 import ctre
 import wpilib
-from magicbot import StateMachine
-
+import magicbot
 
 class Arm:
 
@@ -12,9 +11,9 @@ class Arm:
 
         self.armMotor.setNeutralMode(ctre.NeutralMode.Brake)
 
-    def move(self, leftJoyY):
+    def move(self, guitarJoystickY):
 
-        self.left = leftJoyY
+        self.left = guitarJoystickY
 
 
         if abs(self.left) <= constants.DEADBAND:
