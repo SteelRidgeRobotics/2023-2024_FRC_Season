@@ -1,7 +1,5 @@
 import constants
 import ctre
-import wpilib
-import magicbot
 
 class Arm:
 
@@ -15,12 +13,9 @@ class Arm:
 
         self.left = guitarJoystickY
 
-
         if abs(self.left) <= constants.DEADBAND:
 
             self.left = 0
-
-
 
     def execute(self):
 
