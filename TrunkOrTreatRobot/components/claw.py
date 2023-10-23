@@ -28,4 +28,5 @@ class Claw:
             self.grabberSolenoid.set(wpilib.DoubleSolenoid.Value.kForward)
         elif self.closed==-1:
             self.grabberSolenoid.set(wpilib.DoubleSolenoid.Value.kReverse)
-            
+        else:
+            self.grabberSolenoid.set(wpilib.DoubleSolenoid.Valie.kOff)
