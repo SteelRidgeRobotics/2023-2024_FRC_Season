@@ -3,7 +3,6 @@ import ctre
 import wpilib
 import magicbot
 from guitar.guitar import Guitar
-from robot import Guitar
 
 class Claw:
 
@@ -11,22 +10,19 @@ class Claw:
 
     closed = 0
 
-    def move(self, greenButton, redButton):
+    def move(self, guitar: Guitar):
 
-        self.green = greenButton
-        self.red = redButton
-
-        if self.green:
+        if guitar.getGreenButtonPressed():
             self.closed = 1
-        elif self.red:
+        elif guitar.getRedButtonPressed():
             self.closed = -1
-        else:
-            self.closed = 0
     
     def execute(self):
         if self.closed==1:
             self.grabberSolenoid.set(wpilib.DoubleSolenoid.Value.kForward)
         elif self.closed==-1:
             self.grabberSolenoid.set(wpilib.DoubleSolenoid.Value.kReverse)
-        else:
-            self.grabberSolenoid.set(wpilib.DoubleSolenoid.Valie.kOff)
+
+        wpilib.SmartDashboard.putNumber("Claw Closed?", self.closed)
+
+    

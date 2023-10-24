@@ -1,11 +1,14 @@
 import wpilib
 import magicbot
 import ctre
+from components.claw import Claw
 import constants
 from guitar.guitar import Guitar
 
 
 class TrunkOrTreatRobot(magicbot.MagicRobot):
+
+    claw: Claw
 
     def createObjects(self):
 
@@ -15,7 +18,10 @@ class TrunkOrTreatRobot(magicbot.MagicRobot):
 
     def teleopPeriodic(self):
 
-        pass #Code needed here
+        self.claw.move(self.functionsController)
+
+        wpilib.SmartDashboard.putString("Test 1", "Hello world")
+        wpilib.SmartDashboard.putBoolean("e", self.functionsController.getGreenButton())
 
 if __name__ == "__main__":
 
