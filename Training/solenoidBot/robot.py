@@ -1,4 +1,5 @@
 import wpilib
+import ctre
 
 class SolenoidBot(wpilib.TimedRobot):
 
