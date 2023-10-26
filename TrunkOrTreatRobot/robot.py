@@ -13,15 +13,12 @@ class TrunkOrTreatRobot(magicbot.MagicRobot):
     def createObjects(self):
 
         self.armMotor = ctre.TalonFX(constants.MOTORID) #Arm motor
-        self.grabberSolenoid = wpilib.DoubleSolenoid(constants.CLAWSOLENOIDID, wpilib.PneumaticsModuleType.CTREPCM, constants.SOLENOIDFORWARDCHANNEL, constants.SOLENOIDREVERSECHANNEL) #Not sure what ID is for solenoids. Our guess is that it's wpilib.solenoid
+        self.grabberSolenoid = wpilib.DoubleSolenoid(constants.CLAWSOLENOIDID, wpilib.PneumaticsModuleType.CTREPCM, constants.SOLENOIDFORWARDCHANNEL, constants.SOLENOIDREVERSECHANNEL)
         self.functionsController = Guitar(constants.FUNCTIONSPORT)
 
     def teleopPeriodic(self):
 
-        self.claw.move(self.functionsController)
-
-        wpilib.SmartDashboard.putString("Test 1", "Hello world")
-        wpilib.SmartDashboard.putBoolean("e", self.functionsController.getGreenButton())
+        self.claw.move(self.functionsController.getGreenButton(), self.functionsController.getRedButton())
 
 if __name__ == "__main__":
 
