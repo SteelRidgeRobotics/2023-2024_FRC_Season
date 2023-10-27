@@ -12,7 +12,7 @@ This repository includes the following:
 ## The Basics
 Trunk Based Development makes it easier to have a team of people working together on one project. It works by seperating everyone's work into seperate branches that can be committed and pushed to independently without having to update every change thats made in main.
 
-As of `10/13/2023` we have ~7 programmers, which may not seem like a big deal, but it's literally more than double from how much we had last year. Because of this, we'll try and enforce Trunk Based more.
+As of `10/26/2023` we have 8 programmers, which may not seem like a big deal, but it's literally more than double from how much we had last year. Because of this, we'll try and enforce Trunk Based more.
 
 ## The Art of Not Pissing Off The Other Programmers, by [Pickle_Face5](https://github.com/PickleFace5)
 > "Um... I don't even know where to start with you. I mean, do you even know who you're talkin' to?"
@@ -53,12 +53,12 @@ Basically, when creating your branch, ask yourself the following:
 ### Rule #3: Merge Branches ASAP
 Sitting on a branch for a month will probably be uncomfortable and cause issues when merging your branch. This is why we enforce Rule 2; to give your branch a small amount of time to finish.
 
-Because the branch has been worked on for a month, lots of chances have (hopefully) been done to the main branch, meaning your amazing branch is now *completely outdated!* 🥳
+Because the branch has been worked on for a month, lots of changes have (hopefully) been done to the main branch, meaning your amazing branch is now *completely outdated!* 🥳
 
 To avoid this, finish your current branch before working on a new one. __DON'T MULTITASK__.
 
 > [!NOTE]
-> To keep branches from taking forever, give yourself a deadline; have your new features take ~1-2 weeks to finish.
+> To keep branches from taking forever, give yourself a deadline; have your new features take ~1-2 weeks to finish, depending on the size of it.
 
 ### TL;DR
 1. Don't push code to `main`, create a branch and merge it instead.
