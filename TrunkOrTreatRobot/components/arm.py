@@ -1,3 +1,4 @@
+import wpilib
 import constants
 import ctre
 
@@ -19,7 +20,9 @@ class Arm:
 
     def execute(self):
 
-        self.armMotor.set(ctre.TalonSRXControlMode.PercentOutput, -self.left)
+        self.armMotor.set(ctre.TalonSRXControlMode.PercentOutput, -(self.left))
+        wpilib.SmartDashboard.putNumber("MotorValue", -(self.left))
+        wpilib.SmartDashboard.putNumber("MotorActualValue", self.armMotor.getMotorOutputPercent())
 
 
 
