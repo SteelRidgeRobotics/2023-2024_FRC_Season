@@ -32,11 +32,11 @@ When creating a feature branch (the branch that you write code on then later pus
 #### Example Branch Names (Featuring Palpatine)
 | Good Branch Name | Bad Branch Name | Why That Branch Name Sucks<sup>TM</sup>
 |------------------|------------------|---------------------------------------|
-| `palpatine-guitar-controls` | `palpatine-guitar` | This branch name is too generic. What about the guitar are we adding to Palpatine? |
-| `palpatine-comment-refactoring` | `comment-refactoring` | While this branch name tells us what it's doing, it doesn't tell us to *whom* it's comment refactoring to. |
+| `palpatine-guitar` | `palpatine-control` | This branch name is too generic. What about control are we adding or changing to Palpatine? |
+| `palpatine-refactoring` | `refactoring` | While this branch name tells us what it's doing, it doesn't tell us to *whom* it's comment refactoring to. Always include the name of the robot in your branch. |
 | `palpatine-exploding-glitch-fix` | `palpatine-bug-fix` | This branch doesn't tell us what big fix it's fixing on Palpatine. |
 | `palpatine-controller-drift-fix` | `palpatine-controller-fix-because-it-drifts-slightly-to-the-right` | "I ain't reading all that 🔥" - Me after seeing that branch name probably |
-| `palpatine-back-flip-optimizing` | `code` | ...please don't do this. |
+| `palpatine-back-flip` | `code` | ...please don't do this. |
 
 > [!NOTE]
 > A basic branch should be something similar to `<robot-name>-<what-your-doing>`
