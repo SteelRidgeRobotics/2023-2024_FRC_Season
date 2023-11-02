@@ -29,7 +29,7 @@ class DriveWithController(commands2.CommandBase):
 
         self.gyroAngle = self.drive.getYaw() + 180
         wpilib.SmartDashboard.putNumber("Yaw", self.gyroAngle)
-        self.angle = (conversions.convertJoystickInputToDegrees(conversions.deadband(self.x(), constants.kdeadband),
+        self.angle = 360 - (conversions.convertJoystickInputToDegrees(conversions.deadband(self.x(), constants.kdeadband),
                                                                conversions.deadband(self.y(), constants.kdeadband)) + self.gyroAngle)
         self.magnitude = math.hypot(conversions.deadband(self.x(), constants.kdeadband),
                                     conversions.deadband(self.y(), constants.kdeadband))

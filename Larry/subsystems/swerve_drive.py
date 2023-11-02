@@ -222,10 +222,10 @@ class SwerveDrive(commands2.SubsystemBase):
         rlspeed = math.sqrt(a ** 2 + d ** 2)
         rrspeed = math.sqrt(a ** 2 + c ** 2)
 
-        frangle = math.atan2(b, c) * 180 / math.pi
-        flangle = math.atan2(b, d) * 180 / math.pi
-        rlangle = math.atan2(a, d) * 180 / math.pi
-        rrangle = math.atan2(a, c) * 180 / math.pi
+        frangle = math.atan2(b, c) * (180 / math.pi)
+        flangle = math.atan2(b, d) * (180 / math.pi)
+        rlangle = math.atan2(a, d) * (180 / math.pi)
+        rrangle = math.atan2(a, c) * (180 / math.pi)
 
         # the block below checks for the highest speed that a wheel will be turning
         # if the highest speed is greater than one, we then make the largest value equal one, while keeping the ratios the same

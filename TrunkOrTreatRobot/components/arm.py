@@ -20,8 +20,8 @@ class Arm:
 
     def execute(self):
 
-        self.armMotor.set(ctre.TalonSRXControlMode.PercentOutput, (self.left) * 0.5)
-        wpilib.SmartDashboard.putNumber("MotorValue", (self.left) * 0.5)
+        self.armMotor.set(ctre.TalonSRXControlMode.PercentOutput, (self.left) * 0.4)
+        wpilib.SmartDashboard.putNumber("MotorValue", (self.left) * 0.4)
         wpilib.SmartDashboard.putNumber("MotorActualValue", self.armMotor.getMotorOutputPercent())
 
 
