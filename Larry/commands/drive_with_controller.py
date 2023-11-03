@@ -29,19 +29,11 @@ class DriveWithController(commands2.CommandBase):
 
         self.gyroAngle = self.drive.getYaw() + 180
         wpilib.SmartDashboard.putNumber("Yaw", self.gyroAngle)
-        self.angle = 360 - (conversions.convertJoystickInputToDegrees(conversions.deadband(self.x(), constants.kdeadband),
-                                                               conversions.deadband(self.y(), constants.kdeadband)) + self.gyroAngle)
+        self.angle = (360 - (conversions.convertJoystickInputToDegrees(conversions.deadband(self.x(), constants.kdeadband),
+                                                               conversions.deadband(self.y(), constants.kdeadband)) + self.gyroAngle)) % 360
+        wpilib.SmartDashboard.putNumber("Adjusted Angle", self.angle)
         self.magnitude = math.hypot(conversions.deadband(self.x(), constants.kdeadband),
                                     conversions.deadband(self.y(), constants.kdeadband))
-        
-        self.drive.showWheelStats()
-        wpilib.SmartDashboard.putNumber(" Turn Power -", conversions.deadband(self.rightx(), constants.kdeadband))
-        wpilib.SmartDashboard.putNumber(" Angle -", self.angle)
-        wpilib.SmartDashboard.putNumber(" Magnitude -", self.magnitude)
-        wpilib.SmartDashboard.putNumber(" X -", conversions.deadband(self.x(), constants.kdeadband))
-        wpilib.SmartDashboard.putNumber(" Y -", conversions.deadband(self.y(), constants.kdeadband))
-        wpilib.SmartDashboard.putNumber(" Gyro (Rads) -", math.radians(self.drive.getYaw()))
-        wpilib.SmartDashboard.putNumber(" Gyro (Deg) -", self.gyroAngle)
 
         # self.magnitude *= 0.5
         # self.angle -= self.drive.getYaw()

@@ -161,28 +161,6 @@ class SwerveDrive(commands2.SubsystemBase):
         self.rightFrontSwerveModule.stopAllMotors()
         self.rightRearSwerveModule.stopAllMotors()
 
-    def showWheelStats(self):
-
-        wpilib.SmartDashboard.putNumber(" LF Steering ", self.leftFrontSwerveModule.getCurrentAngle())
-        wpilib.SmartDashboard.putNumber(" LF CAN ", self.leftFrontSwerveModule.getAbsPos())
-        wpilib.SmartDashboard.putNumber(" LF Offset ", self.leftFrontSwerveModule.steeringOffset)
-        wpilib.SmartDashboard.putNumber(" LF Speed ", self.leftFrontSwerveModule.getVelocity())
-
-        wpilib.SmartDashboard.putNumber(" LR Steering ", self.leftRearSwerveModule.getCurrentAngle())
-        wpilib.SmartDashboard.putNumber(" LR CAN ", self.leftRearSwerveModule.getAbsPos())
-        wpilib.SmartDashboard.putNumber(" LR Offset ", self.leftRearSwerveModule.steeringOffset)
-        wpilib.SmartDashboard.putNumber(" LR Speed ", self.leftRearSwerveModule.getVelocity())
-
-        wpilib.SmartDashboard.putNumber(" RF Steering ", self.rightFrontSwerveModule.getCurrentAngle())
-        wpilib.SmartDashboard.putNumber(" RF CAN ", self.rightFrontSwerveModule.getAbsPos())
-        wpilib.SmartDashboard.putNumber(" RF Offset ", self.rightFrontSwerveModule.steeringOffset)
-        wpilib.SmartDashboard.putNumber(" RF Speed ", self.rightFrontSwerveModule.getVelocity())
-
-        wpilib.SmartDashboard.putNumber(" RR Steering ", self.rightRearSwerveModule.getCurrentAngle())
-        wpilib.SmartDashboard.putNumber(" RR CAN ", self.rightRearSwerveModule.getAbsPos())
-        wpilib.SmartDashboard.putNumber(" RR Offset ", self.rightRearSwerveModule.steeringOffset)
-        wpilib.SmartDashboard.putNumber(" RR Speed ", self.rightRearSwerveModule.getVelocity())
-
     #    wpilib.SmartDashboard.putNumberArray("Code Offsets ", [self.leftFrontSwerveModule.offset, self.rightFrontSwerveModule.offset, self.leftRearSwerveModule.offset, self.rightRearSwerveModule.offset])
 
 
