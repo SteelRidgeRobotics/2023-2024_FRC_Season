@@ -149,6 +149,44 @@ class SwerveDrive(commands2.SubsystemBase):
         self.turnWheel(self.rightFrontSwerveModule, direction, magnitude)
         self.turnWheel(self.rightRearSwerveModule, direction, magnitude)
 
+    def translateAndTurn(self, translationX: float, translationY: float, rotX: float):
+        robotLength = 1
+        robotWidth = 1
+
+        temp = translationY * math.cos(self.getYaw() * (math.pi/180)) + translationX * math.sin(self.getYaw() * (math.pi/180))
+        translationX = -translationY * math.sin(self.getYaw() * (math.pi/180)) + translationX * math.cos(self.getYaw() * (math.pi/180))
+        translationY = temp
+
+        a = translationX - rotX * (robotLength / 2)
+        b = translationX + rotX * (robotLength / 2)
+        c = translationY - rotX * (robotWidth / 2)
+        d = translationY + rotX * (robotWidth / 2)
+
+        # Wheel 1 = topRight, Wheel 2 = topLeft, Wheel 3 = bottomLeft, Wheel 4 = bottomRight
+        # wheel = [speed, angle]
+        topRight = [math.sqrt(b ** 2 + c ** 2), math.atan2(b, c) * (180/math.pi)]
+        topLeft = [math.sqrt(b ** 2 + d ** 2), math.atan2(b, d) * (180/math.pi)]
+        bottomLeft = [math.sqrt(a ** 2 + d ** 2), math.atan2(a, d) * (180/math.pi)]
+        bottomRight = [math.sqrt(a ** 2 + c ** 2), math.atan2(a, c) * (180/math.pi)]
+
+        # Check if any wheels have a speed higher than 1. If so, divide all wheels by highest value
+        highestSpeed = max(topRight[0], topLeft[0], bottomLeft[0], bottomRight[0])
+        if highestSpeed > 1:
+            topRight[0] /= highestSpeed
+            topLeft[0] /= highestSpeed
+            bottomLeft[0] /= highestSpeed
+            bottomRight[0] /= highestSpeed
+
+        wpilib.SmartDashboard.putString("topRight", "[" + str(topRight) + "]")
+        wpilib.SmartDashboard.putString("topLeft", "[" + str(topLeft) + "]")
+        wpilib.SmartDashboard.putString("bottomLeft", "[" + str(bottomLeft) + "]")
+        wpilib.SmartDashboard.putString("bottomRight", "[" + str(bottomRight) + "]")
+
+        self.turnWheel(self.leftFrontSwerveModule, topLeft[1] + 180, topLeft[0])
+        self.turnWheel(self.rightFrontSwerveModule, topRight[1] + 180, topRight[0])
+        self.turnWheel(self.leftRearSwerveModule, bottomLeft[1] + 180, bottomLeft[0])
+        self.turnWheel(self.rightRearSwerveModule, bottomRight[1] + 180, bottomRight[0])
+
     def turnInPlace(self, turnPower: float):
         self.turnWheel(self.leftFrontSwerveModule, 45.0, turnPower)
         self.turnWheel(self.rightFrontSwerveModule, 135.0, turnPower)
