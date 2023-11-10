@@ -1,5 +1,8 @@
 import math
 
+# options
+kDebug = True # Turns off some temporary SmartDashboard values (basically if we dont want to clutter up things ;))
+
 # motors
 kleftFrontSpeedID = 0
 kleftRearSpeedID = 1

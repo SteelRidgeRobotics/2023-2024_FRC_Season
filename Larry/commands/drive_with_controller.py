@@ -27,28 +27,15 @@ class DriveWithController(commands2.CommandBase):
 
     def execute(self) -> None:
 
-        self.gyroAngle = self.drive.getYaw() + 180
-        wpilib.SmartDashboard.putNumber("Yaw", self.gyroAngle)
-        self.angle = (360 - (conversions.convertJoystickInputToDegrees(conversions.deadband(self.x(), constants.kdeadband),
-                                                               conversions.deadband(self.y(), constants.kdeadband)) + self.gyroAngle)) % 360
-        wpilib.SmartDashboard.putNumber("Adjusted Angle", self.angle)
-        self.magnitude = math.hypot(conversions.deadband(self.x(), constants.kdeadband),
-                                    conversions.deadband(self.y(), constants.kdeadband))
+        translationX = conversions.deadband(self.x(), constants.kdeadband)
+        translationY = conversions.deadband(self.y(), constants.kdeadband)
+        rotationX = conversions.deadband(self.rightx(), constants.kdeadband)
 
-        # self.magnitude *= 0.5
-        # self.angle -= self.drive.getYaw()
-
-        if self.magnitude >= 1.0:
-            self.magnitude = 1.0
-
-        self.drive.translateAndTurn(self.x(), self.y(), self.rightx())
-        """
-        if self.magnitude == 0.0:
-            # only rotation
-            self.drive.turnInPlace(conversions.deadband(self.rightx(), constants.kdeadband))
-        else:
-            self.drive.translate(self.angle, self.magnitude)
-        """
+        self.drive.translateAndTurn(translationX, translationY, rotationX)
+        if constants.kDebug:
+            wpilib.SmartDashboard.putNumber("translationX", translationX)
+            wpilib.SmartDashboard.putNumber("translationY", translationY)
+            wpilib.SmartDashboard.putNumber("rotationX", rotationX)
 
     def end(self, interrupted: bool) -> None:
         
