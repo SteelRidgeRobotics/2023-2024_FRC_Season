@@ -13,34 +13,52 @@ class SwerveWheel():
         self.speedMotor = speedMotor
 
         self.directionMotor.configSelectedFeedbackSensor(ctre.FeedbackDevice.IntegratedSensor, 0, ktimeoutMs)
+        self.speedMotor.configSelectedFeedbackSensor(ctre.FeedbackDevice.IntegratedSensor, 0, ktimeoutMs)
 
         # self.directionMotor.setSelectedSensorPosition(0.0, 0, ktimeoutMs)
 
         self.directionMotor.config_kF(0, kF, ktimeoutMs)
+        self.speedMotor.config_kF(0, kF, ktimeoutMs)
 
         self.directionMotor.config_kP(0, kP, ktimeoutMs)
+        self.speedMotor.config_kP(0, kP, ktimeoutMs)
 
         self.directionMotor.config_kI(0, kI, ktimeoutMs)
+        self.speedMotor.config_kI(0, kI, ktimeoutMs)
 
         self.directionMotor.config_kD(0, kD, ktimeoutMs)
+        self.speedMotor.config_kD(0, kD, ktimeoutMs)
 
         self.directionMotor.config_IntegralZone(0, kIzone, ktimeoutMs)
+        self.speedMotor.config_IntegralZone(0, kIzone, ktimeoutMs)
 
         # MOTOR CONFIG
         self.directionMotor.configNominalOutputForward(0, ktimeoutMs)
+        self.speedMotor.configNominalOutputForward(0, ktimeoutMs)
+
         self.directionMotor.configNominalOutputReverse(0, ktimeoutMs)
+        self.speedMotor.configNominalOutputReverse(0, ktimeoutMs)
 
         self.directionMotor.configPeakOutputForward(1, ktimeoutMs)
+        self.speedMotor.configPeakOutputForward(1, ktimeoutMs)
+
         self.directionMotor.configPeakOutputReverse(-1, ktimeoutMs)
+        self.speedMotor.configPeakOutputReverse(-1, ktimeoutMs)
 
         self.directionMotor.selectProfileSlot(kSlotIdx, kPIDLoopIdx)
+        self.speedMotor.selectProfileSlot(kSlotIdx, kPIDLoopIdx)
 
         self.directionMotor.configMotionCruiseVelocity(kcruiseVel, ktimeoutMs)
+        self.speedMotor.configMotionCruiseVelocity(kcruiseVel, ktimeoutMs)
+
         self.directionMotor.configMotionAcceleration(kcruiseAccel, ktimeoutMs)
+        self.speedMotor.configMotionAcceleration(kcruiseAccel, ktimeoutMs)
 
         self.directionMotor.setNeutralMode(ctre.NeutralMode.Brake)
+        self.speedMotor.setNeutralMode(ctre.NeutralMode.Brake)
 
         self.directionMotor.setSelectedSensorPosition(0.0, kPIDLoopIdx, ktimeoutMs)
+        self.speedMotor.setSelectedSensorPosition(0.0, kPIDLoopIdx, ktimeoutMs)
 
         # CAN Coder
         self.CANCoder = CANCoder

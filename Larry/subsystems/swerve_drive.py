@@ -52,6 +52,8 @@ class SwerveDrive(commands2.SubsystemBase):
         self.rightFrontSwerveModule = SwerveWheel(self.rightFrontDirection, self.rightFrontSpeed, self.frCANcoder, constants.kfrCANoffset, 0.0)
         self.rightRearSwerveModule = SwerveWheel(self.rightRearDirection, self.rightRearSpeed, self.rrCANcoder, constants.krrCANoffset, 0.0)
 
+        self.wheels = [self.leftFrontSwerveModule, self.rightFrontSwerveModule, self.leftRearSwerveModule, self.rightRearSwerveModule]
+
         self.navX = navx.AHRS.create_spi()
         
         self.PDP = wpilib.PowerDistribution(0, wpilib.PowerDistribution.ModuleType.kCTRE)
@@ -148,6 +150,7 @@ class SwerveDrive(commands2.SubsystemBase):
         self.turnWheel(self.rightRearSwerveModule, direction, magnitude)
 
     def translateAndTurn(self, translationX: float, translationY: float, rotX: float):
+        translationX *= -1
         rotX *= -1
 
         temp = translationY * math.cos(self.getYaw() * (math.pi / 180)) + translationX * math.sin(self.getYaw() * (math.pi / 180))
@@ -176,13 +179,23 @@ class SwerveDrive(commands2.SubsystemBase):
         bottomLeft = [math.sqrt(a ** 2 + d ** 2), math.atan2(a, d) * (180/math.pi) + 180]
         bottomRight = [math.sqrt(a ** 2 + c ** 2), math.atan2(a, c) * (180/math.pi) + 180]
 
+        new_wheels = [topRight, topLeft, bottomRight, bottomLeft]
+
         # Check if any wheels have a speed higher than 1. If so, divide all wheels by highest value
-        highestSpeed = max(topRight[0], topLeft[0], bottomLeft[0], bottomRight[0])
-        if highestSpeed > 1:
-            topRight[0] = topRight[0] / highestSpeed
-            topLeft[0] = topLeft[0] / highestSpeed
-            bottomLeft[0] = bottomLeft[0] / highestSpeed
-            bottomRight[0] = bottomRight[0] / highestSpeed
+        highestSpeed = max(abs(topRight[0]), abs(topLeft[0]), abs(bottomLeft[0]), abs(bottomRight[0]))
+        if highestSpeed != 0:
+            topRight[0] /= highestSpeed
+            topLeft[0] /= highestSpeed
+            bottomLeft[0] /= highestSpeed
+            bottomRight[0] /= highestSpeed
+
+        runs = 0
+        for wheel in self.wheels:
+            if abs(new_wheels[runs][1] - wheel.getCurrentAngle()) > 90 and abs(new_wheels[runs][1] - wheel.getCurrentAngle()) < 270:
+                new_wheels[runs][1] += 180
+                new_wheels[runs][1] %= 360 
+                new_wheels[runs][0] *= -1
+            runs += 1
 
         wpilib.SmartDashboard.putString("topRight", str(topRight))
         wpilib.SmartDashboard.putString("topLeft", str(topLeft))
