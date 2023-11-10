@@ -31,6 +31,10 @@ class DriveWithController(commands2.CommandBase):
         translationY = conversions.deadband(self.y(), constants.kdeadband)
         rotationX = conversions.deadband(self.rightx(), constants.kdeadband)
 
+        if translationX == 0 and translationY == 0 and rotationX != 0:
+            self.drive.turnInPlace(rotationX)
+            return
+
         self.drive.translateAndTurn(translationX, translationY, rotationX)
         if constants.kDebug:
             wpilib.SmartDashboard.putNumber("translationX", translationX)

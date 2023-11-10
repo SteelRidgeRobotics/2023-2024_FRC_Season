@@ -148,6 +148,8 @@ class SwerveDrive(commands2.SubsystemBase):
         self.turnWheel(self.rightRearSwerveModule, direction, magnitude)
 
     def translateAndTurn(self, translationX: float, translationY: float, rotX: float):
+        rotX *= -1
+
         temp = translationY * math.cos(self.getYaw() * (math.pi / 180)) + translationX * math.sin(self.getYaw() * (math.pi / 180))
         translationX = -translationY * math.sin(self.getYaw() * (math.pi / 180)) + translationX * math.cos(self.getYaw() * (math.pi / 180))
         translationY = temp
@@ -186,6 +188,10 @@ class SwerveDrive(commands2.SubsystemBase):
         wpilib.SmartDashboard.putString("topLeft", str(topLeft))
         wpilib.SmartDashboard.putString("bottomLeft", str(bottomLeft))
         wpilib.SmartDashboard.putString("bottomRight", str(bottomRight))
+
+        # Stops robot from moving while no controller values are being returned
+        if translationX == 0 and translationY == 0 and rotX == 0:
+            self.stopAllMotors()
 
         self.turnWheel(self.leftFrontSwerveModule, topLeft[1], topLeft[0])
         self.turnWheel(self.rightFrontSwerveModule, topRight[1], topRight[0])
