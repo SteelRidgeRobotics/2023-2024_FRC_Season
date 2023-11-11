@@ -195,6 +195,10 @@ class SwerveDrive(commands2.SubsystemBase):
                 new_wheels[runs][1] += 180
                 new_wheels[runs][1] %= 360 
                 new_wheels[runs][0] *= -1
+                if constants.kDebug:
+                    wpilib.SmartDashboard.putBoolean("Wheel " + str(runs) + " Reversed?", True)
+            elif constants.kDebug:
+                wpilib.SmartDashboard.putBoolean("Wheel " + str(runs) + " Reversed?", False)
             runs += 1
 
         wpilib.SmartDashboard.putString("topRight", str(topRight))
