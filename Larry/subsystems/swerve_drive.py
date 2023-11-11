@@ -11,7 +11,12 @@ from subsystems.swerve_wheel import SwerveWheel
 
 
 class SwerveDrive(commands2.SubsystemBase):
-    
+    """
+    Our default Swerve Drive class. This contains motor definitions, 
+    turning methods, moving motors from off-state, and Field Orientated
+    Drive.
+    """
+
     def __init__(self) -> None:
 
         super().__init__()
@@ -63,7 +68,20 @@ class SwerveDrive(commands2.SubsystemBase):
         self.pidController = wpimath.controller.PIDController(constants.kChargeP, constants.kChargeI, constants.kChargeD)
         self.onChargeStation = False
 
+        self.inTankMode = False
+        self.inSwerveMode = True
+
     def turnWheel(self, module: SwerveWheel, direction: float, magnitude: float):
+        """
+        Turns a swerve wheel based on the provided direction and 
+        magnitude.
+
+        :param module: The swerve wheel to turn.
+        :param direction: The angle the wheel should turn to 
+        (ranging from 0 to 360 degrees).
+        :param magnitude: The magnitude the wheel should turn at 
+        (ranging from 0 to 1, 1 being 100% power)
+        """
 
         self.units = conversions.convertDegreesToTalonFXUnits(direction)
 
@@ -103,6 +121,15 @@ class SwerveDrive(commands2.SubsystemBase):
             wpilib.SmartDashboard.putNumber("Current Angle", currentAngle)
 
     def translate(self, direction: float, magnitude: float):
+        """
+        Allows for moving up, down, left, and right without rotating 
+        the robot.
+
+        :param direction: The angle the robot should travel at 
+        (ranging from 0 to 360 degrees).
+        :param magnitude: The magnitude the robot should travel at 
+        (ranging from 0 to 1, 1 being 100% power)
+        """
 
         self.turnWheel(self.leftFrontSwerveModule, direction, magnitude)
         self.turnWheel(self.leftRearSwerveModule, direction, magnitude)
@@ -110,7 +137,19 @@ class SwerveDrive(commands2.SubsystemBase):
         self.turnWheel(self.rightRearSwerveModule, direction, magnitude)
 
     def translateAndTurn(self, translationX: float, translationY: float, rotX: float):
+        """
+        This is the default movement method for swerve drive.
 
+        This allows for turning and moving simultaneously and 
+        includes further movement optimizations.
+
+        :param translationX: The magnitude of moving left and right 
+        (ranging from -1 to 1)
+        :param translationY: The magnitude of moving up and down 
+        (ranging from -1 to 1)
+        :param rotX: The magnitude of rotating left and right 
+        (ranging from -1 to 1)
+        """
         translationX *= -1
         rotX *= -1
 
@@ -133,8 +172,6 @@ class SwerveDrive(commands2.SubsystemBase):
 
         # Wheel 1 = topRight, Wheel 2 = topLeft, Wheel 3 = bottomLeft, Wheel 4 = bottomRight
         # wheel = [speed, angle]
-        roundingAm = 3
-
         topRight = [math.sqrt(b ** 2 + c ** 2), math.atan2(b, c) * (180/math.pi) + 180]
         topLeft = [math.sqrt(b ** 2 + d ** 2), math.atan2(b, d) * (180/math.pi) + 180]
         bottomLeft = [math.sqrt(a ** 2 + d ** 2), math.atan2(a, d) * (180/math.pi) + 180]
@@ -177,55 +214,127 @@ class SwerveDrive(commands2.SubsystemBase):
         self.turnWheel(self.rightRearSwerveModule, bottomRight[1], bottomRight[0])
 
     def turnInPlace(self, turnPower: float):
+        """
+        Sets all motors to pre-defined angles to allow for optimized 
+        turning back and forth.
 
+        :param turnPower: The magnitude of the turning (ranging from 
+        -1 to 1, 1 being 100% power forward)
+        """
         self.turnWheel(self.leftFrontSwerveModule, 45.0, turnPower)
         self.turnWheel(self.rightFrontSwerveModule, 135.0, turnPower)
         self.turnWheel(self.rightRearSwerveModule, 225.0, turnPower)
         self.turnWheel(self.leftRearSwerveModule, 315.0, turnPower)
 
     def stopAllMotors(self):
-
+        """
+        Stops all motors.
+        """
         self.leftFrontSwerveModule.stopAllMotors()
         self.leftRearSwerveModule.stopAllMotors()
         self.rightFrontSwerveModule.stopAllMotors()
         self.rightRearSwerveModule.stopAllMotors()
 
     def getYaw(self):
+        """
+        Used for geting the yaw of the NavX.
 
+        :returns: the yaw of the NavX (from -180 to 180)
+        """
         return self.navX.getYaw()
         
     def getPitch(self):
+        """
+        Used for geting the pitch of the NavX.
 
+        :returns: the pitch of the NavX (from -180 to 180)
+        """
         return self.navX.getPitch()
     
     def flushWheels(self):
-
-        self.turnWheel(self.leftFrontSwerveModule, 0.0, 0.01)
-        self.turnWheel(self.leftRearSwerveModule, 0.0, 0.01)
-        self.turnWheel(self.rightFrontSwerveModule, 0.0, 0.01)
-        self.turnWheel(self.rightRearSwerveModule, 0.0, 0.01)
-
+        """
+        Sets all swerve wheels to angle 0 with 0 magnitude, then stops.
+        """
+        self.turnWheel(self.leftFrontSwerveModule, 0.0, 0.0)
+        self.turnWheel(self.leftRearSwerveModule, 0.0, 0.0)
+        self.turnWheel(self.rightFrontSwerveModule, 0.0, 0.0)
+        self.turnWheel(self.rightRearSwerveModule, 0.0, 0.0)
         self.stopAllMotors()
 
     def getPosFromOffState(self):
-
+        """
+        Moves all motors to the correct position on startup.
+        """
         self.leftFrontSwerveModule.CANtoTalon()
         self.leftRearSwerveModule.CANtoTalon()
         self.rightFrontSwerveModule.CANtoTalon()
         self.rightRearSwerveModule.CANtoTalon()
 
     def reset(self):
-
+        """
+        Resets the navX and sets all motor positions to 0.
+        """
         self.navX.reset()
 
         self.leftFrontDirection.setSelectedSensorPosition(0.0, constants.kPIDLoopIdx, constants.ktimeoutMs)
         self.leftFrontSpeed.setSelectedSensorPosition(0.0, constants.kPIDLoopIdx, constants.ktimeoutMs)
-
         self.leftRearDirection.setSelectedSensorPosition(0.0, constants.kPIDLoopIdx, constants.ktimeoutMs)
         self.leftRearSpeed.setSelectedSensorPosition(0.0, constants.kPIDLoopIdx, constants.ktimeoutMs)
-
         self.rightFrontDirection.setSelectedSensorPosition(0.0, constants.kPIDLoopIdx, constants.ktimeoutMs)
         self.rightFrontSpeed.setSelectedSensorPosition(0.0, constants.kPIDLoopIdx, constants.ktimeoutMs)
-
         self.rightRearDirection.setSelectedSensorPosition(0.0, constants.kPIDLoopIdx, constants.ktimeoutMs)
         self.rightRearSpeed.setSelectedSensorPosition(0.0, constants.kPIDLoopIdx, constants.ktimeoutMs)
+
+    def enableTankDrive(self) -> bool:
+        """
+        Enables tank drive mode. This aligns all wheels into a tank 
+        drive formation, disabling turning and moving simultaneously.
+
+        The main use for this is to run automation code that was
+        intended for tank drive drivetrains.
+
+        :returns: True if successfully enabled, False if otherwise.
+        """
+        self.flushWheels()
+        for wheel in self.wheels:
+            if wheel.getCurrentAngle() != 0.0:
+                return False
+
+        self.inTankMode = True
+        self.inSwerveMode = False
+        return True
+    
+    def isInTankDrive(self) -> bool:
+        """
+        Used for getting the current drive mode of the robot.
+
+        :returns: True if in tank drive mode, False if otherwise.
+        """
+        return self.inTankMode
+    
+    def enableSwerveDrive(self) -> bool:
+        """
+        Enables swerve drive mode (enabled by default) and disables 
+        tank drive mode. This allows for turning and moving 
+        simultaneously.
+
+        This is used mainly for teleop purposes to allow for more 
+        control over movement.
+
+        :returns: True if successfully enabled, False if otherwise.
+        """
+        try:
+            self.flushWheels()
+            self.inTankMode = False
+            self.inSwerveMode = True
+            return True
+        except:
+            return False # The chance of this actually failing is literally only if like a motor gets unplugged lmao
+        
+    def isInSwerveDrive(self) -> bool:
+        """
+        Used for getting the current drive mode of the robot.
+
+        :returns: True if in swerve drive mode, False if otherwise.
+        """
+        return self.inSwerveMode
