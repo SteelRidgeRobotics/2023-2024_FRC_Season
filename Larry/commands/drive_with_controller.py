@@ -27,43 +27,19 @@ class DriveWithController(commands2.CommandBase):
 
     def execute(self) -> None:
 
-        self.gyroAngle = self.drive.getYaw() + 180
-        wpilib.SmartDashboard.putNumber("Yaw", self.gyroAngle)
-        self.angle = (conversions.convertJoystickInputToDegrees(conversions.deadband(self.x(), constants.kdeadband),
-                                                               conversions.deadband(self.y(), constants.kdeadband)) + self.gyroAngle)
-        self.magnitude = math.hypot(conversions.deadband(self.x(), constants.kdeadband),
-                                    conversions.deadband(self.y(), constants.kdeadband))
-        
-        self.drive.showWheelStats()
-        wpilib.SmartDashboard.putNumber(" Turn Power -", conversions.deadband(self.rightx(), constants.kdeadband))
-        wpilib.SmartDashboard.putNumber(" Angle -", self.angle)
-        wpilib.SmartDashboard.putNumber(" Magnitude -", self.magnitude)
-        wpilib.SmartDashboard.putNumber(" X -", conversions.deadband(self.x(), constants.kdeadband))
-        wpilib.SmartDashboard.putNumber(" Y -", conversions.deadband(self.y(), constants.kdeadband))
-        wpilib.SmartDashboard.putNumber(" Gyro (Rads) -", math.radians(self.drive.getYaw()))
-        wpilib.SmartDashboard.putNumber(" Gyro (Deg) -", self.gyroAngle)
+        translationX = conversions.deadband(self.x(), constants.kdeadband)
+        translationY = conversions.deadband(self.y(), constants.kdeadband)
+        rotationX = conversions.deadband(self.rightx(), constants.kdeadband)
 
-        # self.magnitude *= 0.5
-        # self.angle -= self.drive.getYaw()
+        if translationX == 0 and translationY == 0 and rotationX != 0:
+            self.drive.turnInPlace(rotationX)
+            return
 
-        if self.magnitude >= 1.0:
-            self.magnitude = 1.0
-
-        if self.magnitude == 0.0:
-            # only rotation
-            self.drive.turnInPlace(conversions.deadband(self.rightx(), constants.kdeadband))
-        else:
-            self.drive.translate(self.angle, self.magnitude)
-            """
-            if self.magnitude != 0.0 and self.rightx != 0.0:
-                # checks if both joysticks are being used
-                self.drive.moveWhileSpinning(self.x(), self.y(), self.rightx())
-            else:
-                # no rotation wanted
-                self.drive.translate(self.angle, self.magnitude)
-                """
-
-        
+        self.drive.translateAndTurn(translationX, translationY, rotationX)
+        if constants.kDebug:
+            wpilib.SmartDashboard.putNumber("translationX", translationX)
+            wpilib.SmartDashboard.putNumber("translationY", translationY)
+            wpilib.SmartDashboard.putNumber("rotationX", rotationX)
 
     def end(self, interrupted: bool) -> None:
         

@@ -11,7 +11,14 @@ from subsystems.swerve_wheel import SwerveWheel
 
 
 class SwerveDrive(commands2.SubsystemBase):
+    """
+    Our default Swerve Drive class. This contains motor definitions, 
+    turning methods, moving motors from off-state, and Field Orientated
+    Drive.
+    """
+
     def __init__(self) -> None:
+
         super().__init__()
         # init motors
         self.leftFrontDirection = ctre.TalonFX(constants.kleftFrontDirectionID)
@@ -52,6 +59,8 @@ class SwerveDrive(commands2.SubsystemBase):
         self.rightFrontSwerveModule = SwerveWheel(self.rightFrontDirection, self.rightFrontSpeed, self.frCANcoder, constants.kfrCANoffset, 0.0)
         self.rightRearSwerveModule = SwerveWheel(self.rightRearDirection, self.rightRearSpeed, self.rrCANcoder, constants.krrCANoffset, 0.0)
 
+        self.wheels = [self.leftFrontSwerveModule, self.rightFrontSwerveModule, self.leftRearSwerveModule, self.rightRearSwerveModule]
+
         self.navX = navx.AHRS.create_spi()
         
         self.PDP = wpilib.PowerDistribution(0, wpilib.PowerDistribution.ModuleType.kCTRE)
@@ -59,7 +68,21 @@ class SwerveDrive(commands2.SubsystemBase):
         self.pidController = wpimath.controller.PIDController(constants.kChargeP, constants.kChargeI, constants.kChargeD)
         self.onChargeStation = False
 
+        self.inTankMode = False
+        self.inSwerveMode = True
+
     def turnWheel(self, module: SwerveWheel, direction: float, magnitude: float):
+        """
+        Turns a swerve wheel based on the provided direction and 
+        magnitude.
+
+        :param module: The swerve wheel to turn.
+        :param direction: The angle the wheel should turn to 
+        (ranging from 0 to 360 degrees).
+        :param magnitude: The magnitude the wheel should turn at 
+        (ranging from 0 to 1, 1 being 100% power)
+        """
+
         self.units = conversions.convertDegreesToTalonFXUnits(direction)
 
         if magnitude >= 1.0:
@@ -69,15 +92,6 @@ class SwerveDrive(commands2.SubsystemBase):
 
         # find current angle
         currentAngle = conversions.convertTalonFXUnitsToDegrees(module.directionMotor.getSelectedSensorPosition()/constants.ksteeringGearRatio)
-        """
-        # see if the abs value is greater than 180
-        if math.fabs(direction) >= 180.0:
-            # find the abs value of the opposite angle
-            opposAngle = math.fabs(direction) - 180.0
-        else:
-            # find the abs value of the opposite angle
-            opposAngle = math.fabs(direction) + 180.0
-        """
         
         if direction < 0:
             opposAngle = direction + 180
@@ -99,168 +113,228 @@ class SwerveDrive(commands2.SubsystemBase):
         wpilib.SmartDashboard.putNumber(" Neg Angle -", negAngle)
         # check if the joystick is in use
         if magnitude != 0.0:
-            """
-            # this is to test that if 360 or zero is closer it goes to 0
-            if (direction == 0.0 or direction == 180.0) and math.fabs(360 - currentAngle) <= math.fabs(
-                    currentAngle - opposAngle):
-                # this means that 360 or zero is the shortest distance
-                # now we have to find if 0.0 is the direction or the opposite angle
-                if direction == 0.0:
-                    module.turn(self.units * constants.ksteeringGearRatio)
-                    module.move(magnitude)
-                else:
-                    module.turn(conversions.convertDegreesToTalonFXUnits(opposAngle) * constants.ksteeringGearRatio)
-                    module.move(-magnitude)
-            """
-        
-            """
-            # if negAngle is closer
-            if math.fabs(currentAngle - direction) >= math.fabs(currentAngle - negAngle):
-                module.turn(conversions.convertDegreesToTalonFXUnits(negAngle + rev) * constants.ksteeringGearRatio)
-                wpilib.SmartDashboard.putNumber("1", math.fabs(currentAngle - direction))
-                wpilib.SmartDashboard.putNumber("-", math.fabs(currentAngle - negAngle))
-                wpilib.SmartDashboard.putBoolean("Using - ANGLE: ", True)
-            # if the original angle is closer   
-            elif math.fabs(currentAngle - direction) <= math.fabs(currentAngle - opposAngle):
-                # turn to the original angle
-                module.turn(conversions.convertDegreesToTalonFXUnits(direction + rev) * constants.ksteeringGearRatio)
-                # move in the normal way
-                module.move(magnitude)
-                wpilib.SmartDashboard.putBoolean("Using - ANGLE: ", False)
-            else:  # the opposite angle is closer
-                # turn to the other angle
-                module.turn(conversions.convertDegreesToTalonFXUnits(opposAngle + rev) * constants.ksteeringGearRatio)
-                # move in the opposite direction
-                module.move(-magnitude)
-                wpilib.SmartDashboard.putBoolean("Using - ANGLE: ", False)
-            """
             module.turn(constants.ksteeringGearRatio * conversions.convertDegreesToTalonFXUnits(conversions.getclosest(currentAngle, direction, magnitude)[0]))
             module.move(conversions.getclosest(currentAngle, direction, magnitude)[1])
 
             wpilib.SmartDashboard.putNumber(" Wanted Angle -", direction)
-            wpilib.SmartDashboard.putNumber("RevComp", conversions.giveRevCompensation(currentAngle, direction))
-            wpilib.SmartDashboard.putNumber("REVOLUTIONS", conversions.getRevolutions(currentAngle))
             wpilib.SmartDashboard.putNumber("Given Angle", conversions.getclosest(currentAngle, direction, magnitude)[0])
             wpilib.SmartDashboard.putNumber("Current Angle", currentAngle)
 
     def translate(self, direction: float, magnitude: float):
+        """
+        Allows for moving up, down, left, and right without rotating 
+        the robot.
+
+        :param direction: The angle the robot should travel at 
+        (ranging from 0 to 360 degrees).
+        :param magnitude: The magnitude the robot should travel at 
+        (ranging from 0 to 1, 1 being 100% power)
+        """
+
         self.turnWheel(self.leftFrontSwerveModule, direction, magnitude)
         self.turnWheel(self.leftRearSwerveModule, direction, magnitude)
         self.turnWheel(self.rightFrontSwerveModule, direction, magnitude)
         self.turnWheel(self.rightRearSwerveModule, direction, magnitude)
 
+    def translateAndTurn(self, translationX: float, translationY: float, rotX: float):
+        """
+        This is the default movement method for swerve drive.
+
+        This allows for turning and moving simultaneously and 
+        includes further movement optimizations.
+
+        :param translationX: The magnitude of moving left and right 
+        (ranging from -1 to 1)
+        :param translationY: The magnitude of moving up and down 
+        (ranging from -1 to 1)
+        :param rotX: The magnitude of rotating left and right 
+        (ranging from -1 to 1)
+        """
+        translationX *= -1
+        rotX *= -1
+
+        temp = translationY * math.cos(self.getYaw() * (math.pi / 180)) + translationX * math.sin(self.getYaw() * (math.pi / 180))
+        translationX = -translationY * math.sin(self.getYaw() * (math.pi / 180)) + translationX * math.cos(self.getYaw() * (math.pi / 180))
+        translationY = temp
+
+        # FOR FUTURE ROBOTICS PEOPLE: These usually would require the rotX to be multiplied by (robotLength or robotWidth / 2). 
+        # However, since Larry is a square, we don't use this. I'm leaving the code there just in case someone reads this and uses it.
+        robotLength = 1
+        robotWidth = 1
+
+        a = translationX - rotX #* (robotLength / 2) 
+        b = translationX + rotX #* (robotLength / 2)
+        c = translationY - rotX #* (robotWidth / 2)
+        d = translationY + rotX #* (robotWidth / 2)
+
+        if constants.kDebug:
+            wpilib.SmartDashboard.putString("ABCD", str([a, b, c, d]))
+
+        # Wheel 1 = topRight, Wheel 2 = topLeft, Wheel 3 = bottomLeft, Wheel 4 = bottomRight
+        # wheel = [speed, angle]
+        topRight = [math.sqrt(b ** 2 + c ** 2), math.atan2(b, c) * (180/math.pi) + 180]
+        topLeft = [math.sqrt(b ** 2 + d ** 2), math.atan2(b, d) * (180/math.pi) + 180]
+        bottomLeft = [math.sqrt(a ** 2 + d ** 2), math.atan2(a, d) * (180/math.pi) + 180]
+        bottomRight = [math.sqrt(a ** 2 + c ** 2), math.atan2(a, c) * (180/math.pi) + 180]
+
+        new_wheels = [topRight, topLeft, bottomRight, bottomLeft]
+
+        # Check if any wheels have a speed higher than 1. If so, divide all wheels by highest value
+        highestSpeed = max(abs(topRight[0]), abs(topLeft[0]), abs(bottomLeft[0]), abs(bottomRight[0]))
+        if highestSpeed != 0:
+            topRight[0] /= highestSpeed
+            topLeft[0] /= highestSpeed
+            bottomLeft[0] /= highestSpeed
+            bottomRight[0] /= highestSpeed
+
+        runs = 0
+        for wheel in self.wheels:
+            if abs(new_wheels[runs][1] - wheel.getCurrentAngle()) > 90 and abs(new_wheels[runs][1] - wheel.getCurrentAngle()) < 270:
+                new_wheels[runs][1] += 180
+                new_wheels[runs][1] %= 360 
+                new_wheels[runs][0] *= -1
+                if constants.kDebug:
+                    wpilib.SmartDashboard.putBoolean("Wheel " + str(runs) + " Reversed?", True)
+            elif constants.kDebug:
+                wpilib.SmartDashboard.putBoolean("Wheel " + str(runs) + " Reversed?", False)
+            runs += 1
+
+        wpilib.SmartDashboard.putString("topRight", str(topRight))
+        wpilib.SmartDashboard.putString("topLeft", str(topLeft))
+        wpilib.SmartDashboard.putString("bottomLeft", str(bottomLeft))
+        wpilib.SmartDashboard.putString("bottomRight", str(bottomRight))
+
+        # Stops robot from moving while no controller values are being returned
+        if translationX == 0 and translationY == 0 and rotX == 0:
+            self.stopAllMotors()
+
+        self.turnWheel(self.leftFrontSwerveModule, topLeft[1], topLeft[0])
+        self.turnWheel(self.rightFrontSwerveModule, topRight[1], topRight[0])
+        self.turnWheel(self.leftRearSwerveModule, bottomLeft[1], bottomLeft[0])
+        self.turnWheel(self.rightRearSwerveModule, bottomRight[1], bottomRight[0])
+
     def turnInPlace(self, turnPower: float):
+        """
+        Sets all motors to pre-defined angles to allow for optimized 
+        turning back and forth.
+
+        :param turnPower: The magnitude of the turning (ranging from 
+        -1 to 1, 1 being 100% power forward)
+        """
         self.turnWheel(self.leftFrontSwerveModule, 45.0, turnPower)
         self.turnWheel(self.rightFrontSwerveModule, 135.0, turnPower)
         self.turnWheel(self.rightRearSwerveModule, 225.0, turnPower)
         self.turnWheel(self.leftRearSwerveModule, 315.0, turnPower)
 
     def stopAllMotors(self):
+        """
+        Stops all motors.
+        """
         self.leftFrontSwerveModule.stopAllMotors()
         self.leftRearSwerveModule.stopAllMotors()
         self.rightFrontSwerveModule.stopAllMotors()
         self.rightRearSwerveModule.stopAllMotors()
 
-    def showWheelStats(self):
-
-        wpilib.SmartDashboard.putNumber(" LF Steering ", self.leftFrontSwerveModule.getCurrentAngle())
-        wpilib.SmartDashboard.putNumber(" LF CAN ", self.leftFrontSwerveModule.getAbsPos())
-        wpilib.SmartDashboard.putNumber(" LF Offset ", self.leftFrontSwerveModule.steeringOffset)
-        wpilib.SmartDashboard.putNumber(" LF Speed ", self.leftFrontSwerveModule.getVelocity())
-
-        wpilib.SmartDashboard.putNumber(" LR Steering ", self.leftRearSwerveModule.getCurrentAngle())
-        wpilib.SmartDashboard.putNumber(" LR CAN ", self.leftRearSwerveModule.getAbsPos())
-        wpilib.SmartDashboard.putNumber(" LR Offset ", self.leftRearSwerveModule.steeringOffset)
-        wpilib.SmartDashboard.putNumber(" LR Speed ", self.leftRearSwerveModule.getVelocity())
-
-        wpilib.SmartDashboard.putNumber(" RF Steering ", self.rightFrontSwerveModule.getCurrentAngle())
-        wpilib.SmartDashboard.putNumber(" RF CAN ", self.rightFrontSwerveModule.getAbsPos())
-        wpilib.SmartDashboard.putNumber(" RF Offset ", self.rightFrontSwerveModule.steeringOffset)
-        wpilib.SmartDashboard.putNumber(" RF Speed ", self.rightFrontSwerveModule.getVelocity())
-
-        wpilib.SmartDashboard.putNumber(" RR Steering ", self.rightRearSwerveModule.getCurrentAngle())
-        wpilib.SmartDashboard.putNumber(" RR CAN ", self.rightRearSwerveModule.getAbsPos())
-        wpilib.SmartDashboard.putNumber(" RR Offset ", self.rightRearSwerveModule.steeringOffset)
-        wpilib.SmartDashboard.putNumber(" RR Speed ", self.rightRearSwerveModule.getVelocity())
-
-    #    wpilib.SmartDashboard.putNumberArray("Code Offsets ", [self.leftFrontSwerveModule.offset, self.rightFrontSwerveModule.offset, self.leftRearSwerveModule.offset, self.rightRearSwerveModule.offset])
-
-
     def getYaw(self):
+        """
+        Used for geting the yaw of the NavX.
 
+        :returns: the yaw of the NavX (from -180 to 180)
+        """
         return self.navX.getYaw()
         
     def getPitch(self):
+        """
+        Used for geting the pitch of the NavX.
 
+        :returns: the pitch of the NavX (from -180 to 180)
+        """
         return self.navX.getPitch()
-
+    
     def flushWheels(self):
-        self.turnWheel(self.leftFrontSwerveModule, 0.0, 0.01)
-        self.turnWheel(self.leftRearSwerveModule, 0.0, 0.01)
-        self.turnWheel(self.rightFrontSwerveModule, 0.0, 0.01)
-        self.turnWheel(self.rightRearSwerveModule, 0.0, 0.01)
-
+        """
+        Sets all swerve wheels to angle 0 with 0 magnitude, then stops.
+        """
+        self.turnWheel(self.leftFrontSwerveModule, 0.0, 0.0)
+        self.turnWheel(self.leftRearSwerveModule, 0.0, 0.0)
+        self.turnWheel(self.rightFrontSwerveModule, 0.0, 0.0)
+        self.turnWheel(self.rightRearSwerveModule, 0.0, 0.0)
         self.stopAllMotors()
 
     def getPosFromOffState(self):
-
+        """
+        Moves all motors to the correct position on startup.
+        """
         self.leftFrontSwerveModule.CANtoTalon()
         self.leftRearSwerveModule.CANtoTalon()
         self.rightFrontSwerveModule.CANtoTalon()
         self.rightRearSwerveModule.CANtoTalon()
 
-    def moveWhileSpinning(self, leftx: float, lefty: float, turnPower: float):
-        straff = -lefty * math.sin(self.getYaw()) + leftx * math.cos(self.getYaw())
-        fwrd = lefty * math.cos(self.getYaw()) + leftx * math.sin(self.getYaw())
-        a = straff - turnPower * (constants.klength / constants.kr)
-        b = straff + turnPower * (constants.klength / constants.kr)
-        c = fwrd - turnPower * (constants.kwidth / constants.kr)
-        d = fwrd + turnPower * (constants.kwidth / constants.kr)
-
-        frspeed = math.sqrt(b ** 2 + c ** 2)
-        flspeed = math.sqrt(b ** 2 + d ** 2)
-        rlspeed = math.sqrt(a ** 2 + d ** 2)
-        rrspeed = math.sqrt(a ** 2 + c ** 2)
-
-        frangle = math.atan2(b, c) * 180 / math.pi
-        flangle = math.atan2(b, d) * 180 / math.pi
-        rlangle = math.atan2(a, d) * 180 / math.pi
-        rrangle = math.atan2(a, c) * 180 / math.pi
-
-        # the block below checks for the highest speed that a wheel will be turning
-        # if the highest speed is greater than one, we then make the largest value equal one, while keeping the ratios the same
-        max = frspeed
-        if flspeed > max:
-            max = flspeed  # would use elif, but we can't gurantee that only one value will be larger than the front right wheel speed
-        if rlspeed > max:
-            max = rlspeed
-        if rrspeed > max:
-            max = rrspeed
-
-        if max > 1:
-            frspeed /= max
-            flspeed /= max
-            rlspeed /= max
-            rrspeed /= max
-
-        # make wheels turn and spin at the speeds and angles calculated above
-        self.turnWheel(self.leftFrontSwerveModule, flangle, flspeed)
-        self.turnWheel(self.leftRearSwerveModule, rlangle, rlspeed)
-        self.turnWheel(self.rightFrontSwerveModule, frangle, frspeed)
-        self.turnWheel(self.rightRearSwerveModule, rrangle, rrspeed)
-
     def reset(self):
+        """
+        Resets the navX and sets all motor positions to 0.
+        """
         self.navX.reset()
-        #self.gyro.calibrate()
 
         self.leftFrontDirection.setSelectedSensorPosition(0.0, constants.kPIDLoopIdx, constants.ktimeoutMs)
         self.leftFrontSpeed.setSelectedSensorPosition(0.0, constants.kPIDLoopIdx, constants.ktimeoutMs)
-
         self.leftRearDirection.setSelectedSensorPosition(0.0, constants.kPIDLoopIdx, constants.ktimeoutMs)
         self.leftRearSpeed.setSelectedSensorPosition(0.0, constants.kPIDLoopIdx, constants.ktimeoutMs)
-
         self.rightFrontDirection.setSelectedSensorPosition(0.0, constants.kPIDLoopIdx, constants.ktimeoutMs)
         self.rightFrontSpeed.setSelectedSensorPosition(0.0, constants.kPIDLoopIdx, constants.ktimeoutMs)
-
         self.rightRearDirection.setSelectedSensorPosition(0.0, constants.kPIDLoopIdx, constants.ktimeoutMs)
         self.rightRearSpeed.setSelectedSensorPosition(0.0, constants.kPIDLoopIdx, constants.ktimeoutMs)
+
+    def enableTankDrive(self) -> bool:
+        """
+        Enables tank drive mode. This aligns all wheels into a tank 
+        drive formation, disabling turning and moving simultaneously.
+
+        The main use for this is to run automation code that was
+        intended for tank drive drivetrains.
+
+        :returns: True if successfully enabled, False if otherwise.
+        """
+        self.flushWheels()
+        for wheel in self.wheels:
+            if wheel.getCurrentAngle() != 0.0:
+                return False
+
+        self.inTankMode = True
+        self.inSwerveMode = False
+        return True
+    
+    def isInTankDrive(self) -> bool:
+        """
+        Used for getting the current drive mode of the robot.
+
+        :returns: True if in tank drive mode, False if otherwise.
+        """
+        return self.inTankMode
+    
+    def enableSwerveDrive(self) -> bool:
+        """
+        Enables swerve drive mode (enabled by default) and disables 
+        tank drive mode. This allows for turning and moving 
+        simultaneously.
+
+        This is used mainly for teleop purposes to allow for more 
+        control over movement.
+
+        :returns: True if successfully enabled, False if otherwise.
+        """
+        try:
+            self.flushWheels()
+            self.inTankMode = False
+            self.inSwerveMode = True
+            return True
+        except:
+            return False # The chance of this actually failing is literally only if like a motor gets unplugged lmao
+        
+    def isInSwerveDrive(self) -> bool:
+        """
+        Used for getting the current drive mode of the robot.
+
+        :returns: True if in swerve drive mode, False if otherwise.
+        """
+        return self.inSwerveMode
