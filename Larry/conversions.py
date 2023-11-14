@@ -59,43 +59,35 @@ def giveRevCompensation(currentAngle, direction):
 
     return revCompensation
 
-
-def getclosest(currentAngle, direction, magnitude):
+def getClosestTurnDirection(currentAngle, direction, magnitude):
+    """
+    Has each wheel pick the closest direction to turn.
+    """
 
     rev = giveRevCompensation(currentAngle, direction)
 
     if direction < 0:
-
         opposAngle = direction + 180
         negAngle = 360 + direction
 
     elif direction > 0:
-
         opposAngle = direction - 180
         negAngle = direction - 360
         
     else:
-
         if sign(direction) == -1:
-
             opposAngle = -180
             negAngle = 0
-
         else:
-
             opposAngle = 180
             negAngle = 0
 
     if math.fabs(currentAngle - direction) >= math.fabs(currentAngle - negAngle):
-
         return (negAngle + rev), magnitude
 
     elif math.fabs(currentAngle - direction) <= math.fabs(currentAngle - opposAngle):
-
         return (direction + rev), magnitude
-
     else:
-
         return (opposAngle + rev), -magnitude
 
 def sign(num) -> int:
@@ -109,7 +101,6 @@ def sign(num) -> int:
         # zero
         return 0
 
-
 def convertJoystickInputToDegrees(x: float,
                                   y: float):  # this allows us to use the x and y values on the joystick and convert it into degrees
     if sign(x) == -1:
@@ -122,7 +113,6 @@ def convertJoystickInputToDegrees(x: float,
         else:
             return float(math.degrees(
                 math.atan2(x, -y)))  # the degrees, the joystick up is zero and the values increase clock-wise
-
 
 def deadband(value: float, band: float):
     # this makes sure that joystick drifting is not an issue.

@@ -85,8 +85,7 @@ class SwerveWheel():
         current_pos = self.directionMotor.getSelectedSensorPosition()
         # convert manual offset angle into TalonFX Units
         offset = convertDegreesToTalonFXUnits(self.moffset) * ksteeringGearRatio
-        self.directionMotor.set(ctre.TalonFXControlMode.MotionMagic, 
-                                int(set_point + offset))
+        self.directionMotor.set(ctre.TalonFXControlMode.MotionMagic, ksteeringGearRatio * int(set_point + offset))
 
     def getAbsPos(self) -> float:
 

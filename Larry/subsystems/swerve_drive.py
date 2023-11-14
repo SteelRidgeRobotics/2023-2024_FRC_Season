@@ -83,42 +83,25 @@ class SwerveDrive(commands2.SubsystemBase):
         (ranging from 0 to 1, 1 being 100% power)
         """
 
-        self.units = conversions.convertDegreesToTalonFXUnits(direction)
+        if magnitude == 0:
+            return
 
-        if magnitude >= 1.0:
-            magnitude = 1.0
-        elif magnitude <= -1.0:
-            magnitude = -1.0
+        # Magnitude clamp btwn -1 and 1
+        magnitude = max(-1.0, min(1.0, magnitude))
 
-        # find current angle
-        currentAngle = conversions.convertTalonFXUnitsToDegrees(module.directionMotor.getSelectedSensorPosition()/constants.ksteeringGearRatio)
-        
-        if direction < 0:
-            opposAngle = direction + 180
-            negAngle = 360 + direction
-        elif direction > 0:
-            opposAngle = direction - 180
-            negAngle = direction - 360
-            
-        else:
-            if conversions.sign(direction) == -1:
-                opposAngle = -180
-                negAngle = 0
-            else:
-                opposAngle = 180
-                negAngle = 0
+        # Direction clamp (0-360)
+        direction %= 360
 
-        # print some stats for debugging
-        wpilib.SmartDashboard.putNumber(" Abs Opposite Angle -", opposAngle)
-        wpilib.SmartDashboard.putNumber(" Neg Angle -", negAngle)
-        # check if the joystick is in use
-        if magnitude != 0.0:
-            module.turn(constants.ksteeringGearRatio * conversions.convertDegreesToTalonFXUnits(conversions.getclosest(currentAngle, direction, magnitude)[0]))
-            module.move(conversions.getclosest(currentAngle, direction, magnitude)[1])
+        currentAngle = conversions.convertTalonFXUnitsToDegrees(module.directionMotor.getSelectedSensorPosition() / constants.ksteeringGearRatio)
 
-            wpilib.SmartDashboard.putNumber(" Wanted Angle -", direction)
-            wpilib.SmartDashboard.putNumber("Given Angle", conversions.getclosest(currentAngle, direction, magnitude)[0])
-            wpilib.SmartDashboard.putNumber("Current Angle", currentAngle)
+        turn, magnitude = conversions.getClosestTurnDirection(currentAngle, direction, magnitude)
+
+        # Turn down speed if motor is far away from target angle
+        if math.fabs(currentAngle - module.getCurrentAngle()) >= 10:
+            magnitude /= 3
+
+        module.turn(conversions.convertDegreesToTalonFXUnits(turn))
+        module.move(magnitude)
 
     def translate(self, direction: float, magnitude: float):
         """
@@ -204,19 +187,6 @@ class SwerveDrive(commands2.SubsystemBase):
             wpilib.SmartDashboard.putNumber("leftFrontAngle", self.leftFrontSwerveModule.getCurrentAngle() % 360)
             wpilib.SmartDashboard.putNumber("leftRearAngle", self.leftRearSwerveModule.getCurrentAngle() % 360)
             wpilib.SmartDashboard.putNumber("rightRearAngle", self.rightRearSwerveModule.getCurrentAngle() % 360)
-            wpilib.SmartDashboard.putNumber("test", abs(topRight[0] - self.rightFrontSwerveModule.getCurrentAngle() % 360))
-
-        # Motor optimization (MOVE TO TURN WHEEL)
-        """
-        if (abs(topRight[0] - self.rightFrontSwerveModule.getCurrentAngle() % 360)) >= 20:
-            topRight[0] = 0.01
-        if (abs(topLeft[0] - self.leftFrontSwerveModule.getCurrentAngle() % 360)) >= 20:
-            topLeft[0] = 0.01
-        if (abs(bottomLeft[0] - self.leftRearSwerveModule.getCurrentAngle() % 360)) >= 20:
-            bottomLeft[0] = 0.01
-        if (abs(bottomRight[0] - self.rightRearSwerveModule.getCurrentAngle() % 360)) >= 20:
-            bottomRight[0] = 0.01
-        """
 
         wpilib.SmartDashboard.putString("topRight", str(topRight))
         wpilib.SmartDashboard.putString("topLeft", str(topLeft))
