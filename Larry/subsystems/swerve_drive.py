@@ -181,7 +181,7 @@ class SwerveDrive(commands2.SubsystemBase):
 
         # Check if any wheels have a speed higher than 1. If so, divide all wheels by highest value
         highestSpeed = max(abs(topRight[0]), abs(topLeft[0]), abs(bottomLeft[0]), abs(bottomRight[0]))
-        if highestSpeed != 0:
+        if highestSpeed > 1:
             topRight[0] /= highestSpeed
             topLeft[0] /= highestSpeed
             bottomLeft[0] /= highestSpeed
@@ -189,7 +189,7 @@ class SwerveDrive(commands2.SubsystemBase):
 
         runs = 0
         for wheel in self.wheels:
-            if abs(new_wheels[runs][1] - wheel.getCurrentAngle()) > 90 and abs(new_wheels[runs][1] - wheel.getCurrentAngle()) < 270:
+            if abs(new_wheels[runs][1] - wheel.getCurrentAngle()) > 90 and abs(new_wheels[runs][1] - wheel.getCurrentAngle()) < 270 and rotX == 0:
                 new_wheels[runs][1] += 180
                 new_wheels[runs][1] %= 360 
                 new_wheels[runs][0] *= -1
@@ -198,6 +198,25 @@ class SwerveDrive(commands2.SubsystemBase):
             elif constants.kDebug:
                 wpilib.SmartDashboard.putBoolean("Wheel " + str(runs) + " Reversed?", False)
             runs += 1
+
+        if constants.kDebug:
+            wpilib.SmartDashboard.putNumber("rightFrontAngle", self.rightFrontSwerveModule.getCurrentAngle() % 360)
+            wpilib.SmartDashboard.putNumber("leftFrontAngle", self.leftFrontSwerveModule.getCurrentAngle() % 360)
+            wpilib.SmartDashboard.putNumber("leftRearAngle", self.leftRearSwerveModule.getCurrentAngle() % 360)
+            wpilib.SmartDashboard.putNumber("rightRearAngle", self.rightRearSwerveModule.getCurrentAngle() % 360)
+            wpilib.SmartDashboard.putNumber("test", abs(topRight[0] - self.rightFrontSwerveModule.getCurrentAngle() % 360))
+
+        # Motor optimization (MOVE TO TURN WHEEL)
+        """
+        if (abs(topRight[0] - self.rightFrontSwerveModule.getCurrentAngle() % 360)) >= 20:
+            topRight[0] = 0.01
+        if (abs(topLeft[0] - self.leftFrontSwerveModule.getCurrentAngle() % 360)) >= 20:
+            topLeft[0] = 0.01
+        if (abs(bottomLeft[0] - self.leftRearSwerveModule.getCurrentAngle() % 360)) >= 20:
+            bottomLeft[0] = 0.01
+        if (abs(bottomRight[0] - self.rightRearSwerveModule.getCurrentAngle() % 360)) >= 20:
+            bottomRight[0] = 0.01
+        """
 
         wpilib.SmartDashboard.putString("topRight", str(topRight))
         wpilib.SmartDashboard.putString("topLeft", str(topLeft))

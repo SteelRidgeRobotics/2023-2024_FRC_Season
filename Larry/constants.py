@@ -2,6 +2,7 @@ import math
 
 # options
 kDebug = True # Turns off some temporary SmartDashboard values (basically if we dont want to clutter up things ;))
+kMaxSwerveSpeed = False # If False, multiples drive train speed by 0.5
 
 # motors
 kleftFrontSpeedID = 0
