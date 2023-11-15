@@ -59,21 +59,26 @@ def giveRevCompensation(currentAngle, direction):
 
     return revCompensation
 
-def getClosestTurnDirection(currentAngle, direction, magnitude):
+def getOptimizedAngleAndMagnitude(currentAngle, direction, magnitude):
     """
-    Has each wheel pick the closest direction to turn.
+    Gives us the optmized angle to travel to and correctly adjusted magnitude for a swerve module.
     """
 
+    # This is the value that will be added to the angle to make a coterminal angle to limit distance
+    # (coterminal = angle +/- 360)
     rev = giveRevCompensation(currentAngle, direction)
 
+    # If direction is clockwise
     if direction < 0:
         opposAngle = direction + 180
-        negAngle = 360 + direction
+        negAngle = 360 + direction # coterminal angle
 
+    # If direction is counterclockwise
     elif direction > 0:
         opposAngle = direction - 180
-        negAngle = direction - 360
+        negAngle = direction - 360 # coterminal angle
         
+    # If either direction works (aka angle == 0)
     else:
         if sign(direction) == -1:
             opposAngle = -180
@@ -82,11 +87,15 @@ def getClosestTurnDirection(currentAngle, direction, magnitude):
             opposAngle = 180
             negAngle = 0
 
+    # If the negative angle (angle - 360) is shorter, we use the negAngle and add rev compensation
     if math.fabs(currentAngle - direction) >= math.fabs(currentAngle - negAngle):
         return (negAngle + rev), magnitude
 
+    # If direction is closer than the opposite angle (the +/- 180 deg), we choose direction and add the rev comp
     elif math.fabs(currentAngle - direction) <= math.fabs(currentAngle - opposAngle):
         return (direction + rev), magnitude
+    
+    # Else, the opposite angle is the closest, then we choose the opposAngle and flip the magnitude
     else:
         return (opposAngle + rev), -magnitude
 
