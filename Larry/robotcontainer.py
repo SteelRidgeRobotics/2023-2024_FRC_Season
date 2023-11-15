@@ -3,8 +3,9 @@ from wpilib import XboxController
 
 import commands2
 import constants
-# import commands
+from frc6343.controller.guitar.guitar import Guitar
 from commands.drive_with_controller import DriveWithController
+from commands.drive_with_guitar import DriveWithGuitar
 from commands.charge_station import ChargeStation
 # import subsystems
 from subsystems.swerve_drive import SwerveDrive
@@ -13,7 +14,7 @@ from subsystems.swerve_drive import SwerveDrive
 class RobotContainer:
     def __init__(self) -> None:
         # init controllers
-        self.driverController = XboxController(constants.kdriverControllerPort)
+        self.driverController = XboxController(constants.kdriverControllerPort) if not constants.kUsingGuitarController else Guitar(constants.kdriverControllerPort)
 
         # init drive motors (may not be necessary)
 
@@ -38,9 +39,23 @@ class RobotContainer:
 
         self.configureButtonBindings()
 
-        self.swerveDrive.setDefaultCommand(
-            DriveWithController(self.swerveDrive, lambda: self.driverController.getLeftX(),
-                                lambda: self.driverController.getLeftY(), lambda: self.driverController.getRightX()))
+        if constants.kUsingGuitarController:
+            self.swerveDrive.setDefaultCommand(
+                DriveWithGuitar(self.swerveDrive,
+                                lambda: self.driverController.getGreenButtonPressed(),
+                                lambda: self.driverController.getRedButtonPressed(),
+                                lambda: self.driverController.getYellowButtonPressed(),
+                                lambda: self.driverController.getBlueButtonPressed(),
+                                lambda: self.driverController.getStrumBarDownPressed(),
+                                lambda: self.driverController.getStrumBarUpPressed()
+                )
+            )
+        else:
+            self.swerveDrive.setDefaultCommand(
+                DriveWithController(self.swerveDrive, lambda: self.driverController.getLeftX(),
+                                    lambda: self.driverController.getLeftY(), lambda: self.driverController.getRightX()))
+        
+
         # self.swerveDrive.setDefaultCommand(Translate(self.swerveDrive,  lambda: self.driverController.getLeftX(), lambda: self.driverController.getLeftY()))
         # self.swerveDrive.setDefaultCommand(MoveInPlace(self.swerveDrive, lambda: self.driverController.getRightX()))
         # self.swerveDrive.setDefaultCommand(DriveSingleModule(self.swerveDrive,  lambda: self.driverController.getLeftX(), lambda: self.driverController.getLeftY()))
