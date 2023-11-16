@@ -83,42 +83,22 @@ class SwerveDrive(commands2.SubsystemBase):
         (ranging from 0 to 1, 1 being 100% power)
         """
 
-        self.units = conversions.convertDegreesToTalonFXUnits(direction)
+        if magnitude == 0:
+            return
 
-        if magnitude >= 1.0:
-            magnitude = 1.0
-        elif magnitude <= -1.0:
-            magnitude = -1.0
+        # Magnitude clamp btweenn -1 and 1
+        magnitude = max(-1.0, min(1.0, magnitude))
 
-        # find current angle
-        currentAngle = conversions.convertTalonFXUnitsToDegrees(module.directionMotor.getSelectedSensorPosition()/constants.ksteeringGearRatio)
-        
-        if direction < 0:
-            opposAngle = direction + 180
-            negAngle = 360 + direction
-        elif direction > 0:
-            opposAngle = direction - 180
-            negAngle = direction - 360
-            
-        else:
-            if conversions.sign(direction) == -1:
-                opposAngle = -180
-                negAngle = 0
-            else:
-                opposAngle = 180
-                negAngle = 0
+        currentAngle = conversions.convertTalonFXUnitsToDegrees(module.directionMotor.getSelectedSensorPosition() / constants.ksteeringGearRatio)
 
-        # print some stats for debugging
-        wpilib.SmartDashboard.putNumber(" Abs Opposite Angle -", opposAngle)
-        wpilib.SmartDashboard.putNumber(" Neg Angle -", negAngle)
-        # check if the joystick is in use
-        if magnitude != 0.0:
-            module.turn(constants.ksteeringGearRatio * conversions.convertDegreesToTalonFXUnits(conversions.getclosest(currentAngle, direction, magnitude)[0]))
-            module.move(conversions.getclosest(currentAngle, direction, magnitude)[1])
+        turn, magnitude = conversions.getOptimizedAngleAndMagnitude(currentAngle, direction, magnitude)
 
-            wpilib.SmartDashboard.putNumber(" Wanted Angle -", direction)
-            wpilib.SmartDashboard.putNumber("Given Angle", conversions.getclosest(currentAngle, direction, magnitude)[0])
-            wpilib.SmartDashboard.putNumber("Current Angle", currentAngle)
+        # Turn down speed if motor is far away from target angle
+        if math.fabs(currentAngle - module.getCurrentAngle()) >= 10:
+            magnitude /= 3
+
+        module.turn(conversions.convertDegreesToTalonFXUnits(turn))
+        module.move(magnitude)
 
     def translate(self, direction: float, magnitude: float):
         """
@@ -136,7 +116,7 @@ class SwerveDrive(commands2.SubsystemBase):
         self.turnWheel(self.rightFrontSwerveModule, direction, magnitude)
         self.turnWheel(self.rightRearSwerveModule, direction, magnitude)
 
-    def translateAndTurn(self, translationX: float, translationY: float, rotX: float):
+    def translateAndTurn(self, translationX: float, translationY: float, rotX: float) -> None:
         """
         This is the default movement method for swerve drive.
 
@@ -153,6 +133,7 @@ class SwerveDrive(commands2.SubsystemBase):
         translationX *= -1
         rotX *= -1
 
+        # Field Orientaated Drive (aka complicated math so the robot doesn't rotate while we translate or somthin idrk)
         temp = translationY * math.cos(self.getYaw() * (math.pi / 180)) + translationX * math.sin(self.getYaw() * (math.pi / 180))
         translationX = -translationY * math.sin(self.getYaw() * (math.pi / 180)) + translationX * math.cos(self.getYaw() * (math.pi / 180))
         translationY = temp
@@ -177,37 +158,24 @@ class SwerveDrive(commands2.SubsystemBase):
         bottomLeft = [math.sqrt(a ** 2 + d ** 2), math.atan2(a, d) * (180/math.pi) + 180]
         bottomRight = [math.sqrt(a ** 2 + c ** 2), math.atan2(a, c) * (180/math.pi) + 180]
 
-        new_wheels = [topRight, topLeft, bottomRight, bottomLeft]
-
         # Check if any wheels have a speed higher than 1. If so, divide all wheels by highest value
         highestSpeed = max(abs(topRight[0]), abs(topLeft[0]), abs(bottomLeft[0]), abs(bottomRight[0]))
-        if highestSpeed != 0:
+        if highestSpeed > 1:
             topRight[0] /= highestSpeed
             topLeft[0] /= highestSpeed
             bottomLeft[0] /= highestSpeed
             bottomRight[0] /= highestSpeed
-
-        runs = 0
-        for wheel in self.wheels:
-            if abs(new_wheels[runs][1] - wheel.getCurrentAngle()) > 90 and abs(new_wheels[runs][1] - wheel.getCurrentAngle()) < 270:
-                new_wheels[runs][1] += 180
-                new_wheels[runs][1] %= 360 
-                new_wheels[runs][0] *= -1
-                if constants.kDebug:
-                    wpilib.SmartDashboard.putBoolean("Wheel " + str(runs) + " Reversed?", True)
-            elif constants.kDebug:
-                wpilib.SmartDashboard.putBoolean("Wheel " + str(runs) + " Reversed?", False)
-            runs += 1
 
         wpilib.SmartDashboard.putString("topRight", str(topRight))
         wpilib.SmartDashboard.putString("topLeft", str(topLeft))
         wpilib.SmartDashboard.putString("bottomLeft", str(bottomLeft))
         wpilib.SmartDashboard.putString("bottomRight", str(bottomRight))
 
-        # Stops robot from moving while no controller values are being returned
+        # Stops robot from moving while no controller values are being returned, but allow robot to still be able to turn wheels
         if translationX == 0 and translationY == 0 and rotX == 0:
-            self.stopAllMotors()
+            topLeft[0], topRight[0], bottomLeft[0], bottomRight[0] = 0.0
 
+        # Turn wheels :D
         self.turnWheel(self.leftFrontSwerveModule, topLeft[1], topLeft[0])
         self.turnWheel(self.rightFrontSwerveModule, topRight[1], topRight[0])
         self.turnWheel(self.leftRearSwerveModule, bottomLeft[1], bottomLeft[0])
