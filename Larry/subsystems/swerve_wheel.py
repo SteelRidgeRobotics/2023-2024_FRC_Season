@@ -1,7 +1,6 @@
 # import commands2
 import ctre
 import wpilib
-from conversions import *
 from constants import *
 
 class SwerveWheel():

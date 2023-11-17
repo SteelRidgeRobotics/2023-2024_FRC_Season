@@ -2,7 +2,6 @@ import math
 
 import commands2
 import constants
-import conversions
 import ctre
 import wpilib
 import wpimath.controller
@@ -169,7 +168,6 @@ class SwerveDrive(commands2.SubsystemBase):
         wpilib.SmartDashboard.putNumber("bottomLeftRealAngle", self.leftRearSwerveModule.getCurrentAngle() % 360)
         wpilib.SmartDashboard.putNumber("bottomRightRealAngle", self.rightRearSwerveModule.getCurrentAngle() % 360)
         
-
         # Stops robot from moving while no controller values are being returned, but allow robot to still be able to turn wheels
         if translationX == 0 and translationY == 0 and rotX == 0:
             self.stopAllMotors()
