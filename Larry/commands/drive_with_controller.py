@@ -3,9 +3,9 @@ import typing
 
 import commands2
 import constants
-import conversions
 import wpilib
 from subsystems.swerve_drive import SwerveDrive
+from frc6343.controller.deadband import deadband
 
 
 class DriveWithController(commands2.CommandBase):
@@ -27,9 +27,9 @@ class DriveWithController(commands2.CommandBase):
 
     def execute(self) -> None:
 
-        translationX = conversions.deadband(self.x(), constants.kdeadband)
-        translationY = conversions.deadband(self.y(), constants.kdeadband)
-        rotationX = conversions.deadband(self.rightx(), constants.kdeadband)
+        translationX = deadband(self.x(), constants.kdeadband)
+        translationY = deadband(self.y(), constants.kdeadband)
+        rotationX = deadband(self.rightx(), constants.kdeadband)
 
         if translationX == 0 and translationY == 0 and rotationX != 0:
             self.drive.turnInPlace(rotationX)

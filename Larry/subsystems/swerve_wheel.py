@@ -15,8 +15,6 @@ class SwerveWheel():
         self.directionMotor.configSelectedFeedbackSensor(ctre.FeedbackDevice.IntegratedSensor, 0, ktimeoutMs)
         self.speedMotor.configSelectedFeedbackSensor(ctre.FeedbackDevice.IntegratedSensor, 0, ktimeoutMs)
 
-        # self.directionMotor.setSelectedSensorPosition(0.0, 0, ktimeoutMs)
-
         self.directionMotor.config_kF(0, kF, ktimeoutMs)
         self.speedMotor.config_kF(0, kF, ktimeoutMs)
 
@@ -60,7 +58,6 @@ class SwerveWheel():
         self.directionMotor.setSelectedSensorPosition(0.0, kPIDLoopIdx, ktimeoutMs)
         self.speedMotor.setSelectedSensorPosition(0.0, kPIDLoopIdx, ktimeoutMs)
 
-        # CAN Coder
         self.CANCoder = CANCoder
         
         self.CANCoder.configSensorInitializationStrategy(ctre.SensorInitializationStrategy.BootToAbsolutePosition, ktimeoutMs)
@@ -71,18 +68,6 @@ class SwerveWheel():
         wpilib.SmartDashboard.putNumber(" I -", kI)
         wpilib.SmartDashboard.putNumber(" D -", kD)
         wpilib.SmartDashboard.putNumber(" F -", kF)
-
-        self.steeringOffset = 0.0
-
-        self.moffset = manualOffset
-
-    # this is our testing turn method
-    def turn(self, set_point: float):
-
-        current_pos = self.directionMotor.getSelectedSensorPosition()
-        # convert manual offset angle into TalonFX Units
-        offset = convertDegreesToTalonFXUnits(self.moffset) * ksteeringGearRatio
-        self.directionMotor.set(ctre.TalonFXControlMode.MotionMagic, ksteeringGearRatio * int(set_point + offset))
 
     def turnToOptimizedAngle(self, desiredAngle) -> bool:
         """
@@ -144,11 +129,7 @@ class SwerveWheel():
         return (pos - (pos % 2048)) / 2048
 
     def CANtoTalon(self):
-        self.directionMotor.setSelectedSensorPosition(
-            (ksteeringGearRatio * convertDegreesToTalonFXUnits(
-            self.CANCoder.getAbsolutePosition()
-            )), 
-            0, ktimeoutMs)
+        self.directionMotor.setSelectedSensorPosition(ksteeringGearRatio * (self.CANCoder.getAbsolutePosition() * (2048 / 360)), 0, ktimeoutMs)
     
     def move(self, joystick_input: float):
         self.speedMotor.set(ctre.TalonFXControlMode.PercentOutput, (1.0) if kMaxSwerveSpeed else (0.33) * joystick_input)
@@ -159,10 +140,7 @@ class SwerveWheel():
         self.directionMotor.setNeutralMode(ctre.NeutralMode.Coast)
 
     def getCurrentAngle(self):
-        return convertTalonFXUnitsToDegrees(self.directionMotor.getSelectedSensorPosition() / ksteeringGearRatio)
+        return (self.directionMotor.getSelectedSensorPosition() / ksteeringGearRatio) * (360 / 2048)
 
     def getVelocity(self):
         return self.speedMotor.getSelectedSensorVelocity()
-
-    def resetToOrigin(self):
-        self.turn(0 + self.offset)
