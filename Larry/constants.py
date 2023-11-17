@@ -28,12 +28,10 @@ kD = 2  # Derivative
 kIzone = 150
 kcruiseVel = 21134.0  # Cruise Velocity at 100% of max (max = 21134)
 kcruiseAccel = 21134.0  # Cruise Acceleration same as velocity
-kticksPerRev = 2048
 kSlotIdx = 0
 kPIDLoopIdx = 0
 
 # CANCoders
-# CAN coders
 kflCANcoderID = 10
 krlCANcoderID = 11
 kfrCANcoderID = 12
@@ -46,10 +44,6 @@ kfrCANoffset = 324.755859375
 krrCANoffset = 28.828125
 
 ksteeringGearRatio = 150 / 7
-
-klength = 29
-kwidth = 29
-kr = math.sqrt((klength ** 2) + (kwidth ** 2))  # ** is the exponent operator
 
 # PID constants for the charge station
 kChargeP = 0.0115
