@@ -1,5 +1,6 @@
 # import commands2
 import ctre
+import math
 import wpilib
 from constants import *
 
@@ -7,7 +8,7 @@ class SwerveWheel():
     def __init__(self, directionMotor: ctre.TalonFX, speedMotor: ctre.TalonFX, 
                  CANCoder: ctre.CANCoder, MagOffset: float, 
                  manualOffset: float) -> None:
-        # super().__init__()
+
         self.directionMotor = directionMotor
         self.speedMotor = speedMotor
 
@@ -63,10 +64,9 @@ class SwerveWheel():
         self.CANCoder.configSensorDirection(True, ktimeoutMs)
         self.CANCoder.configMagnetOffset(MagOffset)
 
-        wpilib.SmartDashboard.putNumber(" P -", kP)
-        wpilib.SmartDashboard.putNumber(" I -", kI)
-        wpilib.SmartDashboard.putNumber(" D -", kD)
-        wpilib.SmartDashboard.putNumber(" F -", kF)
+        self.directionTargetPos = 0.0
+        self.directionTargetAngle = 0.0
+        self.isInverted = False
 
     def turnToOptimizedAngle(self, desiredAngle) -> bool:
         """
@@ -85,43 +85,44 @@ class SwerveWheel():
         """
         desiredAngle %= 360 # just making sure ;) (0-359)
 
-        currentAngle = self.getCurrentAngle() % 360 #0 - 359
-
         # Distance from desiredAngle to currentAngle # 0 - 359
-        angleDist = abs(desiredAngle - currentAngle)
+        angleDist = math.fabs(desiredAngle - self.directionTargetAngle)
 
         # If the angleDist is more than 90 and less than 270, add 180 to the angle and %= 360 to get oppositeAngle. NOTE: MAGNITUDE WILL NEED TO BE INVERTED TO COMPENSATE
         if (angleDist > 90 and angleDist < 270):
             targetAngle = (desiredAngle + 180) % 360
-            invertMagnitude = True
+            self.isInverted = True
         
         # Else, then like, idk, just go to it??? smh
         else:
             targetAngle = desiredAngle
-            invertMagnitude = False
+            self.isInverted = False
 
         
         # Now that we have the correct angle, we figure out if we should rotate counterclockwise or clockwise
-        angleDistButThisTimeItsNotAbsLol = currentAngle - targetAngle
+        angleDistButThisTimeItsNotAbsLol = self.directionTargetAngle - targetAngle
 
         # Before, to move the motor to the right spot, we take the angle, convert that into talonFX units, then add (the amount of revolutions * 2048), then multiple everything by the motors gear ratio
         # However, to avoid having to deal with revolution compensation (which caused some issues), we now get the degree change, convert to motor units, then add or subtract depending on the direction we're rotating
-        motorPos = self.directionMotor.getSelectedSensorPosition() / ksteeringGearRatio
-        changeInTalonUnits = abs(currentAngle - targetAngle) * (360/2048)
+        changeInTalonUnits = math.fabs(self.directionTargetAngle - targetAngle) / (360/2048)
 
         # If that long ass variable is greater than -180 and less than 0, go clockwise (cw = negative motor units)
         if angleDistButThisTimeItsNotAbsLol >= -180 and angleDistButThisTimeItsNotAbsLol < 0:
-            newMotorPos = motorPos - changeInTalonUnits
+            self.directionTargetPos -= changeInTalonUnits
 
         # Else, go counter clockwise (ccw = positive motor units)
         else:
-            newMotorPos = motorPos + changeInTalonUnits
+            self.directionTargetPos += changeInTalonUnits
+
+        self.directionTargetAngle = targetAngle
+
+        if kDebug:
+            wpilib.SmartDashboard.putNumber(str(self.speedMotor.getDeviceID()) + " dirTargetAngle", self.directionTargetAngle)
+            wpilib.SmartDashboard.putNumber(str(self.speedMotor.getDeviceID()) + " dirTargetPos", self.directionTargetPos)
+            wpilib.SmartDashboard.putBoolean(str(self.speedMotor.getDeviceID()) + " Inverted?", self.isInverted)
 
         # Now we can actually turn the motor after like 50 lines lmao
-        self.directionMotor.set(ctre.TalonFXControlMode.MotionMagic, newMotorPos * ksteeringGearRatio)
-
-        # If we have to invert the magnitude, return True, else, return False
-        return invertMagnitude
+        self.directionMotor.set(ctre.TalonFXControlMode.MotionMagic, self.directionTargetPos * ksteeringGearRatio)
 
     def getRevolutions(self) -> int:
         pos = self.directionMotor.getSelectedSensorPosition() / ksteeringGearRatio
@@ -130,8 +131,10 @@ class SwerveWheel():
     def CANtoTalon(self):
         self.directionMotor.setSelectedSensorPosition(ksteeringGearRatio * (self.CANCoder.getAbsolutePosition() * (2048 / 360)), 0, ktimeoutMs)
     
-    def move(self, joystick_input: float):
-        self.speedMotor.set(ctre.TalonFXControlMode.PercentOutput, (1.0) if kMaxSwerveSpeed else (0.33) * joystick_input)
+    def move(self, input: float):
+        if self.isInverted:
+            input *= -1
+        self.speedMotor.set(ctre.TalonFXControlMode.PercentOutput, (1.0) if kMaxSwerveSpeed else (0.33) * input)
 
     def stopAllMotors(self):
         self.directionMotor.set(ctre.TalonFXControlMode.PercentOutput, 0.0)
