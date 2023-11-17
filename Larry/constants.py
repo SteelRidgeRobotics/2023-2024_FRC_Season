@@ -1,5 +1,3 @@
-import math
-
 # options
 kUsingGuitarController = False
 kDebug = True # Turns off some temporary SmartDashboard values (basically if we dont want to clutter up things ;))
