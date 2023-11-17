@@ -71,8 +71,6 @@ class SwerveWheel():
         wpilib.SmartDashboard.putNumber(" I -", kI)
         wpilib.SmartDashboard.putNumber(" D -", kD)
         wpilib.SmartDashboard.putNumber(" F -", kF)
-        # wpilib.SmartDashboard.putNumber(" Sensor Position -", self.directionMotor.getSelectedSensorPosition())
-        self.notTurning = True
 
         self.steeringOffset = 0.0
 
@@ -81,32 +79,77 @@ class SwerveWheel():
     # this is our testing turn method
     def turn(self, set_point: float):
 
-        self.notTurning = False
         current_pos = self.directionMotor.getSelectedSensorPosition()
         # convert manual offset angle into TalonFX Units
         offset = convertDegreesToTalonFXUnits(self.moffset) * ksteeringGearRatio
         self.directionMotor.set(ctre.TalonFXControlMode.MotionMagic, ksteeringGearRatio * int(set_point + offset))
 
-    def getAbsPos(self) -> float:
+    def turnToOptimizedAngle(self, desiredAngle) -> bool:
+        """
+        Takes the desired angle for the motor and calculates if we should:
+        A: Turn clockwise,
+        B: Turn counterclockwise,
+        C: Turn to the opposite angle and invert our magnitude
 
-        return self.CANCoder.getAbsolutePosition()
+        The function then executes to that angle.
+
+        Do note that if C, the magnitude will have to be inverted seperately outside of this method. Sorry, hopefully you read this.
+
+        :params desiredAngle: The angle that we want the wheel to turn to.
+
+        :returns: True if magnitude needs to be inverted.
+        """
+        desiredAngle %= 360 # just making sure ;) (0-359)
+
+        currentAngle = self.getCurrentAngle() % 360 #0 - 359
+
+        # Distance from desiredAngle to currentAngle # 0 - 359
+        angleDist = abs(desiredAngle - currentAngle)
+
+        # If the angleDist is more than 90 and less than 270, add 180 to the angle and %= 360 to get oppositeAngle. NOTE: MAGNITUDE WILL NEED TO BE INVERTED TO COMPENSATE
+        if (angleDist > 90 and angleDist < 270):
+            targetAngle = (desiredAngle + 180) % 360
+            invertMagnitude = True
+        
+        # Else, then like, idk, just go to it??? smh
+        else:
+            targetAngle = desiredAngle
+            invertMagnitude = False
+
+        
+        # Now that we have the correct angle, we figure out if we should rotate counterclockwise or clockwise
+        angleDistButThisTimeItsNotAbsLol = currentAngle - targetAngle
+
+        # Before, to move the motor to the right spot, we take the angle, convert that into talonFX units, then add (the amount of revolutions * 2048), then multiple everything by the motors gear ratio
+        # However, to avoid having to deal with revolution compensation (which caused some issues), we now get the degree change, convert to motor units, then add or subtract depending on the direction we're rotating
+        motorPos = self.directionMotor.getSelectedSensorPosition() / ksteeringGearRatio
+        changeInTalonUnits = abs(currentAngle - targetAngle) * (360/2048)
+
+        # If that long ass variable is greater than -180 and less than 0, go clockwise (cw = negative motor units)
+        if angleDistButThisTimeItsNotAbsLol >= -180 and angleDistButThisTimeItsNotAbsLol < 0:
+            newMotorPos = motorPos - changeInTalonUnits
+
+        # Else, go counter clockwise (ccw = positive motor units)
+        else:
+            newMotorPos = motorPos + changeInTalonUnits
+
+        # Now we can actually turn the motor after like 50 lines lmao
+        self.directionMotor.set(ctre.TalonFXControlMode.MotionMagic, newMotorPos * ksteeringGearRatio)
+
+        # If we have to invert the magnitude, return True, else, return False
+        return invertMagnitude
+
+    def getRevolutions(self) -> int:
+        pos = self.directionMotor.getSelectedSensorPosition() / ksteeringGearRatio
+        return (pos - (pos % 2048)) / 2048
 
     def CANtoTalon(self):
-
-        self.steeringOffset = (ksteeringGearRatio * 
-                               convertDegreesToTalonFXUnits(self.getAbsPos()))
-        
-        # self.directionMotor.configIntegratedSensorOffset(self.steeringOffset, ktimeoutMs)
-        self.directionMotor.setSelectedSensorPosition(self.steeringOffset, 0, ktimeoutMs)
-        
-    def isNotinMotion(self) -> bool:
-
-        if self.directionMotor.getActiveTrajectoryVelocity() == 0.0:
-            self.notTurning = True
-        else:
-            self.notTurning = False
-        return self.notTurning
-
+        self.directionMotor.setSelectedSensorPosition(
+            (ksteeringGearRatio * convertDegreesToTalonFXUnits(
+            self.CANCoder.getAbsolutePosition()
+            )), 
+            0, ktimeoutMs)
+    
     def move(self, joystick_input: float):
         self.speedMotor.set(ctre.TalonFXControlMode.PercentOutput, (1.0) if kMaxSwerveSpeed else (0.33) * joystick_input)
 

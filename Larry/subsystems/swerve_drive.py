@@ -71,7 +71,7 @@ class SwerveDrive(commands2.SubsystemBase):
         self.inTankMode = False
         self.inSwerveMode = True
 
-    def turnWheel(self, module: SwerveWheel, direction: float, magnitude: float):
+    def turnWheel(self, module: SwerveWheel, direction: float, magnitude: float) -> None:
         """
         Turns a swerve wheel based on the provided direction and 
         magnitude.
@@ -83,19 +83,12 @@ class SwerveDrive(commands2.SubsystemBase):
         (ranging from 0 to 1, 1 being 100% power)
         """
 
-        # Magnitude clamp btweenn -1 and 1
+        # Magnitude clamp between -1 and 1
         magnitude = max(-1.0, min(1.0, magnitude))
 
-        currentAngle = conversions.convertTalonFXUnitsToDegrees(module.directionMotor.getSelectedSensorPosition() / constants.ksteeringGearRatio)
+        if module.turnToOptimizedAngle(direction):
+            magnitude *= -1
 
-        turn, magnitude = conversions.getOptimizedAngleAndMagnitude(currentAngle, direction, magnitude)
-
-        # Turn down speed if motor is far away from target angle
-        if math.fabs(currentAngle - module.getCurrentAngle()) >= 10:
-            magnitude /= 3
-
-        module.turn(conversions.convertDegreesToTalonFXUnits(turn))
-        
         if magnitude == 0:
             return
         
