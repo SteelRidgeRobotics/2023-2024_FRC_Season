@@ -1,4 +1,5 @@
 import math
+import wpilib
 
 conversionFactor = 2048 / 360 # 1 revolution of the falcon 500 is 2048 units
 

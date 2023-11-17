@@ -83,9 +83,6 @@ class SwerveDrive(commands2.SubsystemBase):
         (ranging from 0 to 1, 1 being 100% power)
         """
 
-        if magnitude == 0:
-            return
-
         # Magnitude clamp btweenn -1 and 1
         magnitude = max(-1.0, min(1.0, magnitude))
 
@@ -98,6 +95,10 @@ class SwerveDrive(commands2.SubsystemBase):
             magnitude /= 3
 
         module.turn(conversions.convertDegreesToTalonFXUnits(turn))
+        
+        if magnitude == 0:
+            return
+        
         module.move(magnitude)
 
     def translate(self, direction: float, magnitude: float):
@@ -166,14 +167,20 @@ class SwerveDrive(commands2.SubsystemBase):
             bottomLeft[0] /= highestSpeed
             bottomRight[0] /= highestSpeed
 
-        wpilib.SmartDashboard.putString("topRight", str(topRight))
-        wpilib.SmartDashboard.putString("topLeft", str(topLeft))
-        wpilib.SmartDashboard.putString("bottomLeft", str(bottomLeft))
-        wpilib.SmartDashboard.putString("bottomRight", str(bottomRight))
+        wpilib.SmartDashboard.putNumber("topRightAngle", topRight[1])
+        wpilib.SmartDashboard.putNumber("topLeftAngle", topLeft[1])
+        wpilib.SmartDashboard.putNumber("bottomLeftAngle", bottomLeft[1])
+        wpilib.SmartDashboard.putNumber("bottomRightAngle", bottomRight[1])
+        wpilib.SmartDashboard.putNumber("topRightRealAngle", self.rightFrontSwerveModule.getCurrentAngle() % 360)
+        wpilib.SmartDashboard.putNumber("topLeftRealAngle", self.leftFrontSwerveModule.getCurrentAngle() % 360)
+        wpilib.SmartDashboard.putNumber("bottomLeftRealAngle", self.leftRearSwerveModule.getCurrentAngle() % 360)
+        wpilib.SmartDashboard.putNumber("bottomRightRealAngle", self.rightRearSwerveModule.getCurrentAngle() % 360)
+        
 
         # Stops robot from moving while no controller values are being returned, but allow robot to still be able to turn wheels
         if translationX == 0 and translationY == 0 and rotX == 0:
-            topLeft[0], topRight[0], bottomLeft[0], bottomRight[0] = 0.0
+            self.stopAllMotors()
+            return
 
         # Turn wheels :D
         self.turnWheel(self.leftFrontSwerveModule, topLeft[1], topLeft[0])

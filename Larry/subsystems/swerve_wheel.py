@@ -108,7 +108,7 @@ class SwerveWheel():
         return self.notTurning
 
     def move(self, joystick_input: float):
-        self.speedMotor.set(ctre.TalonFXControlMode.PercentOutput, (1.0) if kMaxSwerveSpeed else (0.3) * joystick_input)
+        self.speedMotor.set(ctre.TalonFXControlMode.PercentOutput, (1.0) if kMaxSwerveSpeed else (0.33) * joystick_input)
 
     def stopAllMotors(self):
         self.directionMotor.set(ctre.TalonFXControlMode.PercentOutput, 0.0)
