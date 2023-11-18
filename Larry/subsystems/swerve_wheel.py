@@ -92,14 +92,6 @@ class SwerveWheel():
             targetAngle = desiredAngle
             self.isInverted = False
 
-        
-        # Now that we have the correct angle, we figure out if we should rotate counterclockwise or clockwise
-        angleDiff = targetAngle - self.directionTargetAngle
-
-        # Accounting if the angleDiff is negative
-        if angleDiff < 0:
-            angleDiff += 360
-
         # Before, to move the motor to the right spot, we would take the angle, convert that into talonFX units, then add (the amount of revolutions * 2048), then multiple everything by the motors gear ratio
         # However, to avoid having to deal with revolution compensation (which caused some issues), we now get the degree change, convert to motor units, then add or subtract depending on the direction we're rotating
         targetAngleDist = math.fabs(targetAngle - self.directionTargetAngle)
@@ -109,6 +101,13 @@ class SwerveWheel():
             targetAngleDist = abs(targetAngleDist - 360)
 
         changeInTalonUnits = targetAngleDist / (360/2048)
+
+        # Now that we have the correct angle, we figure out if we should rotate counterclockwise or clockwise
+        angleDiff = targetAngle - self.directionTargetAngle
+
+        # Accounting if the angleDiff is negative
+        if angleDiff < 0:
+            angleDiff += 360
 
         # If angleDiff is greater than 180, go counter-clockwise (ccw is positive for talonFX, and vice versa)
         if angleDiff > 180:
@@ -135,21 +134,24 @@ class SwerveWheel():
     def CANtoTalon(self):
         self.directionMotor.setSelectedSensorPosition(ksteeringGearRatio * (self.CANCoder.getAbsolutePosition() * (2048 / 360)), 0, ktimeoutMs)
     
-    def move(self, input: float):
+    def move(self, input: float) -> None:
         if self.isInverted:
             input *= -1
 
+
         # Slows down motor at a curve depending on how far the motor angle is from the target angle.
         # Don't worry about the actual equation, I just eyeballed the numbers lmao
-        diff = math.fabs(self.getCurrentAngle() - self.directionTargetAngle)
-        if diff > 180:
-            diff = math.fabs(diff - 360)
-        slowdownMult = max(0, min(1.0, (-(3.1454 / 1120.06) * (diff) ** 2) + 1)) # disabled, test nov 20th
+        angleDiff = self.directionTargetAngle - self.getCurrentAngle()
+        angleDiff = (angleDiff + 180) % 360 - 180
 
-        self.speedMotor.set(ctre.TalonFXControlMode.PercentOutput, input)
+        slowdownMult = max(0, min(1.0, (-(3.1454 / 11200.6) * (angleDiff ** 2)) + 1))
+        if not wpilib.RobotBase.isReal():
+            slowdownMult = 1
+
+        self.speedMotor.set(ctre.TalonFXControlMode.PercentOutput, input * slowdownMult)
 
         if kDebug:
-            wpilib.SmartDashboard.putNumber(str(self.speedMotor.getDeviceID()) + " Mag", input)
+            wpilib.SmartDashboard.putNumber(str(self.speedMotor.getDeviceID()) + " Mag", input * slowdownMult)
 
     def stopAllMotors(self):
         self.directionMotor.set(ctre.TalonFXControlMode.PercentOutput, 0.0)
