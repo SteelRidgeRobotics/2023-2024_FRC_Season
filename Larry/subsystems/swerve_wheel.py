@@ -127,17 +127,12 @@ class SwerveWheel():
         # Now we can actually turn the motor after like 60 lines lmao
         self.directionMotor.set(ctre.TalonFXControlMode.MotionMagic, self.directionTargetPos * ksteeringGearRatio)
 
-    def getRevolutions(self) -> int:
-        pos = self.directionMotor.getSelectedSensorPosition() / ksteeringGearRatio
-        return (pos - (pos % 2048)) / 2048
-
     def CANtoTalon(self):
         self.directionMotor.setSelectedSensorPosition(ksteeringGearRatio * (self.CANCoder.getAbsolutePosition() * (2048 / 360)), 0, ktimeoutMs)
     
     def move(self, input: float) -> None:
         if self.isInverted:
             input *= -1
-
 
         # Slows down motor at a curve depending on how far the motor angle is from the target angle.
         # Don't worry about the actual equation, I just eyeballed the numbers lmao
@@ -164,6 +159,4 @@ class SwerveWheel():
 
     def getCurrentAngle(self):
         return (self.directionMotor.getSelectedSensorPosition() / ksteeringGearRatio) * (360 / 2048)
-
-    def getVelocity(self):
-        return self.speedMotor.getSelectedSensorVelocity()
+    
