@@ -139,7 +139,7 @@ class SwerveWheel():
         angleDiff = self.directionTargetAngle - self.getCurrentAngle()
         angleDiff = (angleDiff + 180) % 360 - 180
 
-        slowdownMult = max(0, min(1.0, (-(3.1454 / 11200.6) * (angleDiff ** 2)) + 1))
+        slowdownMult = max(0, min(1.0, (-(3.14514 / 11200.6) * (angleDiff ** 2)) + 1))
         if not wpilib.RobotBase.isReal() or not slowdownWhenFar:
             slowdownMult = 1
 

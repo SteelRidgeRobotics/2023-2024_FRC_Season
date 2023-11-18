@@ -17,7 +17,9 @@
       "/LiveWindow/Ungrouped/Scheduler": "Scheduler",
       "/LiveWindow/Ungrouped/class frc2::SubsystemBase": "Subsystem",
       "/LiveWindow/Ungrouped/navX-Sensor[4]": "Gyro",
+      "/SmartDashboard/Auto": "String Chooser",
       "/SmartDashboard/Autonomous Code": "String Chooser",
+      "/SmartDashboard/Profile": "String Chooser",
       "/SmartDashboard/Selected Driver Profile": "String Chooser"
     }
   },
