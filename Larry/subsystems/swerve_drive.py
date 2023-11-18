@@ -67,9 +67,6 @@ class SwerveDrive(commands2.SubsystemBase):
         self.pidController = wpimath.controller.PIDController(constants.kChargeP, constants.kChargeI, constants.kChargeD)
         self.onChargeStation = False
 
-        self.inTankMode = False
-        self.inSwerveMode = True
-
     def turnWheel(self, module: SwerveWheel, direction: float, magnitude: float) -> None:
         """
         Turns a swerve wheel based on the provided direction and 
@@ -141,9 +138,6 @@ class SwerveDrive(commands2.SubsystemBase):
         c = translationY - rotX #* (robotWidth / 2)
         d = translationY + rotX #* (robotWidth / 2)
 
-        if constants.kDebug:
-            wpilib.SmartDashboard.putString("ABCD", str([a, b, c, d]))
-
         # Wheel 1 = topRight, Wheel 2 = topLeft, Wheel 3 = bottomLeft, Wheel 4 = bottomRight
         # wheel = [speed, angle]
         topRight = [math.sqrt(b ** 2 + c ** 2), math.atan2(b, c) * (180/math.pi) + 180]
@@ -159,16 +153,12 @@ class SwerveDrive(commands2.SubsystemBase):
             bottomLeft[0] /= highestSpeed
             bottomRight[0] /= highestSpeed
 
-        wpilib.SmartDashboard.putNumber("topRightAngle", topRight[1])
-        wpilib.SmartDashboard.putNumber("topLeftAngle", topLeft[1])
-        wpilib.SmartDashboard.putNumber("bottomLeftAngle", bottomLeft[1])
-        wpilib.SmartDashboard.putNumber("bottomRightAngle", bottomRight[1])
         wpilib.SmartDashboard.putNumber("topRightRealAngle", self.rightFrontSwerveModule.getCurrentAngle() % 360)
         wpilib.SmartDashboard.putNumber("topLeftRealAngle", self.leftFrontSwerveModule.getCurrentAngle() % 360)
         wpilib.SmartDashboard.putNumber("bottomLeftRealAngle", self.leftRearSwerveModule.getCurrentAngle() % 360)
         wpilib.SmartDashboard.putNumber("bottomRightRealAngle", self.rightRearSwerveModule.getCurrentAngle() % 360)
         
-        # Stops robot from moving while no controller values are being returned, but allow robot to still be able to turn wheels
+        # Stops robot from moving while no controller values are being returned
         if translationX == 0 and translationY == 0 and rotX == 0:
             self.stopAllMotors()
             return
@@ -250,57 +240,3 @@ class SwerveDrive(commands2.SubsystemBase):
         self.rightFrontSpeed.setSelectedSensorPosition(0.0, constants.kPIDLoopIdx, constants.ktimeoutMs)
         self.rightRearDirection.setSelectedSensorPosition(0.0, constants.kPIDLoopIdx, constants.ktimeoutMs)
         self.rightRearSpeed.setSelectedSensorPosition(0.0, constants.kPIDLoopIdx, constants.ktimeoutMs)
-
-    def enableTankDrive(self) -> bool:
-        """
-        Enables tank drive mode. This aligns all wheels into a tank 
-        drive formation, disabling turning and moving simultaneously.
-
-        The main use for this is to run automation code that was
-        intended for tank drive drivetrains.
-
-        :returns: True if successfully enabled, False if otherwise.
-        """
-        self.flushWheels()
-        for wheel in self.wheels:
-            if wheel.getCurrentAngle() != 0.0:
-                return False
-
-        self.inTankMode = True
-        self.inSwerveMode = False
-        return True
-    
-    def isInTankDrive(self) -> bool:
-        """
-        Used for getting the current drive mode of the robot.
-
-        :returns: True if in tank drive mode, False if otherwise.
-        """
-        return self.inTankMode
-    
-    def enableSwerveDrive(self) -> bool:
-        """
-        Enables swerve drive mode (enabled by default) and disables 
-        tank drive mode. This allows for turning and moving 
-        simultaneously.
-
-        This is used mainly for teleop purposes to allow for more 
-        control over movement.
-
-        :returns: True if successfully enabled, False if otherwise.
-        """
-        try:
-            self.flushWheels()
-            self.inTankMode = False
-            self.inSwerveMode = True
-            return True
-        except:
-            return False # The chance of this actually failing is literally only if like a motor gets unplugged lmao
-        
-    def isInSwerveDrive(self) -> bool:
-        """
-        Used for getting the current drive mode of the robot.
-
-        :returns: True if in swerve drive mode, False if otherwise.
-        """
-        return self.inSwerveMode

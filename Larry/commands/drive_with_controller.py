@@ -30,15 +30,7 @@ class DriveWithController(commands2.CommandBase):
         translationY = deadband(self.y(), constants.kdeadband)
         rotationX = deadband(self.rightx(), constants.kdeadband)
 
-        #if translationX == 0 and translationY == 0 and rotationX != 0:
-            #self.drive.turnInPlace(rotationX)
-            #return
-
         self.drive.translateAndTurn(translationX, translationY, rotationX)
-        if constants.kDebug:
-            wpilib.SmartDashboard.putNumber("translationX", translationX)
-            wpilib.SmartDashboard.putNumber("translationY", translationY)
-            wpilib.SmartDashboard.putNumber("rotationX", rotationX)
 
     def end(self, interrupted: bool) -> None:
         
