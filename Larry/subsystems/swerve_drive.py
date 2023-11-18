@@ -58,14 +58,9 @@ class SwerveDrive(commands2.SubsystemBase):
         self.rightFrontSwerveModule = SwerveWheel(self.rightFrontDirection, self.rightFrontSpeed, self.frCANcoder, constants.kfrCANoffset, 0.0)
         self.rightRearSwerveModule = SwerveWheel(self.rightRearDirection, self.rightRearSpeed, self.rrCANcoder, constants.krrCANoffset, 0.0)
 
-        self.wheels = [self.leftFrontSwerveModule, self.rightFrontSwerveModule, self.leftRearSwerveModule, self.rightRearSwerveModule]
-
         self.navX = navx.AHRS.create_spi()
         
         self.PDP = wpilib.PowerDistribution(0, wpilib.PowerDistribution.ModuleType.kCTRE)
-
-        self.pidController = wpimath.controller.PIDController(constants.kChargeP, constants.kChargeI, constants.kChargeD)
-        self.onChargeStation = False
 
     def turnWheel(self, module: SwerveWheel, direction: float, magnitude: float) -> None:
         """
@@ -82,8 +77,7 @@ class SwerveDrive(commands2.SubsystemBase):
         # Magnitude clamp between -1 and 1
         magnitude = max(-1.0, min(1.0, magnitude))
 
-        if module.turnToOptimizedAngle(direction):
-            magnitude *= -1
+        module.turnToOptimizedAngle(direction)
 
         if magnitude == 0:
             return

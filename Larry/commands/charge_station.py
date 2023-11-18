@@ -1,6 +1,8 @@
 import commands2
-import wpilib
+import constants
 from subsystems.swerve_drive import SwerveDrive
+import wpilib
+from wpimath.controller import PIDController
 
 class ChargeStation(commands2.CommandBase):
 
@@ -13,9 +15,12 @@ class ChargeStation(commands2.CommandBase):
 
         self.addRequirements([self.drive])
 
+        self.pidController = PIDController(constants.kChargeP, constants.kChargeI, constants.kChargeD)
+        self.onChargeStation = False
+
     def initialize(self):
 
-        self.drive.onChargeStation = False
+        self.onChargeStation = False
         self.timer.stop()
         self.timer.reset()
 
@@ -24,19 +29,19 @@ class ChargeStation(commands2.CommandBase):
         wpilib.SmartDashboard.putNumber("Yaw", self.drive.getYaw())
         wpilib.SmartDashboard.putNumber("Pitch", self.drive.getPitch())
 
-        if self.drive.getPitch() <= 7.5 and not self.drive.onChargeStation:
+        if self.drive.getPitch() <= 7.5 and not self.onChargeStation:
 
             self.drive.translate(0, 0.3)
             wpilib.SmartDashboard.putString("Auto Status", "Driving to Station")
 
         elif self.timer.get() <= 1:
 
-            self.drive.onChargeStation = True
+            self.onChargeStation = True
             self.timer.start()
 
         else:
 
-            power = (self.drive.pidController.calculate(self.drive.getPitch(), 0.0))
+            power = (self.pidController.calculate(self.drive.getPitch(), 0.0))
 
             wpilib.SmartDashboard.putString("Auto Status", "PID Control")
 
