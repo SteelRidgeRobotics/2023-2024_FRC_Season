@@ -3,8 +3,9 @@ from wpilib import XboxController
 
 import commands2
 import constants
-# import commands
+from frc6343.controller.guitar.guitar import Guitar
 from commands.drive_with_controller import DriveWithController
+from commands.drive_with_guitar import DriveWithGuitar
 from commands.charge_station import ChargeStation
 from commands.set_driver_profile import DriverProfiles, SetDriverProfile
 # import subsystems
@@ -13,7 +14,7 @@ from subsystems.swerve_drive import SwerveDrive
 class RobotContainer:
     def __init__(self) -> None:
         # init controllers
-        self.driverController = XboxController(constants.kdriverControllerPort)
+        self.driverController = XboxController(constants.kdriverControllerPort) if not constants.kUsingGuitarController else Guitar(constants.kdriverControllerPort)
 
         self.timer = wpilib.Timer
 
@@ -37,9 +38,21 @@ class RobotContainer:
 
         self.configureButtonBindings()
 
-        self.swerveDrive.setDefaultCommand(
-            DriveWithController(self.swerveDrive, lambda: self.driverController.getLeftX(), lambda: self.driverController.getLeftY(), lambda: self.driverController.getRightX(), 
-                                lambda: self.driverController.getLeftBumper(), lambda: self.driverController.getRightBumper()))
+        if constants.kUsingGuitarController:
+            self.swerveDrive.setDefaultCommand(
+                DriveWithGuitar(self.swerveDrive,
+                                lambda: self.driverController.getGreenButtonPressed(),
+                                lambda: self.driverController.getRedButtonPressed(),
+                                lambda: self.driverController.getYellowButtonPressed(),
+                                lambda: self.driverController.getBlueButtonPressed(),
+                                lambda: self.driverController.getStrumBarDownPressed(),
+                                lambda: self.driverController.getStrumBarUpPressed()
+                )
+            )
+        else:
+            self.swerveDrive.setDefaultCommand(
+                DriveWithController(self.swerveDrive, lambda: self.driverController.getLeftX(), lambda: self.driverController.getLeftY(), lambda: self.driverController.getRightX(), 
+                                    lambda: self.driverController.getLeftBumper(), lambda: self.driverController.getRightBumper()))
 
     def configureButtonBindings(self):
         """This is where our trigger bindings for commands go"""
