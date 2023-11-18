@@ -4,17 +4,12 @@
       "visible": false
     }
   },
-  "Joysticks": {
-    "window": {
-      "visible": false
-    }
-  },
   "keyboardJoysticks": [
     {
       "axisConfig": [
         {
-          "decKey": 65,
-          "incKey": 68
+          "decKey": 68,
+          "incKey": 65
         },
         {
           "decKey": 87,
@@ -27,7 +22,7 @@
           "keyRate": 0.009999999776482582
         }
       ],
-      "axisCount": 3,
+      "axisCount": 1,
       "buttonCount": 4,
       "buttonKeys": [
         90,

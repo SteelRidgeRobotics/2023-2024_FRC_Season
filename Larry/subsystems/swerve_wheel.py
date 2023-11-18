@@ -138,6 +138,14 @@ class SwerveWheel():
     def move(self, input: float):
         if self.isInverted:
             input *= -1
+
+        # Slows down motor at a curve depending on how far the motor angle is from the target angle.
+        # Don't worry about the actual equation, I just eyeballed the numbers lmao
+        diff = math.fabs(self.getCurrentAngle() - self.directionTargetAngle)
+        if diff > 180:
+            diff = math.fabs(diff - 360)
+        slowdownMult = max(0, min(1.0, (-(3.1454 / 1120.06) * (diff) ** 2) + 1)) # disabled, test nov 20th
+
         self.speedMotor.set(ctre.TalonFXControlMode.PercentOutput, input)
 
         if kDebug:
