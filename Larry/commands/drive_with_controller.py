@@ -32,9 +32,9 @@ class DriveWithController(commands2.CommandBase):
 
         # Modifiers
         if self.leftBumper() and self.rightBumper():
-            self.drive.setSpeedMultiplier(defSpeedMult * (constants.kBumperSlowdownFactor / 2))
+            self.drive.setSpeedMultiplier(defSpeedMult * (self.drive.getBumperSlowdownFactor() ** 2))
         elif self.leftBumper() or self.rightBumper():
-            self.drive.setSpeedMultiplier(defSpeedMult * constants.kBumperSlowdownFactor)
+            self.drive.setSpeedMultiplier(defSpeedMult * self.drive.getBumperSlowdownFactor())
         else:
             self.drive.setSpeedMultiplier(defSpeedMult)
 

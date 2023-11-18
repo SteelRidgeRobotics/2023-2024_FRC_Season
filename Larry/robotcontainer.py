@@ -6,9 +6,9 @@ import constants
 # import commands
 from commands.drive_with_controller import DriveWithController
 from commands.charge_station import ChargeStation
+from commands.set_driver_profile import DriverProfiles, SetDriverProfile
 # import subsystems
 from subsystems.swerve_drive import SwerveDrive
-
 
 class RobotContainer:
     def __init__(self) -> None:
@@ -19,20 +19,21 @@ class RobotContainer:
 
         # init subsystems
         self.swerveDrive = SwerveDrive()
+
         # auto chooser
-        self.chooser = wpilib.SendableChooser()
+        self.autoChooser = wpilib.SendableChooser()
 
         # Add commands to auto command chooser
-        self.chargeStation = ChargeStation(self.swerveDrive)
-        """
-        self.simple_auto = SimpleAuto(self.drive)
-        self.complex_auto = ComplexAuto(self.drive)
-        #set a default option
-        #add options
-        #show autonomous on the driver station
-        """
+        self.autoChooser.addOption("Charge Station", ChargeStation(self.swerveDrive))
 
-        self.chooser.addOption("Charge Station", self.chargeStation)
+        wpilib.SmartDashboard.putData("Auto", self.autoChooser)
+
+        # profile chooser
+        self.profileChooser = wpilib.SendableChooser()
+        self.profileChooser.setDefaultOption("Default", SetDriverProfile(self.swerveDrive, DriverProfiles.DEFAULT))
+        self.profileChooser.addOption("Default Slow | Bumper Speedup", SetDriverProfile(self.swerveDrive, DriverProfiles.DEFAULT_SLOW_BUMPER_SPEEDUP))
+
+        wpilib.SmartDashboard.putData("Profile", self.profileChooser)
 
         self.configureButtonBindings()
 
@@ -44,4 +45,7 @@ class RobotContainer:
         """This is where our trigger bindings for commands go"""
 
     def getAutonomousCommand(self) -> commands2.Command:
-        return self.chooser.getSelected()
+        return self.autoChooser.getSelected()
+    
+    def getDriverProfile(self) -> commands2.Command:
+        return self.profileChooser.getSelected()

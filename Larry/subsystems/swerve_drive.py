@@ -67,6 +67,8 @@ class SwerveDrive(commands2.SubsystemBase):
         self.rotationMultiplier = self.defaultRotationMultiplier = constants.kDefaultRotationMultiplier
         self.translationMultiplier = self.defaultTranslationMultiplier = constants.kDefaultTranslationMultiplier
 
+        self.bumperSlowdownFactor = 1
+
     def turnWheel(self, module: SwerveWheel, direction: float, magnitude: float, 
                   applySpeedMultiplier: bool=False) -> None:
         """
@@ -269,6 +271,9 @@ class SwerveDrive(commands2.SubsystemBase):
         self.rightRearDirection.setSelectedSensorPosition(0.0, constants.kPIDLoopIdx, constants.ktimeoutMs)
         self.rightRearSpeed.setSelectedSensorPosition(0.0, constants.kPIDLoopIdx, constants.ktimeoutMs)
 
+    """
+    DRIVING MULTIPLIERS
+    """
     def setSpeedMultiplier(self, newSpeed: float) -> None:
         """
         Sets the new speed multiplier.
@@ -294,6 +299,14 @@ class SwerveDrive(commands2.SubsystemBase):
         The speed multiplier is factored into all turnWheel functions.
         """
         return self.defaultSpeedMultiplier
+    
+    def setDefaultSpeedMultiplier(self, newDefSpeed: float) -> float:
+        """
+        Sets the default speed multiplier.
+
+        The speed multiplier is factored into all turnWheel functions.
+        """
+        self.defaultSpeedMultiplier = max(-1.0, min(1.0, newDefSpeed))
     
     def setRotationMultiplier(self, newSpeed: float) -> None:
         """
@@ -321,6 +334,16 @@ class SwerveDrive(commands2.SubsystemBase):
         """
         return self.defaultRotationMultiplier
     
+    def setDefaultRotationMultiplier(self, newDefSpeed: float) -> None:
+        """
+        Sets the default rotation multiplier.
+
+        The rotation multiplier is factored into all rotation-related calculations.
+
+        Values between 0-1 are accepted, 0 being 0% power and 1 being maximum power.
+        """
+        self.defaultRotationMultiplier = max(-1.0, min(1.0, newDefSpeed))
+    
     def setTranslationMultiplier(self, newSpeed: float) -> None:
         """
         Sets the new translation multiplier.
@@ -346,3 +369,34 @@ class SwerveDrive(commands2.SubsystemBase):
         The translation multiplier is factored into all translation-related calculations.
         """
         return self.defaultTranslationMultiplier
+    
+    def setDefaultTranslationMultiplier(self, newDefSpeed: float) -> None:
+        """
+        Sets the default translation multiplier.
+
+        The translation multiplier is factored into all translation-related calculations.
+
+        Values between 0-1 are accepted, 0 being 0% power and 1 being maximum power.
+        """
+        self.defaultTranslationMultiplier = max(-1.0, min(1.0, newDefSpeed))
+
+    """
+    MISC
+    """
+    def getBumperSlowdownFactor(self) -> float:
+        """
+        Gets the bumper slowdown factor.
+
+        This isn't ran through any code, but rather used for other commands to properly configure.
+        """
+        return self.bumperSlowdownFactor
+    
+    def setBumperSlowdownFactor(self, newAm: float) -> None:
+        """
+        Gets the bumper slowdown factor.
+
+        This isn't ran through any code, but rather used for other commands to properly configure.
+
+        Any value is accepted.
+        """
+        self.bumperSlowdownFactor = newAm

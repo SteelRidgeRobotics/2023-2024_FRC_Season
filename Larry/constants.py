@@ -1,14 +1,17 @@
-# options
+"""
+CONSTANTS
+"""
+
+# Options
 kUsingGuitarController = False
 kDebug = True # Turns off some temporary SmartDashboard values (basically if we dont want to clutter up things ;))
-kBumperSlowdownFactor = 0.5 # Amount the bumpers slowdown the robot. Default is 0.5, 50%
 
-# multipliers
+# Multipliers
 kDefaultSpeedMultplier = 1.0
 kDefaultTranslationMultiplier = 1.0
 kDefaultRotationMultiplier = 1.0
 
-# motors
+# Motors
 kleftFrontSpeedID = 0
 kleftRearSpeedID = 1
 krightFrontSpeedID = 2
@@ -19,7 +22,7 @@ kleftRearDirectionID = 5
 krightFrontDirectionID = 6
 krightRearDirectionID = 7
 
-# controllers
+# Controllers
 kdriverControllerPort = 0
 kdeadband = 0.15
 
@@ -41,7 +44,7 @@ krlCANcoderID = 11
 kfrCANcoderID = 12
 krrCANcoderID = 13
 
-# offsets
+# Offsets
 kflCANoffset = 350.5078125
 krlCANoffset = 179.12109375
 kfrCANoffset = 324.755859375
