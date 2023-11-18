@@ -70,25 +70,19 @@ class SwerveWheel():
 
     def turnToOptimizedAngle(self, desiredAngle) -> bool:
         """
-        Takes the desired angle for the motor and calculates if we should:
-        A: Turn clockwise,
-        B: Turn counterclockwise,
-        C: Turn to the opposite angle and invert our magnitude
-
-        The function then executes to that angle.
-
-        Do note that if C, the magnitude will have to be inverted seperately outside of this method. Sorry, hopefully you read this.
+        Takes the desired angle for the motor, then:
+        1. Turn to the opposite angle and invert the speed motor, and
+        2. Turns the wheel clockwise or counter clockwise
 
         :params desiredAngle: The angle that we want the wheel to turn to.
 
-        :returns: True if magnitude needs to be inverted.
+        :returns: True if the magnitude was inverted.
         """
         desiredAngle %= 360 # just making sure ;) (0-359)
 
-        # Distance from desiredAngle to currentAngle # 0 - 359
         angleDist = math.fabs(desiredAngle - self.directionTargetAngle)
 
-        # If the angleDist is more than 90 and less than 270, add 180 to the angle and %= 360 to get oppositeAngle. NOTE: MAGNITUDE WILL NEED TO BE INVERTED TO COMPENSATE
+        # If the angleDist is more than 90 and less than 270, add 180 to the angle and %= 360 to get oppositeAngle.
         if (angleDist > 90 and angleDist < 270):
             targetAngle = (desiredAngle + 180) % 360
             self.isInverted = True
@@ -100,19 +94,29 @@ class SwerveWheel():
 
         
         # Now that we have the correct angle, we figure out if we should rotate counterclockwise or clockwise
-        angleDistButThisTimeItsNotAbsLol = self.directionTargetAngle - targetAngle
+        angleDiff = targetAngle - self.directionTargetAngle
 
-        # Before, to move the motor to the right spot, we take the angle, convert that into talonFX units, then add (the amount of revolutions * 2048), then multiple everything by the motors gear ratio
+        # Accounting if the angleDiff is negative
+        if angleDiff < 0:
+            angleDiff += 360
+
+        # Before, to move the motor to the right spot, we would take the angle, convert that into talonFX units, then add (the amount of revolutions * 2048), then multiple everything by the motors gear ratio
         # However, to avoid having to deal with revolution compensation (which caused some issues), we now get the degree change, convert to motor units, then add or subtract depending on the direction we're rotating
-        changeInTalonUnits = math.fabs(self.directionTargetAngle - targetAngle) / (360/2048)
+        targetAngleDist = math.fabs(targetAngle - self.directionTargetAngle)
 
-        # If that long ass variable is greater than -180 and less than 0, go clockwise (cw = negative motor units)
-        if angleDistButThisTimeItsNotAbsLol >= -180 and angleDistButThisTimeItsNotAbsLol < 0:
-            self.directionTargetPos -= changeInTalonUnits
+        # When going from x angle to 0, the robot will try and go "the long way around" to the angle. This just checks to make sure we're actually getting the right distance
+        if targetAngleDist > 180:
+            targetAngleDist = abs(targetAngleDist - 360)
 
-        # Else, go counter clockwise (ccw = positive motor units)
-        else:
+        changeInTalonUnits = targetAngleDist / (360/2048)
+
+        # If angleDiff is greater than 180, go counter-clockwise (ccw is positive for talonFX, and vice versa)
+        if angleDiff > 180:
             self.directionTargetPos += changeInTalonUnits
+
+        # Else, go clockwise
+        else:
+            self.directionTargetPos -= changeInTalonUnits
 
         self.directionTargetAngle = targetAngle
 
@@ -121,7 +125,7 @@ class SwerveWheel():
             wpilib.SmartDashboard.putNumber(str(self.speedMotor.getDeviceID()) + " dirTargetPos", self.directionTargetPos)
             wpilib.SmartDashboard.putBoolean(str(self.speedMotor.getDeviceID()) + " Inverted?", self.isInverted)
 
-        # Now we can actually turn the motor after like 50 lines lmao
+        # Now we can actually turn the motor after like 60 lines lmao
         self.directionMotor.set(ctre.TalonFXControlMode.MotionMagic, self.directionTargetPos * ksteeringGearRatio)
 
     def getRevolutions(self) -> int:
