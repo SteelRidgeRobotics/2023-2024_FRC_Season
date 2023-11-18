@@ -37,8 +37,8 @@ class RobotContainer:
         self.configureButtonBindings()
 
         self.swerveDrive.setDefaultCommand(
-            DriveWithController(self.swerveDrive, lambda: self.driverController.getLeftX(),
-                                lambda: self.driverController.getLeftY(), lambda: self.driverController.getRightX()))
+            DriveWithController(self.swerveDrive, lambda: self.driverController.getLeftX(), lambda: self.driverController.getLeftY(), lambda: self.driverController.getRightX(), 
+                                lambda: self.driverController.getLeftBumper(), lambda: self.driverController.getRightBumper()))
 
     def configureButtonBindings(self):
         """This is where our trigger bindings for commands go"""

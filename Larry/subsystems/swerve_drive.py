@@ -63,9 +63,9 @@ class SwerveDrive(commands2.SubsystemBase):
         self.PDP = wpilib.PowerDistribution(0, wpilib.PowerDistribution.ModuleType.kCTRE)
 
         # Movement modifiers
-        self.speedMultiplier = self.defaultSpeedMultiplier = 1.0
-        self.rotationMultiplier = self.defaultRotationMultiplier = 1.0
-        self.translationMultiplier = self.defaultTranslationMultiplier = 1.0
+        self.speedMultiplier = self.defaultSpeedMultiplier = constants.kDefaultSpeedMultplier
+        self.rotationMultiplier = self.defaultRotationMultiplier = constants.kDefaultRotationMultiplier
+        self.translationMultiplier = self.defaultTranslationMultiplier = constants.kDefaultTranslationMultiplier
 
     def turnWheel(self, module: SwerveWheel, direction: float, magnitude: float, 
                   applySpeedMultiplier: bool=False) -> None:

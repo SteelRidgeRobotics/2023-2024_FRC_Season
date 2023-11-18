@@ -8,14 +8,17 @@ from frc6343.controller.deadband import deadband
 
 
 class DriveWithController(commands2.CommandBase):
-    def __init__(self, swerveDrive: SwerveDrive, x: typing.Callable[[], float], y: typing.Callable[[], float],
-                 rightx: typing.Callable[[], float]) -> None:
+    def __init__(self, swerveDrive: SwerveDrive, 
+                x: typing.Callable[[], float], y: typing.Callable[[], float],rightx: typing.Callable[[], float],
+                leftBumper: typing.Callable[[], bool], rightBumper: typing.Callable[[], bool]) -> None:
         
         super().__init__()
         self.drive = swerveDrive
         self.x = x
         self.y = y
         self.rightx = rightx
+        self.leftBumper = leftBumper
+        self.rightBumper = rightBumper
         self.addRequirements([self.drive])
         self.drive.reset()
         self.drive.getPosFromOffState()
@@ -25,6 +28,17 @@ class DriveWithController(commands2.CommandBase):
         self.drive.navX.reset()
 
     def execute(self) -> None:
+        defSpeedMult = self.drive.getDefaultSpeedMultiplier()
+
+        # Modifiers
+        if self.leftBumper() and self.rightBumper():
+            self.drive.setSpeedMultiplier(defSpeedMult * (constants.kBumperSlowdownFactor / 2))
+        elif self.leftBumper() or self.rightBumper():
+            self.drive.setSpeedMultiplier(defSpeedMult * constants.kBumperSlowdownFactor)
+        else:
+            self.drive.setSpeedMultiplier(defSpeedMult)
+
+        wpilib.SmartDashboard.putNumber("Speed Multiplier", self.drive.getSpeedMultiplier())
 
         translationX = deadband(self.x(), constants.kdeadband)
         translationY = deadband(self.y(), constants.kdeadband)

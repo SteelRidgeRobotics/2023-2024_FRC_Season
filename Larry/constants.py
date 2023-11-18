@@ -1,7 +1,12 @@
 # options
 kUsingGuitarController = False
 kDebug = True # Turns off some temporary SmartDashboard values (basically if we dont want to clutter up things ;))
-kMaxSwerveSpeed = False # If False, multiples drive train speed by 0.33
+kBumperSlowdownFactor = 0.5 # Amount the bumpers slowdown the robot. Default is 0.5, 50%
+
+# multipliers
+kDefaultSpeedMultplier = 1.0
+kDefaultTranslationMultiplier = 1.0
+kDefaultRotationMultiplier = 1.0
 
 # motors
 kleftFrontSpeedID = 0
@@ -14,6 +19,7 @@ kleftRearDirectionID = 5
 krightFrontDirectionID = 6
 krightRearDirectionID = 7
 
+# controllers
 kdriverControllerPort = 0
 kdeadband = 0.15
 

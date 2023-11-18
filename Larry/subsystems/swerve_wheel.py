@@ -138,12 +138,19 @@ class SwerveWheel():
     def move(self, input: float):
         if self.isInverted:
             input *= -1
-        self.speedMotor.set(ctre.TalonFXControlMode.PercentOutput, (1.0) if kMaxSwerveSpeed else (0.33) * input)
+        self.speedMotor.set(ctre.TalonFXControlMode.PercentOutput, input)
+
+        if kDebug:
+            wpilib.SmartDashboard.putNumber(str(self.speedMotor.getDeviceID()) + " Mag", input)
 
     def stopAllMotors(self):
         self.directionMotor.set(ctre.TalonFXControlMode.PercentOutput, 0.0)
         self.speedMotor.set(ctre.TalonFXControlMode.PercentOutput, 0.0)
         self.directionMotor.setNeutralMode(ctre.NeutralMode.Coast)
+
+        # Prevents SmartDashboard desync
+        if kDebug:
+            wpilib.SmartDashboard.putNumber(str(self.speedMotor.getDeviceID()) + " Mag", 0)
 
     def getCurrentAngle(self):
         return (self.directionMotor.getSelectedSensorPosition() / ksteeringGearRatio) * (360 / 2048)
