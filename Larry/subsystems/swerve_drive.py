@@ -147,10 +147,11 @@ class SwerveDrive(commands2.SubsystemBase):
             bottomLeft[0] /= highestSpeed
             bottomRight[0] /= highestSpeed
 
-        wpilib.SmartDashboard.putNumber("topRightRealAngle", self.rightFrontSwerveModule.getCurrentAngle() % 360)
-        wpilib.SmartDashboard.putNumber("topLeftRealAngle", self.leftFrontSwerveModule.getCurrentAngle() % 360)
-        wpilib.SmartDashboard.putNumber("bottomLeftRealAngle", self.leftRearSwerveModule.getCurrentAngle() % 360)
-        wpilib.SmartDashboard.putNumber("bottomRightRealAngle", self.rightRearSwerveModule.getCurrentAngle() % 360)
+        if wpilib.RobotBase.isReal() and constants.kDebug:
+            wpilib.SmartDashboard.putNumber("topRightRealAngle", self.rightFrontSwerveModule.getCurrentAngle() % 360)
+            wpilib.SmartDashboard.putNumber("topLeftRealAngle", self.leftFrontSwerveModule.getCurrentAngle() % 360)
+            wpilib.SmartDashboard.putNumber("bottomLeftRealAngle", self.leftRearSwerveModule.getCurrentAngle() % 360)
+            wpilib.SmartDashboard.putNumber("bottomRightRealAngle", self.rightRearSwerveModule.getCurrentAngle() % 360)
         
         # Stops robot from moving while no controller values are being returned
         if translationX == 0 and translationY == 0 and rotX == 0:
