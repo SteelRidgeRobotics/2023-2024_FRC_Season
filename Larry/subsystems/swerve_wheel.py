@@ -130,7 +130,7 @@ class SwerveWheel():
     def CANtoTalon(self):
         self.directionMotor.setSelectedSensorPosition(ksteeringGearRatio * (self.CANCoder.getAbsolutePosition() * (2048 / 360)), 0, ktimeoutMs)
     
-    def move(self, input: float) -> None:
+    def move(self, input: float, slowdownWhenFar: bool=True) -> None:
         if self.isInverted:
             input *= -1
 
@@ -140,7 +140,7 @@ class SwerveWheel():
         angleDiff = (angleDiff + 180) % 360 - 180
 
         slowdownMult = max(0, min(1.0, (-(3.1454 / 11200.6) * (angleDiff ** 2)) + 1))
-        if not wpilib.RobotBase.isReal():
+        if not wpilib.RobotBase.isReal() or not slowdownWhenFar:
             slowdownMult = 1
 
         self.speedMotor.set(ctre.TalonFXControlMode.PercentOutput, input * slowdownMult)
