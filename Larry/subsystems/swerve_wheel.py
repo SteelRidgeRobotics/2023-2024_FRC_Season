@@ -111,11 +111,11 @@ class SwerveWheel():
 
         # If angleDiff is greater than 180, go counter-clockwise (ccw is positive for talonFX, and vice versa)
         if angleDiff > 180:
-            self.directionTargetPos += changeInTalonUnits
+            self.directionTargetPos -= changeInTalonUnits
 
         # Else, go clockwise
         else:
-            self.directionTargetPos -= changeInTalonUnits
+            self.directionTargetPos += changeInTalonUnits
 
         self.directionTargetAngle = targetAngle
 
@@ -143,10 +143,10 @@ class SwerveWheel():
         if not wpilib.RobotBase.isReal() or not slowdownWhenFar:
             slowdownMult = 1
 
-        self.speedMotor.set(ctre.TalonFXControlMode.PercentOutput, input * slowdownMult)
+        self.speedMotor.set(ctre.TalonFXControlMode.PercentOutput, input * 1)
 
         if kDebug:
-            wpilib.SmartDashboard.putNumber(str(self.speedMotor.getDeviceID()) + " Mag", input * slowdownMult)
+            wpilib.SmartDashboard.putNumber(str(self.speedMotor.getDeviceID()) + " Mag", input * 1)
 
     def stopAllMotors(self):
         self.directionMotor.set(ctre.TalonFXControlMode.PercentOutput, 0.0)

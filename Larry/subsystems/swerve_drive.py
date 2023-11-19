@@ -162,6 +162,11 @@ class SwerveDrive(commands2.SubsystemBase):
         bottomLeft = [math.sqrt(a ** 2 + d ** 2), math.atan2(a, d) * (180/math.pi) + 180]
         bottomRight = [math.sqrt(a ** 2 + c ** 2), math.atan2(a, c) * (180/math.pi) + 180]
 
+        wpilib.SmartDashboard.putNumberArray("topRight", topRight)
+        wpilib.SmartDashboard.putNumberArray("bottomRight", bottomRight)
+        wpilib.SmartDashboard.putNumberArray("topLeft", topLeft)
+        wpilib.SmartDashboard.putNumberArray("bottomLeft", bottomLeft)
+
         # Check if any wheels have a speed higher than 1. If so, divide all wheels by highest value
         highestSpeed = max(abs(topRight[0]), abs(topLeft[0]), abs(bottomLeft[0]), abs(bottomRight[0]))
         if highestSpeed > 1:

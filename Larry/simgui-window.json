@@ -5,11 +5,11 @@
   "MainWindow": {
     "GLOBAL": {
       "fps": "0",
-      "height": "1369",
+      "height": "1001",
       "maximized": "1",
       "style": "1",
-      "userScale": "6",
-      "width": "2560",
+      "userScale": "2",
+      "width": "1920",
       "xpos": "0",
       "ypos": "23"
     }
@@ -45,8 +45,8 @@
     },
     "###Joysticks": {
       "Collapsed": "1",
-      "Pos": "483,1194",
-      "Size": "1516,392"
+      "Pos": "483,982",
+      "Size": "976,278"
     },
     "###Keyboard 0 Settings": {
       "Collapsed": "0",
@@ -80,13 +80,13 @@
     },
     "###System Joysticks": {
       "Collapsed": "1",
-      "Pos": "10,983",
-      "Size": "354,362"
+      "Pos": "10,982",
+      "Size": "232,254"
     },
     "###Timing": {
       "Collapsed": "1",
       "Pos": "9,952",
-      "Size": "241,187"
+      "Size": "162,142"
     },
     "Debug##Default": {
       "Collapsed": "0",
@@ -96,7 +96,7 @@
     "Robot State": {
       "Collapsed": "0",
       "Pos": "23,62",
-      "Size": "161,159"
+      "Size": "109,114"
     }
   }
 }

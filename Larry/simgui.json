@@ -32,9 +32,6 @@
     },
     "precision": 3,
     "transitory": {
-      "FMSInfo": {
-        "open": true
-      },
       "SmartDashboard": {
         "open": true
       }

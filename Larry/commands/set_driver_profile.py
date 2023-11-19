@@ -2,8 +2,32 @@ import commands2
 from enum import Enum
 from subsystems.swerve_drive import SwerveDrive
 
+class BumperOptions(Enum):
+    NONE = 0
+    SPEED = 1
+    ROTATION = 2
+    TRANSLATION = 3
+
+class TriggerOptions(Enum):
+    NONE = 0
+    ANALOG_0_2 = 2
+    ANALOG_0_1 = 1
+    ANALOG_0_05 = 0.5
+    ANALOG_0_025 = 0.25
+    SET_2 = 2
+    SET_05 = 0.5
+    SET_025 = 0.25
+
+
+# DEFAULT = {"defSpeedMultiplier": 1.0, "defTranslationMultiplier": 1.0, "defRotationMultiplier": 1.0, 
+# "kLeftBumperOption": BumperOptions.SPEED, "kLeftBumperFactor": 0.5, "kRightBumperOption": BumperOptions.SPEED, "kRightBumperFactor": 0.5, 
+# "kLeftTriggerOption": TriggerOptions.NONE, "kRightTriggerOption": TriggerOptions.NONE}
+
 class DriverProfiles(Enum):
-    DEFAULT = {"defSpeedMultiplier": 1.0, "defTranslationMultiplier": 1.0, "defRotationMultiplier": 1.0, "kBumperFactor": 0.5}
+    DEFAULT = {"defSpeedMultiplier": 1.0, "defTranslationMultiplier": 1.0, "defRotationMultiplier": 1.0, 
+               "kLeftBumperOption": BumperOptions.SPEED, "kLeftBumperFactor": 0.5, "kRightBumperOption": BumperOptions.SPEED, "kRightBumperFactor": 0.5, 
+               "kLeftTriggerOption": TriggerOptions.NONE, "kRightTriggerOption": TriggerOptions.NONE}
+    
     DEFAULT_SLOW_BUMPER_SPEEDUP = {"defSpeedMultiplier": 0.25, "defTranslationMultiplier": 1.0, "defRotationMultiplier": 1.0, "kBumperFactor": 2.0}
 
 class SetDriverProfile(commands2.CommandBase):
@@ -31,4 +55,3 @@ class SetDriverProfile(commands2.CommandBase):
         self.swerveDrive.setDefaultSpeedMultiplier(selectedProfile.get("defSpeedMultiplier"))
         self.swerveDrive.setDefaultTranslationMultiplier(selectedProfile.get("defTranslationMultiplier"))
         self.swerveDrive.setDefaultRotationMultiplier(selectedProfile.get("defRotationMultiplier"))
-        self.swerveDrive.setBumperSlowdownFactor(selectedProfile.get("kBumperFactor"))
