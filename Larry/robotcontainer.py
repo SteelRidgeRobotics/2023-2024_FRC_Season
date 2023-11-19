@@ -32,7 +32,7 @@ class RobotContainer:
         # profile chooser
         self.profileChooser = wpilib.SendableChooser()
         self.profileChooser.setDefaultOption("Default", SetDriverProfile(self.swerveDrive, DriverProfiles.DEFAULT))
-        self.profileChooser.addOption("Default Slow | Bumper Speedup", SetDriverProfile(self.swerveDrive, DriverProfiles.DEFAULT_SLOW_BUMPER_SPEEDUP))
+        self.profileChooser.addOption("Default 25%, Bumper Speedup", SetDriverProfile(self.swerveDrive, DriverProfiles.DEFAULT_SLOW_BUMPER_SPEEDUP))
 
         wpilib.SmartDashboard.putData("Profile", self.profileChooser)
 
@@ -52,7 +52,8 @@ class RobotContainer:
         else:
             self.swerveDrive.setDefaultCommand(
                 DriveWithController(self.swerveDrive, lambda: self.driverController.getLeftX(), lambda: self.driverController.getLeftY(), lambda: self.driverController.getRightX(), 
-                                    lambda: self.driverController.getLeftBumper(), lambda: self.driverController.getRightBumper()))
+                                    lambda: self.driverController.getLeftBumper(), lambda: self.driverController.getRightBumper(),
+                                    lambda: self.driverController.getLeftTriggerAxis(), lambda: self.driverController.getRightTriggerAxis()))
 
     def configureButtonBindings(self):
         """This is where our trigger bindings for commands go"""

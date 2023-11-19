@@ -1,23 +1,7 @@
 import commands2
 from enum import Enum
+from constants import MultiplierOptions, TriggerOptions
 from subsystems.swerve_drive import SwerveDrive
-
-class BumperOptions(Enum):
-    NONE = 0
-    SPEED = 1
-    ROTATION = 2
-    TRANSLATION = 3
-
-class TriggerOptions(Enum):
-    NONE = 0
-    ANALOG_0_2 = 2
-    ANALOG_0_1 = 1
-    ANALOG_0_05 = 0.5
-    ANALOG_0_025 = 0.25
-    SET_2 = 2
-    SET_05 = 0.5
-    SET_025 = 0.25
-
 
 # DEFAULT = {"defSpeedMultiplier": 1.0, "defTranslationMultiplier": 1.0, "defRotationMultiplier": 1.0, 
 # "kLeftBumperOption": BumperOptions.SPEED, "kLeftBumperFactor": 0.5, "kRightBumperOption": BumperOptions.SPEED, "kRightBumperFactor": 0.5, 
@@ -25,8 +9,9 @@ class TriggerOptions(Enum):
 
 class DriverProfiles(Enum):
     DEFAULT = {"defSpeedMultiplier": 1.0, "defTranslationMultiplier": 1.0, "defRotationMultiplier": 1.0, 
-               "kLeftBumperOption": BumperOptions.SPEED, "kLeftBumperFactor": 0.5, "kRightBumperOption": BumperOptions.SPEED, "kRightBumperFactor": 0.5, 
-               "kLeftTriggerOption": TriggerOptions.NONE, "kRightTriggerOption": TriggerOptions.NONE}
+               "kLeftBumperOption": MultiplierOptions.SPEED, "kLeftBumperFactor": 0.5, "kRightBumperOption": MultiplierOptions.SPEED, "kRightBumperFactor": 0.5, 
+               "kLeftTriggerOption": TriggerOptions.NONE, "kLeftTriggerMode": MultiplierOptions.NONE, 
+               "kRightTriggerOption": TriggerOptions.NONE, "kRightTriggerMode": MultiplierOptions.NONE}
     
     DEFAULT_SLOW_BUMPER_SPEEDUP = {"defSpeedMultiplier": 0.25, "defTranslationMultiplier": 1.0, "defRotationMultiplier": 1.0, "kBumperFactor": 2.0}
 
@@ -55,3 +40,19 @@ class SetDriverProfile(commands2.CommandBase):
         self.swerveDrive.setDefaultSpeedMultiplier(selectedProfile.get("defSpeedMultiplier"))
         self.swerveDrive.setDefaultTranslationMultiplier(selectedProfile.get("defTranslationMultiplier"))
         self.swerveDrive.setDefaultRotationMultiplier(selectedProfile.get("defRotationMultiplier"))
+
+        if selectedProfile.get("kLeftBumperOption") != MultiplierOptions.NONE:
+            self.swerveDrive.setLeftBumperMode(selectedProfile.get("kLeftBumperOption"))
+            self.swerveDrive.setLeftBumperFactor(selectedProfile.get("kLeftBumperFactor"))
+
+        if selectedProfile.get("kRightBumperOption") != MultiplierOptions.NONE:
+            self.swerveDrive.setRightBumperMode(selectedProfile.get("kRightBumperOption"))
+            self.swerveDrive.setRightBumperFactor(selectedProfile.get("kRightBumperFactor"))
+
+        if selectedProfile.get("kLeftTriggerOption") != TriggerOptions.NONE:
+            self.swerveDrive.setLeftTriggerMode(selectedProfile.get("kLeftTriggerMode"))
+            self.swerveDrive.setLeftTriggerOption(selectedProfile.get("kLeftTriggerOption"))
+
+        if selectedProfile.get("kRightTriggerOption") != TriggerOptions.NONE:
+            self.swerveDrive.setRightTriggerMode(selectedProfile.get("kRightTriggerMode"))
+            self.swerveDrive.setRightTriggerOption(selectedProfile.get("kRightTriggerOption"))
