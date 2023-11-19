@@ -30,6 +30,9 @@ class MyRobot(commands2.TimedCommandRobot):
         if self.autoCommand:
             self.autoCommand.cancel()
 
+        self.profile = self.container.getDriverProfile()
+        self.profile.schedule()
+        
     def teleopPeriodic(self):
         pass
 

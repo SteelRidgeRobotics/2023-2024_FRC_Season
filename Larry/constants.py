@@ -1,11 +1,36 @@
-import math
+from enum import Enum
 
-# options
-kUsingGuitarController = True
+"""
+CONSTANTS
+"""
+
+# Options
+kUsingGuitarController = False
 kDebug = True # Turns off some temporary SmartDashboard values (basically if we dont want to clutter up things ;))
-kMaxSwerveSpeed = False # If False, multiples drive train speed by 0.5
 
-# motors
+# Multipliers
+kDefaultSpeedMultplier = 1.0
+kDefaultTranslationMultiplier = 1.0
+kDefaultRotationMultiplier = 1.0
+
+# Driving Profile Enums
+class MultiplierOptions(Enum):
+    NONE = 0
+    SPEED = 1
+    ROTATION = 2
+    TRANSLATION = 3
+
+class TriggerOptions(Enum):
+    NONE = 0
+    ANALOG_1_2 = 2
+    ANALOG_0_1 = 1
+    ANALOG_0_05 = 0.5
+    ANALOG_0_025 = 0.25
+    SET_2 = 2
+    SET_05 = 0.5
+    SET_025 = 0.25
+
+# Motors
 kleftFrontSpeedID = 0
 kleftRearSpeedID = 1
 krightFrontSpeedID = 2
@@ -16,6 +41,7 @@ kleftRearDirectionID = 5
 krightFrontDirectionID = 6
 krightRearDirectionID = 7
 
+# Controllers
 kdriverControllerPort = 0
 kdeadband = 0.15
 
@@ -28,28 +54,22 @@ kD = 2  # Derivative
 kIzone = 150
 kcruiseVel = 21134.0  # Cruise Velocity at 100% of max (max = 21134)
 kcruiseAccel = 21134.0  # Cruise Acceleration same as velocity
-kticksPerRev = 2048
 kSlotIdx = 0
 kPIDLoopIdx = 0
 
 # CANCoders
-# CAN coders
 kflCANcoderID = 10
 krlCANcoderID = 11
 kfrCANcoderID = 12
 krrCANcoderID = 13
 
-# offsets
+# Offsets
 kflCANoffset = 350.5078125
 krlCANoffset = 179.12109375
 kfrCANoffset = 324.755859375
 krrCANoffset = 28.828125
 
 ksteeringGearRatio = 150 / 7
-
-klength = 29
-kwidth = 29
-kr = math.sqrt((klength ** 2) + (kwidth ** 2))  # ** is the exponent operator
 
 # PID constants for the charge station
 kChargeP = 0.0115

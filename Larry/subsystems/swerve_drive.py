@@ -1,11 +1,10 @@
 import math
 
+from constants import MultiplierOptions, TriggerOptions
 import commands2
 import constants
-import conversions
 import ctre
 import wpilib
-import wpimath.controller
 import navx
 from subsystems.swerve_wheel import SwerveWheel
 
@@ -59,19 +58,24 @@ class SwerveDrive(commands2.SubsystemBase):
         self.rightFrontSwerveModule = SwerveWheel(self.rightFrontDirection, self.rightFrontSpeed, self.frCANcoder, constants.kfrCANoffset, 0.0)
         self.rightRearSwerveModule = SwerveWheel(self.rightRearDirection, self.rightRearSpeed, self.rrCANcoder, constants.krrCANoffset, 0.0)
 
-        self.wheels = [self.leftFrontSwerveModule, self.rightFrontSwerveModule, self.leftRearSwerveModule, self.rightRearSwerveModule]
-
         self.navX = navx.AHRS.create_spi()
         
         self.PDP = wpilib.PowerDistribution(0, wpilib.PowerDistribution.ModuleType.kCTRE)
 
-        self.pidController = wpimath.controller.PIDController(constants.kChargeP, constants.kChargeI, constants.kChargeD)
-        self.onChargeStation = False
+        # Movement modifiers
+        self.speedMultiplier = self.defaultSpeedMultiplier = constants.kDefaultSpeedMultplier
+        self.rotationMultiplier = self.defaultRotationMultiplier = constants.kDefaultRotationMultiplier
+        self.translationMultiplier = self.defaultTranslationMultiplier = constants.kDefaultTranslationMultiplier
 
-        self.inTankMode = False
-        self.inSwerveMode = True
+        # Driving profle options
+        self.leftBumperMode = self.rightBumperMode = MultiplierOptions.NONE
+        self.leftBumperFactor = self.rightBumperFactor = 1.0
 
-    def turnWheel(self, module: SwerveWheel, direction: float, magnitude: float):
+        self.leftTriggerMode = self.rightTriggerMode = MultiplierOptions.NONE
+        self.leftTriggerOption = self.rightTriggerOption = TriggerOptions.NONE
+
+    def turnWheel(self, module: SwerveWheel, direction: float, magnitude: float, 
+                  applySpeedMultiplier: bool=False) -> None:
         """
         Turns a swerve wheel based on the provided direction and 
         magnitude.
@@ -83,24 +87,20 @@ class SwerveDrive(commands2.SubsystemBase):
         (ranging from 0 to 1, 1 being 100% power)
         """
 
+        # Magnitude clamp between -1 and 1
+        magnitude = max(-1.0, min(1.0, magnitude))
+        if applySpeedMultiplier:
+            magnitude *= self.speedMultiplier
+
+        module.turnToOptimizedAngle(direction)
+
         if magnitude == 0:
             return
-
-        # Magnitude clamp btweenn -1 and 1
-        magnitude = max(-1.0, min(1.0, magnitude))
-
-        currentAngle = conversions.convertTalonFXUnitsToDegrees(module.directionMotor.getSelectedSensorPosition() / constants.ksteeringGearRatio)
-
-        turn, magnitude = conversions.getOptimizedAngleAndMagnitude(currentAngle, direction, magnitude)
-
-        # Turn down speed if motor is far away from target angle
-        if math.fabs(currentAngle - module.getCurrentAngle()) >= 10:
-            magnitude /= 3
-
-        module.turn(conversions.convertDegreesToTalonFXUnits(turn))
+        
         module.move(magnitude)
 
-    def translate(self, direction: float, magnitude: float):
+    def translate(self, direction: float, magnitude: float, 
+                  applyTranslationMultiplier: bool=True, applySpeedMultiplier: bool=True):
         """
         Allows for moving up, down, left, and right without rotating 
         the robot.
@@ -110,13 +110,18 @@ class SwerveDrive(commands2.SubsystemBase):
         :param magnitude: The magnitude the robot should travel at 
         (ranging from 0 to 1, 1 being 100% power)
         """
+        if applyTranslationMultiplier:
+            magnitude *= self.translationMultiplier
+        if applySpeedMultiplier:
+            magnitude *= self.speedMultiplier
 
         self.turnWheel(self.leftFrontSwerveModule, direction, magnitude)
         self.turnWheel(self.leftRearSwerveModule, direction, magnitude)
         self.turnWheel(self.rightFrontSwerveModule, direction, magnitude)
         self.turnWheel(self.rightRearSwerveModule, direction, magnitude)
 
-    def translateAndTurn(self, translationX: float, translationY: float, rotX: float) -> None:
+    def translateAndTurn(self, translationX: float, translationY: float, rotX: float, 
+                         applyTranslationMultiplier: bool=True, applyRotationMultiplier: bool=True, applySpeedModifier: bool=True) -> None:
         """
         This is the default movement method for swerve drive.
 
@@ -133,6 +138,13 @@ class SwerveDrive(commands2.SubsystemBase):
         translationX *= -1
         rotX *= -1
 
+        # Add non-speed multipliers
+        if applyTranslationMultiplier:
+            translationX *= self.translationMultiplier
+            translationY *= self.translationMultiplier
+        if applyRotationMultiplier:
+            rotX *= self.rotationMultiplier
+
         # Field Orientaated Drive (aka complicated math so the robot doesn't rotate while we translate or somthin idrk)
         temp = translationY * math.cos(self.getYaw() * (math.pi / 180)) + translationX * math.sin(self.getYaw() * (math.pi / 180))
         translationX = -translationY * math.sin(self.getYaw() * (math.pi / 180)) + translationX * math.cos(self.getYaw() * (math.pi / 180))
@@ -148,15 +160,17 @@ class SwerveDrive(commands2.SubsystemBase):
         c = translationY - rotX #* (robotWidth / 2)
         d = translationY + rotX #* (robotWidth / 2)
 
-        if constants.kDebug:
-            wpilib.SmartDashboard.putString("ABCD", str([a, b, c, d]))
-
         # Wheel 1 = topRight, Wheel 2 = topLeft, Wheel 3 = bottomLeft, Wheel 4 = bottomRight
         # wheel = [speed, angle]
         topRight = [math.sqrt(b ** 2 + c ** 2), math.atan2(b, c) * (180/math.pi) + 180]
         topLeft = [math.sqrt(b ** 2 + d ** 2), math.atan2(b, d) * (180/math.pi) + 180]
         bottomLeft = [math.sqrt(a ** 2 + d ** 2), math.atan2(a, d) * (180/math.pi) + 180]
         bottomRight = [math.sqrt(a ** 2 + c ** 2), math.atan2(a, c) * (180/math.pi) + 180]
+
+        wpilib.SmartDashboard.putNumberArray("topRight", topRight)
+        wpilib.SmartDashboard.putNumberArray("bottomRight", bottomRight)
+        wpilib.SmartDashboard.putNumberArray("topLeft", topLeft)
+        wpilib.SmartDashboard.putNumberArray("bottomLeft", bottomLeft)
 
         # Check if any wheels have a speed higher than 1. If so, divide all wheels by highest value
         highestSpeed = max(abs(topRight[0]), abs(topLeft[0]), abs(bottomLeft[0]), abs(bottomRight[0]))
@@ -166,14 +180,23 @@ class SwerveDrive(commands2.SubsystemBase):
             bottomLeft[0] /= highestSpeed
             bottomRight[0] /= highestSpeed
 
-        wpilib.SmartDashboard.putString("topRight", str(topRight))
-        wpilib.SmartDashboard.putString("topLeft", str(topLeft))
-        wpilib.SmartDashboard.putString("bottomLeft", str(bottomLeft))
-        wpilib.SmartDashboard.putString("bottomRight", str(bottomRight))
-
-        # Stops robot from moving while no controller values are being returned, but allow robot to still be able to turn wheels
+        if wpilib.RobotBase.isReal() and constants.kDebug:
+            wpilib.SmartDashboard.putNumber("topRightRealAngle", self.rightFrontSwerveModule.getCurrentAngle() % 360)
+            wpilib.SmartDashboard.putNumber("topLeftRealAngle", self.leftFrontSwerveModule.getCurrentAngle() % 360)
+            wpilib.SmartDashboard.putNumber("bottomLeftRealAngle", self.leftRearSwerveModule.getCurrentAngle() % 360)
+            wpilib.SmartDashboard.putNumber("bottomRightRealAngle", self.rightRearSwerveModule.getCurrentAngle() % 360)
+        
+        # Stops robot from moving while no controller values are being returned
         if translationX == 0 and translationY == 0 and rotX == 0:
-            topLeft[0], topRight[0], bottomLeft[0], bottomRight[0] = 0.0
+            self.stopAllMotors()
+            return
+        
+        # Speed modifiers
+        if applySpeedModifier:
+            topRight[0] *= self.speedMultiplier
+            topLeft[0] *= self.speedMultiplier
+            bottomLeft[0] *= self.speedMultiplier
+            bottomRight[0] *= self.speedMultiplier
 
         # Turn wheels :D
         self.turnWheel(self.leftFrontSwerveModule, topLeft[1], topLeft[0])
@@ -181,7 +204,7 @@ class SwerveDrive(commands2.SubsystemBase):
         self.turnWheel(self.leftRearSwerveModule, bottomLeft[1], bottomLeft[0])
         self.turnWheel(self.rightRearSwerveModule, bottomRight[1], bottomRight[0])
 
-    def turnInPlace(self, turnPower: float):
+    def turnInPlace(self, turnPower: float, applyRotationMultiplier: bool=True, applySpeedMultiplier: bool=True) -> None:
         """
         Sets all motors to pre-defined angles to allow for optimized 
         turning back and forth.
@@ -189,6 +212,11 @@ class SwerveDrive(commands2.SubsystemBase):
         :param turnPower: The magnitude of the turning (ranging from 
         -1 to 1, 1 being 100% power forward)
         """
+        if applyRotationMultiplier:
+            turnPower *= self.rotationMultiplier
+        if applySpeedMultiplier:
+            turnPower *= self.speedMultiplier
+
         self.turnWheel(self.leftFrontSwerveModule, 45.0, turnPower)
         self.turnWheel(self.rightFrontSwerveModule, 135.0, turnPower)
         self.turnWheel(self.rightRearSwerveModule, 225.0, turnPower)
@@ -253,56 +281,244 @@ class SwerveDrive(commands2.SubsystemBase):
         self.rightRearDirection.setSelectedSensorPosition(0.0, constants.kPIDLoopIdx, constants.ktimeoutMs)
         self.rightRearSpeed.setSelectedSensorPosition(0.0, constants.kPIDLoopIdx, constants.ktimeoutMs)
 
-    def enableTankDrive(self) -> bool:
+    """
+    DRIVING MULTIPLIERS
+    """
+    def setSpeedMultiplier(self, newSpeed: float) -> None:
         """
-        Enables tank drive mode. This aligns all wheels into a tank 
-        drive formation, disabling turning and moving simultaneously.
+        Sets the new speed multiplier.
 
-        The main use for this is to run automation code that was
-        intended for tank drive drivetrains.
+        The speed multiplier is factored into all turnWheel functions.
 
-        :returns: True if successfully enabled, False if otherwise.
+        Values between 0-1 are accepted, 0 being 0% power and 1 being maximum power.
         """
-        self.flushWheels()
-        for wheel in self.wheels:
-            if wheel.getCurrentAngle() != 0.0:
-                return False
+        self.speedMultiplier = newSpeed
 
-        self.inTankMode = True
-        self.inSwerveMode = False
-        return True
+    def getSpeedMultiplier(self) -> float:
+        """
+        Gets the speed multiplier.
+
+        The speed multiplier is factored into all turnWheel functions.
+        """
+        return self.speedMultiplier
     
-    def isInTankDrive(self) -> bool:
+    def getDefaultSpeedMultiplier(self) -> float:
         """
-        Used for getting the current drive mode of the robot.
+        Gets the default speed multiplier.
 
-        :returns: True if in tank drive mode, False if otherwise.
+        The speed multiplier is factored into all turnWheel functions.
         """
-        return self.inTankMode
+        return self.defaultSpeedMultiplier
     
-    def enableSwerveDrive(self) -> bool:
+    def setDefaultSpeedMultiplier(self, newDefSpeed: float) -> float:
         """
-        Enables swerve drive mode (enabled by default) and disables 
-        tank drive mode. This allows for turning and moving 
-        simultaneously.
+        Sets the default speed multiplier.
 
-        This is used mainly for teleop purposes to allow for more 
-        control over movement.
+        The speed multiplier is factored into all turnWheel functions.
+        """
+        self.defaultSpeedMultiplier = newDefSpeed
+    
+    def setRotationMultiplier(self, newSpeed: float) -> None:
+        """
+        Sets the new rotation multiplier.
 
-        :returns: True if successfully enabled, False if otherwise.
-        """
-        try:
-            self.flushWheels()
-            self.inTankMode = False
-            self.inSwerveMode = True
-            return True
-        except:
-            return False # The chance of this actually failing is literally only if like a motor gets unplugged lmao
-        
-    def isInSwerveDrive(self) -> bool:
-        """
-        Used for getting the current drive mode of the robot.
+        The rotation multiplier is factored into all rotation-related calculations.
 
-        :returns: True if in swerve drive mode, False if otherwise.
+        Values between 0-1 are accepted, 0 being 0% power and 1 being maximum power.
         """
-        return self.inSwerveMode
+        self.rotationMultiplier = newSpeed
+
+    def getRotationMultiplier(self) -> float:
+        """
+        Gets the rotation multiplier.
+
+        The rotation multiplier is factored into all rotation-related calculations.
+        """
+        return self.rotationMultiplier
+    
+    def getDefaultRotationMultiplier(self) -> float:
+        """
+        Gets the default rotation multiplier.
+
+        The rotation multiplier is factored into all rotation-related calculations.
+        """
+        return self.defaultRotationMultiplier
+    
+    def setDefaultRotationMultiplier(self, newDefSpeed: float) -> None:
+        """
+        Sets the default rotation multiplier.
+
+        The rotation multiplier is factored into all rotation-related calculations.
+
+        Values between 0-1 are accepted, 0 being 0% power and 1 being maximum power.
+        """
+        self.defaultRotationMultiplier = newDefSpeed
+    
+    def setTranslationMultiplier(self, newSpeed: float) -> None:
+        """
+        Sets the new translation multiplier.
+
+        The translation multiplier is factored into all translation-related calculations.
+        """
+        self.translationMultiplier = newSpeed
+
+    def getTranslationMultiplier(self) -> float:
+        """
+        Gets the translation multiplier.
+
+        The translation multiplier is factored into all translation-related calculations.
+        """
+        return self.translationMultiplier
+    
+    def getDefaultTranslationMultiplier(self) -> float:
+        """
+        Gets the default translation multiplier.
+
+        The translation multiplier is factored into all translation-related calculations.
+        """
+        return self.defaultTranslationMultiplier
+    
+    def setDefaultTranslationMultiplier(self, newDefSpeed: float) -> None:
+        """
+        Sets the default translation multiplier.
+
+        The translation multiplier is factored into all translation-related calculations.
+
+        Values between 0-1 are accepted, 0 being 0% power and 1 being maximum power.
+        """
+        self.defaultTranslationMultiplier = newDefSpeed
+
+    """
+    MISC
+    """
+    # Left Bumper
+    def getLeftBumperMode(self) -> MultiplierOptions:
+        """
+        Gets the left bumper mode.
+
+        This isn't ran through any code, but rather used for other commands to properly configure.
+        """
+        return self.leftBumperMode
+    
+    def setLeftBumperMode(self, mode: MultiplierOptions) -> None:
+        """
+        Sets the left bumper mode.
+
+        This isn't ran through any code, but rather used for other commands to properly configure.
+        """
+        self.leftBumperMode = mode
+
+    def getLeftBumperFactor(self) -> float:
+        """
+        Gets the left bumper factor.
+
+        This isn't ran through any code, but rather used for other commands to properly configure.
+        """
+        return self.leftBumperFactor
+    
+    def setLeftBumperFactor(self, factor: float) -> None:
+        """
+        Sets the left bumper factor.
+
+        This isn't ran through any code, but rather used for other commands to properly configure.
+        """
+        self.leftBumperFactor = factor
+
+    # Right Bumper
+    def getRightBumperMode(self) -> MultiplierOptions:
+        """
+        Gets the right bumper mode.
+
+        This isn't ran through any code, but rather used for other commands to properly configure.
+        """
+        return self.rightBumperMode
+    
+    def setRightBumperMode(self, mode: MultiplierOptions) -> None:
+        """
+        Sets the right bumper mode.
+
+        This isn't ran through any code, but rather used for other commands to properly configure.
+        """
+        self.rightBumperMode = mode
+
+    def getRightBumperFactor(self) -> float:
+        """
+        Gets the right bumper factor.
+
+        This isn't ran through any code, but rather used for other commands to properly configure.
+        """
+        return self.rightBumperFactor
+    
+    def setRightBumperFactor(self, factor: float) -> None:
+        """
+        Sets the right bumper factor.
+
+        This isn't ran through any code, but rather used for other commands to properly configure.
+        """
+        self.rightBumperFactor = factor
+
+    # Left Trigger
+    def getLeftTriggerMode(self) -> MultiplierOptions:
+        """
+        Gets the left trigger mode.
+
+        This isn't ran through any code, but rather used for other commands to properly configure.
+        """
+        return self.leftTriggerMode
+    
+    def setLeftTriggerMode(self, mode: MultiplierOptions) -> None:
+        """
+        Sets the left trigger mode.
+
+        This isn't ran through any code, but rather used for other commands to properly configure.
+        """
+        self.leftTriggerMode = mode
+
+    def getLeftTriggerOption(self) -> TriggerOptions:
+        """
+        Gets the left trigger option.
+
+        This isn't ran through any code, but rather used for other commands to properly configure.
+        """
+        return self.leftTriggerOption
+    
+    def setLeftTriggerOption(self, option: TriggerOptions):
+        """
+        Sets the left trigger option.
+
+        This isn't ran through any code, but rather used for other commands to properly configure.
+        """
+        self.leftTriggerOption = option
+
+    # Right Trigger
+    def getRightTriggerMode(self) -> MultiplierOptions:
+        """
+        Gets the right trigger mode.
+
+        This isn't ran through any code, but rather used for other commands to properly configure.
+        """
+        return self.rightTriggerMode
+    
+    def setRightTriggerMode(self, mode: MultiplierOptions) -> None:
+        """
+        Sets the right trigger mode.
+
+        This isn't ran through any code, but rather used for other commands to properly configure.
+        """
+        self.rightTriggerMode = mode
+
+    def getRightTriggerOption(self) -> TriggerOptions:
+        """
+        Gets the right trigger option.
+
+        This isn't ran through any code, but rather used for other commands to properly configure.
+        """
+        return self.rightTriggerOption
+    
+    def setRightTriggerOption(self, option: TriggerOptions) -> None:
+        """
+        Sets the right trigger option.
+
+        This isn't ran through any code, but rather used for other commands to properly configure.
+        """
+        self.rightTriggerOption = option
