@@ -7,6 +7,46 @@ from subsystems.swerve_drive import SwerveDrive
 # "kLeftBumperOption": BumperOptions.SPEED, "kLeftBumperFactor": 0.5, "kRightBumperOption": BumperOptions.SPEED, "kRightBumperFactor": 0.5, 
 # "kLeftTriggerOption": TriggerOptions.NONE, "kRightTriggerOption": TriggerOptions.NONE}
 
+"""
+Profile Options:
+
+A. TRANSLATING (probably tuple) | Def: (True, False, False)
+    1. Left Joystick
+    2. Right Joystick
+    3. DPad
+
+B. ROTATING (tuple) | Def: (False, True, False, False)
+    1. Left Joystick
+    2. Right Joystick
+    3. DPad
+    4. L/R Bumpers
+
+C. MULTIPLIER MANIPS (Good luck)
+    a. Toggles
+        1. A,B,X,Y Buttons
+        2. LR Bumpers
+        3. LR Triggers
+        4. Back Buttons (may not work, due to pain to sim e.g i don't have them so it's on the "maybe" list.)
+        5: Up Down Left Right D-PAD
+    b. Analog
+        1. LR Triggers
+    c. Dialable (aka press multiple times to increase, press multiple times to decrease)
+        1. DPad
+        2. LR Bumpers
+        3. LR Triggers
+
+D. MULTIPLIER FACTORS (how much we change them when ____)
+    a. Set Modes
+        1. When pressed, x. When released, y
+        2. Toggle to x or y
+        3. Toggle increase by z, limit x <= z <= y
+    b. Analog (Triggers)
+        1. When pressed, slowly go from x to y
+        2. When pressed, set to x. Else, set to y
+    c. Misc
+        1. If button 1 pressed, x, if both pressed, y, else z
+"""
+
 class DriverProfiles(Enum):
     DEFAULT = {"defSpeedMultiplier": 1.0, "defTranslationMultiplier": 1.0, "defRotationMultiplier": 1.0, 
                "kLeftBumperOption": MultiplierOptions.SPEED, "kLeftBumperFactor": 0.5, "kRightBumperOption": MultiplierOptions.SPEED, "kRightBumperFactor": 0.5, 
