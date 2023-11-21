@@ -21,6 +21,13 @@
       "/SmartDashboard/Autonomous Code": "String Chooser",
       "/SmartDashboard/Profile": "String Chooser",
       "/SmartDashboard/Selected Driver Profile": "String Chooser"
+    },
+    "windows": {
+      "/SmartDashboard/Profile": {
+        "window": {
+          "visible": true
+        }
+      }
     }
   },
   "NetworkTables": {
@@ -33,6 +40,9 @@
     "precision": 3,
     "transitory": {
       "SmartDashboard": {
+        "Profile": {
+          "open": true
+        },
         "open": true
       }
     }

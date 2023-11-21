@@ -13,7 +13,10 @@ class DriverProfiles(Enum):
                "kLeftTriggerOption": TriggerOptions.NONE, "kLeftTriggerMode": MultiplierOptions.NONE, 
                "kRightTriggerOption": TriggerOptions.NONE, "kRightTriggerMode": MultiplierOptions.NONE}
     
-    DEFAULT_SLOW_BUMPER_SPEEDUP = {"defSpeedMultiplier": 0.25, "defTranslationMultiplier": 1.0, "defRotationMultiplier": 1.0, "kBumperFactor": 2.0}
+    DEFAULT_SLOW_BUMPER_SPEEDUP = {"defSpeedMultiplier": 0.25, "defTranslationMultiplier": 1.0, "defRotationMultiplier": 1.0,
+                                   "kLeftBumperOption": MultiplierOptions.SPEED, "kLeftBumperFactor": 2.0, "kRightBumperOption": MultiplierOptions.SPEED, "kRightBumperFactor": 2.0,
+                                   "kLeftTriggerOption": TriggerOptions.NONE, "kLeftTriggerMode": MultiplierOptions.NONE, 
+                                    "kRightTriggerOption": TriggerOptions.NONE, "kRightTriggerMode": MultiplierOptions.NONE}
 
 class SetDriverProfile(commands2.CommandBase):
 

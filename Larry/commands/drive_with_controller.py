@@ -7,7 +7,6 @@ import wpilib
 from subsystems.swerve_drive import SwerveDrive
 from frc6343.controller.deadband import deadband
 
-
 class DriveWithController(commands2.CommandBase):
     def __init__(self, swerveDrive: SwerveDrive, 
                 x: typing.Callable[[], float], y: typing.Callable[[], float],rightx: typing.Callable[[], float],
@@ -91,9 +90,9 @@ def setMultiplierFromOption(swerve: SwerveDrive, option: MultiplierOptions, fact
         case MultiplierOptions.ROTATION:
             swerve.setRotationMultiplier(swerve.getDefaultRotationMultiplier() * factor)
         case MultiplierOptions.TRANSLATION:
-            swerve.setTranslationMultiplier(swerve.getDefaultRotationMultiplier() * factor)
+            swerve.setTranslationMultiplier(swerve.getDefaultTranslationMultiplier() * factor)
         case MultiplierOptions.SPEED:
-            swerve.setSpeedMultiplier(swerve.getDefaultRotationMultiplier() * factor)
+            swerve.setSpeedMultiplier(swerve.getDefaultSpeedMultiplier() * factor)
 
 def setMultiplierFromTriggerOption(swerve: SwerveDrive, multOption: MultiplierOptions, option: TriggerOptions, trigger: float) -> None:
     match option:
