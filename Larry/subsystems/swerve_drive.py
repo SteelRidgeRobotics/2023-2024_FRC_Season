@@ -1,9 +1,9 @@
 import math
 
-from constants import MultiplierOptions, TriggerOptions
 import commands2
 import constants
 import ctre
+from ctre.sensors import CANCoder
 import wpilib
 import navx
 from subsystems.swerve_wheel import SwerveWheel
@@ -46,10 +46,10 @@ class SwerveDrive(commands2.SubsystemBase):
         self.rightRearDirection.setInverted(False)
 
         # init CAN coders
-        self.flCANcoder = ctre.CANCoder(constants.kflCANcoderID)
-        self.rlCANcoder = ctre.CANCoder(constants.krlCANcoderID)
-        self.frCANcoder = ctre.CANCoder(constants.kfrCANcoderID)
-        self.rrCANcoder = ctre.CANCoder(constants.krrCANcoderID)
+        self.flCANcoder = CANCoder(constants.kflCANcoderID)
+        self.rlCANcoder = CANCoder(constants.krlCANcoderID)
+        self.frCANcoder = CANCoder(constants.kfrCANcoderID)
+        self.rrCANcoder = CANCoder(constants.krrCANcoderID)
 
         # init swerve modules
         self.leftFrontSwerveModule = SwerveWheel(self.leftFrontDirection, self.leftFrontSpeed, self.flCANcoder, constants.kflCANoffset, 0.0)
@@ -63,16 +63,9 @@ class SwerveDrive(commands2.SubsystemBase):
         self.PDP = wpilib.PowerDistribution(0, wpilib.PowerDistribution.ModuleType.kCTRE)
 
         # Movement modifiers
-        self.speedMultiplier = self.defaultSpeedMultiplier = constants.kDefaultSpeedMultplier
-        self.rotationMultiplier = self.defaultRotationMultiplier = constants.kDefaultRotationMultiplier
-        self.translationMultiplier = self.defaultTranslationMultiplier = constants.kDefaultTranslationMultiplier
-
-        # Driving profle options
-        self.leftBumperMode = self.rightBumperMode = MultiplierOptions.NONE
-        self.leftBumperFactor = self.rightBumperFactor = 1.0
-
-        self.leftTriggerMode = self.rightTriggerMode = MultiplierOptions.NONE
-        self.leftTriggerOption = self.rightTriggerOption = TriggerOptions.NONE
+        self.speedMultiplier = constants.kDefaultSpeedMultplier
+        self.rotationMultiplier = constants.kDefaultRotationMultiplier
+        self.translationMultiplier = constants.kDefaultTranslationMultiplier
 
     def turnWheel(self, module: SwerveWheel, direction: float, magnitude: float, 
                   applySpeedMultiplier: bool=False) -> None:
@@ -387,138 +380,3 @@ class SwerveDrive(commands2.SubsystemBase):
         Values between 0-1 are accepted, 0 being 0% power and 1 being maximum power.
         """
         self.defaultTranslationMultiplier = newDefSpeed
-
-    """
-    MISC
-    """
-    # Left Bumper
-    def getLeftBumperMode(self) -> MultiplierOptions:
-        """
-        Gets the left bumper mode.
-
-        This isn't ran through any code, but rather used for other commands to properly configure.
-        """
-        return self.leftBumperMode
-    
-    def setLeftBumperMode(self, mode: MultiplierOptions) -> None:
-        """
-        Sets the left bumper mode.
-
-        This isn't ran through any code, but rather used for other commands to properly configure.
-        """
-        self.leftBumperMode = mode
-
-    def getLeftBumperFactor(self) -> float:
-        """
-        Gets the left bumper factor.
-
-        This isn't ran through any code, but rather used for other commands to properly configure.
-        """
-        return self.leftBumperFactor
-    
-    def setLeftBumperFactor(self, factor: float) -> None:
-        """
-        Sets the left bumper factor.
-
-        This isn't ran through any code, but rather used for other commands to properly configure.
-        """
-        self.leftBumperFactor = factor
-
-    # Right Bumper
-    def getRightBumperMode(self) -> MultiplierOptions:
-        """
-        Gets the right bumper mode.
-
-        This isn't ran through any code, but rather used for other commands to properly configure.
-        """
-        return self.rightBumperMode
-    
-    def setRightBumperMode(self, mode: MultiplierOptions) -> None:
-        """
-        Sets the right bumper mode.
-
-        This isn't ran through any code, but rather used for other commands to properly configure.
-        """
-        self.rightBumperMode = mode
-
-    def getRightBumperFactor(self) -> float:
-        """
-        Gets the right bumper factor.
-
-        This isn't ran through any code, but rather used for other commands to properly configure.
-        """
-        return self.rightBumperFactor
-    
-    def setRightBumperFactor(self, factor: float) -> None:
-        """
-        Sets the right bumper factor.
-
-        This isn't ran through any code, but rather used for other commands to properly configure.
-        """
-        self.rightBumperFactor = factor
-
-    # Left Trigger
-    def getLeftTriggerMode(self) -> MultiplierOptions:
-        """
-        Gets the left trigger mode.
-
-        This isn't ran through any code, but rather used for other commands to properly configure.
-        """
-        return self.leftTriggerMode
-    
-    def setLeftTriggerMode(self, mode: MultiplierOptions) -> None:
-        """
-        Sets the left trigger mode.
-
-        This isn't ran through any code, but rather used for other commands to properly configure.
-        """
-        self.leftTriggerMode = mode
-
-    def getLeftTriggerOption(self) -> TriggerOptions:
-        """
-        Gets the left trigger option.
-
-        This isn't ran through any code, but rather used for other commands to properly configure.
-        """
-        return self.leftTriggerOption
-    
-    def setLeftTriggerOption(self, option: TriggerOptions):
-        """
-        Sets the left trigger option.
-
-        This isn't ran through any code, but rather used for other commands to properly configure.
-        """
-        self.leftTriggerOption = option
-
-    # Right Trigger
-    def getRightTriggerMode(self) -> MultiplierOptions:
-        """
-        Gets the right trigger mode.
-
-        This isn't ran through any code, but rather used for other commands to properly configure.
-        """
-        return self.rightTriggerMode
-    
-    def setRightTriggerMode(self, mode: MultiplierOptions) -> None:
-        """
-        Sets the right trigger mode.
-
-        This isn't ran through any code, but rather used for other commands to properly configure.
-        """
-        self.rightTriggerMode = mode
-
-    def getRightTriggerOption(self) -> TriggerOptions:
-        """
-        Gets the right trigger option.
-
-        This isn't ran through any code, but rather used for other commands to properly configure.
-        """
-        return self.rightTriggerOption
-    
-    def setRightTriggerOption(self, option: TriggerOptions) -> None:
-        """
-        Sets the right trigger option.
-
-        This isn't ran through any code, but rather used for other commands to properly configure.
-        """
-        self.rightTriggerOption = option

@@ -1,5 +1,3 @@
-from enum import Enum
-
 """
 CONSTANTS
 """
@@ -12,23 +10,6 @@ kDebug = True # Turns off some temporary SmartDashboard values (basically if we 
 kDefaultSpeedMultplier = 1.0
 kDefaultTranslationMultiplier = 1.0
 kDefaultRotationMultiplier = 1.0
-
-# Driving Profile Enums
-class MultiplierOptions(Enum):
-    NONE = 0
-    SPEED = 1
-    ROTATION = 2
-    TRANSLATION = 3
-
-class TriggerOptions(Enum):
-    NONE = 0
-    ANALOG_1_2 = 2
-    ANALOG_0_1 = 1
-    ANALOG_0_05 = 0.5
-    ANALOG_0_025 = 0.25
-    SET_2 = 2
-    SET_05 = 0.5
-    SET_025 = 0.25
 
 # Motors
 kleftFrontSpeedID = 0

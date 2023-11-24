@@ -30,11 +30,15 @@ class MyRobot(commands2.TimedCommandRobot):
         if self.autoCommand:
             self.autoCommand.cancel()
 
-        self.profile = self.container.getDriverProfile()
-        self.profile.schedule()
+        self.drivingMode = self.container.getDrivingMode()
+        self.container.getSwerveDrive().setDefaultCommand(self.drivingMode)
         
     def teleopPeriodic(self):
-        pass
+        if self.drivingMode != self.container.getDrivingMode():
+            self.container.getSwerveDrive().removeDefaultCommand()
+            self.container.getSwerveDrive().setDefaultCommand(self.container.getDrivingMode())
+            
+            self.drivingMode = self.container.getDrivingMode()
 
     def testInit(self):
 
