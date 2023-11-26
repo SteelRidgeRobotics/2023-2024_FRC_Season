@@ -2,7 +2,10 @@ from components.swerve_wheel import SwerveWheel
 from constants import *
 import math
 import navx
-from wpilib import SmartDashboard, RobotBase
+import pathplannerlib
+from wpilib import SmartDashboard
+from wpimath.kinematics import SwerveDrive4Kinematics, SwerveDrive4Odometry, SwerveModulePosition
+from wpimath.geometry import Translation2d, Pose2d, Rotation2d
 
 class SwerveDrive:
     front_left: SwerveWheel
@@ -24,7 +27,20 @@ class SwerveDrive:
         """
         This function is automatically called after the components have been injected.
         """
-        pass
+        # Kinematics
+        self.front_left_pose = Translation2d(0.381, 0.381)
+        self.front_right_pose = Translation2d(0.381, -0.381)
+        self.rear_left_pose = Translation2d(-0.381, 0.381)
+        self.rear_right_pose = Translation2d(-0.381, -0.381)
+        self.kinematics = SwerveDrive4Kinematics(self.front_left_pose, self.front_right_pose, self.rear_left_pose, self.rear_right_pose)
+
+        # Odometry
+        self.odometry = SwerveDrive4Odometry(self.kinematics, Rotation2d(math.radians(self.getPitch())), 
+                                             (SwerveModulePosition(self.front_left.getDirectionMotorPos()), 
+                                              SwerveModulePosition(self.front_right.getDirectionMotorPos()), 
+                                              SwerveModulePosition(self.rear_left.getDirectionMotorPos()), 
+                                              SwerveModulePosition(self.rear_right.getDirectionMotorPos())),
+                                            Pose2d(x=0, y=0, angle=0))
     
     """
     CONTROL METHODS
@@ -48,6 +64,20 @@ class SwerveDrive:
 
     def setSpeedMultiplier(self, multiplier: float) -> None:
         self.speedMultiplier = multiplier
+
+    def getPitch(self) -> float:
+        return self.navX.getYaw()
+
+    """
+    INFO STUFF(?)
+    yeah idk tbh
+    """
+    def updateOdometry(self) -> None:
+        self.odometry.update(Rotation2d(math.radians(self.navX_sim.getDouble("Pitch").get())),
+                            SwerveModulePosition(self.front_left.getDirectionMotorPos()), 
+                            SwerveModulePosition(self.front_right.getDirectionMotorPos()), 
+                            SwerveModulePosition(self.rear_left.getDirectionMotorPos()), 
+                            SwerveModulePosition(self.rear_right.getDirectionMotorPos()))
 
     """
     EXECUTE

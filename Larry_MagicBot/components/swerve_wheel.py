@@ -1,8 +1,9 @@
 from constants import *
 from ctre import FeedbackDevice, NeutralMode, TalonFX, TalonFXControlMode
-from ctre.sensors import CANCoder, SensorInitializationStrategy
+from ctre.sensors import CANCoder, CANCoderSimCollection, SensorInitializationStrategy
 from math import fabs
 import wpilib
+from wpimath.system.plant import DCMotor
 
 class SwerveWheel:
     speed_motor: TalonFX
@@ -63,6 +64,9 @@ class SwerveWheel:
         self.cancoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition, ktimeoutMs)
         self.cancoder.configSensorDirection(True, ktimeoutMs)
 
+        # Sim CANCoder
+        self.cancoder_sim = CANCoderSimCollection(self.cancoder)
+
         self.directionTargetPos = 0.0
         self.directionTargetAngle = 0.0
         self.isInverted = False
@@ -93,6 +97,9 @@ class SwerveWheel:
             wpilib.SmartDashboard.putNumber(str(self.speed_motor.getDeviceID()) + " Mag", 0)
 
         self.stopped = True
+    
+    def getDirectionMotorPos(self) -> None:
+        return self.speed_motor.getSelectedSensorPosition() / ksteeringGearRatio
 
     """
     EXECUTE

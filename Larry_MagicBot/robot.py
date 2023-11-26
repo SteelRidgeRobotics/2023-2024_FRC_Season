@@ -7,6 +7,9 @@ from frc6343.controller.deadband import deadband
 import magicbot
 import navx
 import wpilib
+from wpilib import SmartDashboard
+from wpilib.simulation import FlywheelSim
+from wpimath.system.plant import DCMotor
 
 class Larry(magicbot.MagicRobot):
     swerve_drive: SwerveDrive
@@ -39,7 +42,12 @@ class Larry(magicbot.MagicRobot):
 
         # Swerve Drive
         self.navX = navx.AHRS.create_spi()
-        
+
+        # Field
+        if not self.isReal():
+            self.field2d = wpilib.Field2d()
+            SmartDashboard.putData("Field", self.field2d)
+
 
     def teleopInit(self):
         self.driver_controller = wpilib.XboxController(0)
@@ -64,6 +72,19 @@ class Larry(magicbot.MagicRobot):
         self.swerve_drive.setTranslationX(left_joy_x)
         self.swerve_drive.setTranslationY(left_joy_y)
         self.swerve_drive.setRotationX(right_joy_x)
+
+    def robotPeriodic(self) -> None:
+        super().robotPeriodic()
+
+        
+        if not self.isReal():
+            # Simulation stuff
+            # Update Swerve Drive Odometry
+            self.swerve_drive.updateOdometry()
+
+            # TODO: UPDATE FIELD ENCODERS
+            self.field2d.setRobotPose(self.swerve_drive.odometry.getPose())
+            SmartDashboard.putData("Field", self.field2d)
 
 if __name__ == "__main__":
     wpilib.run(Larry)
