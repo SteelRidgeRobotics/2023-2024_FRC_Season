@@ -27,3 +27,7 @@ This robot uses a single RoboRIO 2 as the only robot controller.
 
 The OpenMesh radio is connected directly to the RoboRIO 2 through an Ethernet cable. The radio is powered from the
 VRM's 12V, 2A output which is connected to the DC barrel connector on the radio.
+
+## Crimp Inspection Log
+
+The crimp inspections on this robot are undocumented.
