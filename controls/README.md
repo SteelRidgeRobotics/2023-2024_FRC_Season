@@ -1,3 +1,4 @@
 # Controls Projects
 
-This directory contains the controls projects and documantation.
+This directory contains the controls projects and documentation.
+
