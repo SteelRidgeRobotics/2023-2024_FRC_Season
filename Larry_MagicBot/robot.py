@@ -33,7 +33,7 @@ class Larry(magicbot.MagicRobot):
         self.rear_left_speed_motor = TalonFX(kleftRearSpeedID)
         self.rear_left_direction_motor = TalonFX(kleftRearDirectionID)
         self.rear_left_cancoder = CANCoder(krlCANcoderID)
-        self.rear_left_cancoder.configMagnetOffset(krlCANcoderID)
+        self.rear_left_cancoder.configMagnetOffset(krlCANoffset)
 
         self.rear_right_speed_motor = TalonFX(krightRearSpeedID)
         self.rear_right_direction_motor = TalonFX(krightRearDirectionID)
