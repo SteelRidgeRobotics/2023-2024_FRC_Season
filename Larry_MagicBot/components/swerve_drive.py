@@ -41,6 +41,9 @@ class SwerveDrive:
                                               SwerveModulePosition(self.rear_left.getDirectionMotorPos()), 
                                               SwerveModulePosition(self.rear_right.getDirectionMotorPos())),
                                             Pose2d(x=0, y=0, angle=0))
+        
+        self.front_right.speed_motor.setInverted(True)
+        self.rear_right.speed_motor.setInverted(True)
     
     """
     CONTROL METHODS
@@ -73,7 +76,7 @@ class SwerveDrive:
     yeah idk tbh
     """
     def updateOdometry(self) -> None:
-        self.odometry.update(Rotation2d(math.radians(self.navX_sim.getDouble("Pitch").get())),
+        self.odometry.update(Rotation2d(math.radians(self.navX.getPitch())),
                             SwerveModulePosition(self.front_left.getDirectionMotorPos()), 
                             SwerveModulePosition(self.front_right.getDirectionMotorPos()), 
                             SwerveModulePosition(self.rear_left.getDirectionMotorPos()), 
@@ -153,3 +156,5 @@ class SwerveDrive:
 
         self.rear_right.setDesiredSpeed(bottomRight[0])
         self.rear_right.setDesiredAngle(bottomRight[1])
+
+        SmartDashboard.putNumber("Robot Angle", self.getPitch())
