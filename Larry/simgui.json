@@ -23,6 +23,11 @@
       "/SmartDashboard/Selected Driver Profile": "String Chooser"
     },
     "windows": {
+      "/SmartDashboard/Auto": {
+        "window": {
+          "visible": true
+        }
+      },
       "/SmartDashboard/Profile": {
         "window": {
           "visible": true

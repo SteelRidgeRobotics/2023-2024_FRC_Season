@@ -1,3 +1,4 @@
+from pathplannerlib import PathConstraints
 """
 CONSTANTS
 """
@@ -5,6 +6,13 @@ CONSTANTS
 # Options
 kUsingGuitarController = False
 kDebug = True # Turns off some temporary SmartDashboard values (basically if we dont want to clutter up things ;))
+
+# Larry stats (for ease of access and path tracing)
+#klarryMaxSpeed = 
+#klarryMaxAcceleration = 
+
+# PathPlanner options
+kdefaultPathConstraints = PathConstraints(4.0, 3.0)
 
 # Multipliers
 kDefaultSpeedMultplier = 1.0

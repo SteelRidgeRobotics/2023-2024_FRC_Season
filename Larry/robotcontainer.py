@@ -7,6 +7,7 @@ from frc6343.controller.guitar.guitar import Guitar
 from commands.drive_with_controller import DriveControllerDefault, DriveControllerDefaultSlow, DriveControllerWyatt
 from commands.drive_with_guitar import DriveWithGuitar
 from commands.charge_station import ChargeStation
+from commands.follow_path import FollowPath
 from subsystems.swerve_drive import SwerveDrive
 
 class RobotContainer:
@@ -24,6 +25,7 @@ class RobotContainer:
 
         # Add commands to auto command chooser
         self.autoChooser.addOption("Charge Station", ChargeStation(self.swerveDrive))
+        self.autoChooser.addOption("PathPlanner Test 1", FollowPath(self.swerveDrive, "Test 1"))
 
         wpilib.SmartDashboard.putData("Auto", self.autoChooser)
 
