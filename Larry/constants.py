@@ -8,8 +8,9 @@ kUsingGuitarController = False
 kDebug = True # Turns off some temporary SmartDashboard values (basically if we dont want to clutter up things ;))
 
 # Larry stats (for ease of access and path tracing) (in meters per second, m/s)
-klarryMaxSpeed = 3.658
-#klarryMaxAcceleration = 
+klarryMaxSpeed = 3.658 # m/s
+klarryMaxRotSpeed = 10.43 # rads/s
+#klarryMaxAcceleration = # m/s^2
 
 # PathPlanner options
 kdefaultPathConstraints = PathConstraints(4.0, 3.0)

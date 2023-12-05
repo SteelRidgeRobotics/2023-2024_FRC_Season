@@ -3,7 +3,7 @@ from constants import *
 import math
 from pathplannerlib import PathPlanner
 from subsystems.swerve_drive import SwerveDrive
-from wpilib import Timer
+from wpilib import SmartDashboard, Timer
 
 
 class FollowPath(CommandBase):
@@ -30,14 +30,32 @@ class FollowPath(CommandBase):
 
         self.pathIndex = self.path.sample(self.sampleTime)
 
-         # WARNING: THIS WILL NOT WORK!!! We have to get the speed of each wheel on the robot and convert this value into a value from -1 to 1 magnitude
-         # Calculates angleVel
-        angleVel = self.pathIndex.asWPILibState().curvature * self.pathIndex.asWPILibState().velocity
+        rotationX = self.pathIndex.asWPILibState().curvature * self.pathIndex.asWPILibState().velocity
 
-        # Sets angle value to magnitude for larry
-        # (put something here :p)
+        # Use trig to get translationX and translationY
+        translationMag = self.pathIndex.velocity
+        translationHeading = self.pathIndex.pose.rotation().radians()
+        
+        translationX = math.cos(translationHeading) * translationMag
+        translationY = math.sin(translationHeading) * translationMag
 
-        print("{Time: " + str(round(self.sampleTime, 2)) + ", angleVel: " + str(round(angleVel, 3)) + "}")
+        # Convert to magnitudes
+        rotationX /= klarryMaxRotSpeed
+        translationX /= klarryMaxSpeed
+        translationY /= klarryMaxSpeed
+
+        # Clamp magnitudes
+        rotationX = max(-1, min(1, rotationX))
+        translationX = max(-1, min(1, translationX))
+        translationY = max(-1, min(1, translationY))
+
+        # Send to SwerveDrive
+        self.drive.translateAndTurn(translationX, translationY, rotationX,
+                                    applyTranslationMultiplier=False, applyRotationMultiplier=False, applySpeedModifier=False)
+        
+        SmartDashboard.putNumber("TranslationX", translationX)
+        SmartDashboard.putNumber("TranslationY", translationY)
+        SmartDashboard.putNumber("RotX", rotationX)
 
     def end(self, interrupted: bool) -> None:
         self.drive.stopAllMotors()
