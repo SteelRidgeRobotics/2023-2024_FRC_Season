@@ -140,14 +140,14 @@ class SwerveWheel():
         angleDiff = self.directionTargetAngle - self.getCurrentAngle()
         angleDiff = (angleDiff + 180) % 360 - 180
 
-        slowdownMult = max(0, min(1.0, (-(3.14514 / 11200.6) * (angleDiff ** 2)) + 1))
+        slowdownMult = max(0, min(1.0, (-(3.14514 / 112006) * (angleDiff ** 2)) + 1))
         if not wpilib.RobotBase.isReal() or not slowdownWhenFar:
             slowdownMult = 1
 
-        self.speedMotor.set(ctre.TalonFXControlMode.PercentOutput, input * 1)
+        self.speedMotor.set(ctre.TalonFXControlMode.PercentOutput, input * slowdownMult)
 
         if kDebug:
-            wpilib.SmartDashboard.putNumber(str(self.speedMotor.getDeviceID()) + " Mag", input * 1)
+            wpilib.SmartDashboard.putNumber(str(self.speedMotor.getDeviceID()) + " Mag", input * slowdownMult)
 
     def stopAllMotors(self):
         self.directionMotor.set(ctre.TalonFXControlMode.PercentOutput, 0.0)
