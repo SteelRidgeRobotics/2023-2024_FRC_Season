@@ -52,10 +52,6 @@ class FollowPath(CommandBase):
         # Send to SwerveDrive
         self.drive.translateAndTurn(translationX, translationY, rotationX,
                                     applyTranslationMultiplier=False, applyRotationMultiplier=False, applySpeedModifier=False)
-        
-        SmartDashboard.putNumber("TranslationX", translationX)
-        SmartDashboard.putNumber("TranslationY", translationY)
-        SmartDashboard.putNumber("RotX", rotationX)
 
     def end(self, interrupted: bool) -> None:
         self.drive.stopAllMotors()

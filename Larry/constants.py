@@ -5,7 +5,7 @@ CONSTANTS
 
 # Options
 kUsingGuitarController = False
-kDebug = True # Turns off some temporary SmartDashboard values (basically if we dont want to clutter up things ;))
+kDebug = False # Turns off some temporary SmartDashboard values (basically if we dont want to clutter up things ;))
 
 # Larry stats (for ease of access and path tracing) (in meters per second, m/s)
 klarryMaxSpeed = 3.658 # m/s
