@@ -1,9 +1,8 @@
-# import commands2
+from constants import *
 import ctre
 from ctre.sensors import CANCoder
-import math
-import wpilib
-from constants import *
+from math import fabs
+from wpilib import RobotBase, SmartDashboard
 
 class SwerveWheel():
     def __init__(self, directionMotor: ctre.TalonFX, speedMotor: ctre.TalonFX, 
@@ -81,7 +80,7 @@ class SwerveWheel():
         """
         desiredAngle %= 360 # just making sure ;) (0-359)
 
-        angleDist = math.fabs(desiredAngle - self.directionTargetAngle)
+        angleDist = fabs(desiredAngle - self.directionTargetAngle)
 
         # If the angleDist is more than 90 and less than 270, add 180 to the angle and %= 360 to get oppositeAngle.
         if (angleDist > 90 and angleDist < 270):
@@ -95,7 +94,7 @@ class SwerveWheel():
 
         # Before, to move the motor to the right spot, we would take the angle, convert that into talonFX units, then add (the amount of revolutions * 2048), then multiple everything by the motors gear ratio
         # However, to avoid having to deal with revolution compensation (which caused some issues), we now get the degree change, convert to motor units, then add or subtract depending on the direction we're rotating
-        targetAngleDist = math.fabs(targetAngle - self.directionTargetAngle)
+        targetAngleDist = fabs(targetAngle - self.directionTargetAngle)
 
         # When going from x angle to 0, the robot will try and go "the long way around" to the angle. This just checks to make sure we're actually getting the right distance
         if targetAngleDist > 180:
@@ -121,9 +120,9 @@ class SwerveWheel():
         self.directionTargetAngle = targetAngle
 
         if kDebug:
-            wpilib.SmartDashboard.putNumber(str(self.speedMotor.getDeviceID()) + " dirTargetAngle", self.directionTargetAngle)
-            wpilib.SmartDashboard.putNumber(str(self.speedMotor.getDeviceID()) + " dirTargetPos", self.directionTargetPos)
-            wpilib.SmartDashboard.putBoolean(str(self.speedMotor.getDeviceID()) + " Inverted?", self.isInverted)
+            SmartDashboard.putNumber(str(self.speedMotor.getDeviceID()) + " dirTargetAngle", self.directionTargetAngle)
+            SmartDashboard.putNumber(str(self.speedMotor.getDeviceID()) + " dirTargetPos", self.directionTargetPos)
+            SmartDashboard.putBoolean(str(self.speedMotor.getDeviceID()) + " Inverted?", self.isInverted)
 
         # Now we can actually turn the motor after like 60 lines lmao
         self.directionMotor.set(ctre.TalonFXControlMode.MotionMagic, self.directionTargetPos * ksteeringGearRatio)
@@ -141,13 +140,13 @@ class SwerveWheel():
         angleDiff = (angleDiff + 180) % 360 - 180
 
         slowdownMult = max(0, min(1.0, (-(3.14514 / 112006) * (angleDiff ** 2)) + 1))
-        if not wpilib.RobotBase.isReal() or not slowdownWhenFar:
+        if not RobotBase.isReal() or not slowdownWhenFar:
             slowdownMult = 1
 
         self.speedMotor.set(ctre.TalonFXControlMode.PercentOutput, input * slowdownMult)
 
         if kDebug:
-            wpilib.SmartDashboard.putNumber(str(self.speedMotor.getDeviceID()) + " Mag", input * slowdownMult)
+            SmartDashboard.putNumber(str(self.speedMotor.getDeviceID()) + " Mag", input * slowdownMult)
 
     def stopAllMotors(self):
         self.directionMotor.set(ctre.TalonFXControlMode.PercentOutput, 0.0)
@@ -156,7 +155,7 @@ class SwerveWheel():
 
         # Prevents SmartDashboard desync
         if kDebug:
-            wpilib.SmartDashboard.putNumber(str(self.speedMotor.getDeviceID()) + " Mag", 0)
+            SmartDashboard.putNumber(str(self.speedMotor.getDeviceID()) + " Mag", 0)
 
     def getCurrentAngle(self):
         return (self.directionMotor.getSelectedSensorPosition() / ksteeringGearRatio) * (360 / 2048)

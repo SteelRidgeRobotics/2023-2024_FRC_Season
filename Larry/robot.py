@@ -1,12 +1,8 @@
-import commands2
-import wpilib
-
+from commands2 import CommandScheduler, TimedCommandRobot
 from robotcontainer import RobotContainer
+from wpilib import run
 
-
-# vision setup
-
-class MyRobot(commands2.TimedCommandRobot):
+class MyRobot(TimedCommandRobot):
     def robotInit(self):
 
         self.container = RobotContainer()
@@ -14,7 +10,7 @@ class MyRobot(commands2.TimedCommandRobot):
 
     def robotPeriodic(self):
 
-        commands2.CommandScheduler.getInstance().run()
+        CommandScheduler.getInstance().run()
 
     def autonomousInit(self):
         self.autoCommand = self.container.getAutonomousCommand()
@@ -42,8 +38,8 @@ class MyRobot(commands2.TimedCommandRobot):
 
     def testInit(self):
 
-        commands2.CommandScheduler.getInstance().cancelAll()
+        CommandScheduler.getInstance().cancelAll()
 
 
 if __name__ == "__main__":
-    wpilib.run(MyRobot)
+    run(MyRobot)

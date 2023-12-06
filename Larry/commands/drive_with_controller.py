@@ -1,16 +1,15 @@
-import typing
-
-import commands2
-import constants
-import wpilib
-from subsystems.swerve_drive import SwerveDrive
+from commands2 import CommandBase
+from constants import *
 from frc6343.controller.deadband import deadband
+from subsystems.swerve_drive import SwerveDrive
+from typing import Callable
+from wpilib import SmartDashboard
 
-class DriveControllerDefault(commands2.CommandBase):
+class DriveControllerDefault(CommandBase):
     def __init__(self, swerveDrive: SwerveDrive, 
-                x: typing.Callable[[], float], y: typing.Callable[[], float],rightx: typing.Callable[[], float],
-                leftBumper: typing.Callable[[], bool], rightBumper: typing.Callable[[], bool],
-                decreaseAngleOffset: typing.Callable[[], bool], increaseAngleOffset: typing.Callable[[], bool]) -> None:
+                x: Callable[[], float], y: Callable[[], float],rightx: Callable[[], float],
+                leftBumper: Callable[[], bool], rightBumper: Callable[[], bool],
+                decreaseAngleOffset: Callable[[], bool], increaseAngleOffset: Callable[[], bool]) -> None:
         
         super().__init__()
         self.drive = swerveDrive
@@ -49,9 +48,9 @@ class DriveControllerDefault(commands2.CommandBase):
         else:
             self.drive.setSpeedMultiplier(self.defSpeedMult)
 
-        wpilib.SmartDashboard.putNumber("Rot Mult.", self.drive.getRotationMultiplier())
-        wpilib.SmartDashboard.putNumber("Speed Mult.", self.drive.getSpeedMultiplier())
-        wpilib.SmartDashboard.putNumber("Translation Mult.", self.drive.getTranslationMultiplier())
+        SmartDashboard.putNumber("Rot Mult.", self.drive.getRotationMultiplier())
+        SmartDashboard.putNumber("Speed Mult.", self.drive.getSpeedMultiplier())
+        SmartDashboard.putNumber("Translation Mult.", self.drive.getTranslationMultiplier())
 
         # Angle Offset
         if self.decreaseAngleOffset() and not self.angleDecreasePressed:
@@ -66,9 +65,9 @@ class DriveControllerDefault(commands2.CommandBase):
         elif not self.increaseAngleOffset():
             self.angleIncreasePressed = False
 
-        translationX = deadband(self.x(), constants.kdeadband)
-        translationY = deadband(self.y(), constants.kdeadband)
-        rotationX = deadband(self.rightx(), constants.kdeadband)
+        translationX = deadband(self.x(), kdeadband)
+        translationY = deadband(self.y(), kdeadband)
+        rotationX = deadband(self.rightx(), kdeadband)
 
         self.drive.translateAndTurn(translationX, translationY, rotationX)
 
@@ -78,11 +77,11 @@ class DriveControllerDefault(commands2.CommandBase):
     def isFinished(self) -> bool:
         return True if self.drive.getDefaultCommand() != self else False
     
-class DriveControllerDefaultSlow(commands2.CommandBase):
+class DriveControllerDefaultSlow(CommandBase):
     def __init__(self, swerveDrive: SwerveDrive, 
-                x: typing.Callable[[], float], y: typing.Callable[[], float],rightx: typing.Callable[[], float],
-                leftBumper: typing.Callable[[], bool], rightBumper: typing.Callable[[], bool],
-                decreaseAngleOffset: typing.Callable[[], bool], increaseAngleOffset: typing.Callable[[], bool]) -> None:
+                x: Callable[[], float], y: Callable[[], float],rightx: Callable[[], float],
+                leftBumper: Callable[[], bool], rightBumper: Callable[[], bool],
+                decreaseAngleOffset: Callable[[], bool], increaseAngleOffset: Callable[[], bool]) -> None:
         
         super().__init__()
         self.drive = swerveDrive
@@ -119,9 +118,9 @@ class DriveControllerDefaultSlow(commands2.CommandBase):
         else:
             self.drive.setSpeedMultiplier(self.defSpeedMult)
 
-        wpilib.SmartDashboard.putNumber("Rot Mult.", self.drive.getRotationMultiplier())
-        wpilib.SmartDashboard.putNumber("Speed Mult.", self.drive.getSpeedMultiplier())
-        wpilib.SmartDashboard.putNumber("Translation Mult.", self.drive.getTranslationMultiplier())
+        SmartDashboard.putNumber("Rot Mult.", self.drive.getRotationMultiplier())
+        SmartDashboard.putNumber("Speed Mult.", self.drive.getSpeedMultiplier())
+        SmartDashboard.putNumber("Translation Mult.", self.drive.getTranslationMultiplier())
 
         # Angle Offset
         if self.decreaseAngleOffset() and not self.angleDecreasePressed:
@@ -136,9 +135,9 @@ class DriveControllerDefaultSlow(commands2.CommandBase):
         elif not self.increaseAngleOffset():
             self.angleIncreasePressed = False
 
-        translationX = deadband(self.x(), constants.kdeadband)
-        translationY = deadband(self.y(), constants.kdeadband)
-        rotationX = deadband(self.rightx(), constants.kdeadband)
+        translationX = deadband(self.x(), kdeadband)
+        translationY = deadband(self.y(), kdeadband)
+        rotationX = deadband(self.rightx(), kdeadband)
 
         self.drive.translateAndTurn(translationX, translationY, rotationX)
 
@@ -155,11 +154,11 @@ triggers speed up translational based on how much they're pressed
 
 summary I guess ^^^^^ 
 """
-class DriveControllerWyatt(commands2.CommandBase):
+class DriveControllerWyatt(CommandBase):
     def __init__(self, swerveDrive: SwerveDrive, 
-                x: typing.Callable[[], float], y: typing.Callable[[], float],rightx: typing.Callable[[], float],
-                leftBumper: typing.Callable[[], bool], rightBumper: typing.Callable[[], bool],
-                leftTrigger: typing.Callable[[], float], rightTrigger: typing.Callable[[], float]) -> None:
+                x: Callable[[], float], y: Callable[[], float],rightx: Callable[[], float],
+                leftBumper: Callable[[], bool], rightBumper: Callable[[], bool],
+                leftTrigger: Callable[[], float], rightTrigger: Callable[[], float]) -> None:
         
         super().__init__()
         self.drive = swerveDrive
@@ -192,13 +191,13 @@ class DriveControllerWyatt(commands2.CommandBase):
         maxTrigger = max(self.leftTrigger(), self.rightTrigger())
         self.drive.setTranslationMultiplier(maxTrigger * 0.75 + self.defTranslationMult)
 
-        wpilib.SmartDashboard.putNumber("Rot Mult.", self.drive.getRotationMultiplier())
-        wpilib.SmartDashboard.putNumber("Speed Mult.", self.drive.getSpeedMultiplier())
-        wpilib.SmartDashboard.putNumber("Translation Mult.", self.drive.getTranslationMultiplier())
+        SmartDashboard.putNumber("Rot Mult.", self.drive.getRotationMultiplier())
+        SmartDashboard.putNumber("Speed Mult.", self.drive.getSpeedMultiplier())
+        SmartDashboard.putNumber("Translation Mult.", self.drive.getTranslationMultiplier())
 
-        translationX = deadband(self.x(), constants.kdeadband)
-        translationY = deadband(self.y(), constants.kdeadband)
-        rotationX = deadband(self.rightx(), constants.kdeadband)
+        translationX = deadband(self.x(), kdeadband)
+        translationY = deadband(self.y(), kdeadband)
+        rotationX = deadband(self.rightx(), kdeadband)
 
         self.drive.translateAndTurn(translationX, translationY, rotationX)
 

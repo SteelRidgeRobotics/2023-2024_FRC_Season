@@ -1,9 +1,9 @@
 from commands2 import CommandBase
 from constants import *
-import math
+from math import cos, sin
 from pathplannerlib import PathPlanner
 from subsystems.swerve_drive import SwerveDrive
-from wpilib import SmartDashboard, Timer
+from wpilib import Timer
 
 
 class FollowPath(CommandBase):
@@ -36,8 +36,8 @@ class FollowPath(CommandBase):
         translationMag = self.pathIndex.velocity
         translationHeading = self.pathIndex.pose.rotation().radians()
         
-        translationX = math.cos(translationHeading) * translationMag
-        translationY = math.sin(translationHeading) * translationMag
+        translationX = cos(translationHeading) * translationMag
+        translationY = sin(translationHeading) * translationMag
 
         # Convert to magnitudes
         rotationX /= klarryMaxRotSpeed

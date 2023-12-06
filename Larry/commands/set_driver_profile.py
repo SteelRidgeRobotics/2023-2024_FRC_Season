@@ -1,4 +1,4 @@
-import commands2
+from commands2 import CommandBase
 from enum import Enum
 from constants import MultiplierOptions, TriggerOptions
 from subsystems.swerve_drive import SwerveDrive
@@ -58,7 +58,7 @@ class DriverProfiles(Enum):
                                    "kLeftTriggerOption": TriggerOptions.NONE, "kLeftTriggerMode": MultiplierOptions.NONE, 
                                     "kRightTriggerOption": TriggerOptions.NONE, "kRightTriggerMode": MultiplierOptions.NONE}
 
-class SetDriverProfile(commands2.CommandBase):
+class SetDriverProfile(CommandBase):
 
     def __init__(self, swerveDrive: SwerveDrive, driverProfile: DriverProfiles) -> None:
         super().__init__()

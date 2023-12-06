@@ -1,13 +1,8 @@
-from frc6343.controller.guitar.guitar import Guitar
-import math
-import typing
-
-import commands2
-import constants
-import wpilib
+from commands2 import CommandBase
+from typing import Callable
 from subsystems.swerve_drive import SwerveDrive
 
-class DriveWithGuitar(commands2.CommandBase):
+class DriveWithGuitar(CommandBase):
     """
     Allows driving swerve drive with the guitar controller.
 
@@ -15,12 +10,12 @@ class DriveWithGuitar(commands2.CommandBase):
     """
 
     def __init__(self, swerveDrive: SwerveDrive, 
-                 greenFret: typing.Callable[[], bool], 
-                 redFret: typing.Callable[[], bool], 
-                 yellowFret: typing.Callable[[], bool], 
-                 blueFret: typing.Callable[[], bool],
-                 strumBarDown: typing.Callable[[], bool],
-                 strumBarUp: typing.Callable[[], bool]) -> None:
+                 greenFret: Callable[[], bool], 
+                 redFret: Callable[[], bool], 
+                 yellowFret: Callable[[], bool], 
+                 blueFret: Callable[[], bool],
+                 strumBarDown: Callable[[], bool],
+                 strumBarUp: Callable[[], bool]) -> None:
         
         super().__init__()
         self.drive = swerveDrive
