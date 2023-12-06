@@ -59,6 +59,7 @@ class SwerveDrive(commands2.SubsystemBase):
         self.rightRearSwerveModule = SwerveWheel(self.rightRearDirection, self.rightRearSpeed, self.rrCANcoder, constants.krrCANoffset, 0.0)
 
         self.navX = navx.AHRS.create_spi()
+        self.angleOffset = 0
         
         self.PDP = wpilib.PowerDistribution(0, wpilib.PowerDistribution.ModuleType.kCTRE)
 
@@ -138,9 +139,9 @@ class SwerveDrive(commands2.SubsystemBase):
         if applyRotationMultiplier:
             rotX *= self.rotationMultiplier
 
-        # Field Orientaated Drive (aka complicated math so the robot doesn't rotate while we translate or somthin idrk)
-        temp = translationY * math.cos(self.getYaw() * (math.pi / 180)) + translationX * math.sin(self.getYaw() * (math.pi / 180))
-        translationX = -translationY * math.sin(self.getYaw() * (math.pi / 180)) + translationX * math.cos(self.getYaw() * (math.pi / 180))
+        # Field Orientated Drive (aka complicated math so the robot doesn't rotate while we translate or somthin idrk)
+        temp = translationY * math.cos((self.getYaw() + self.angleOffset) * (math.pi / 180)) + translationX * math.sin((self.getYaw() + self.angleOffset) * (math.pi / 180))
+        translationX = -translationY * math.sin((self.getYaw() + self.angleOffset) * (math.pi / 180)) + translationX * math.cos((self.getYaw() + self.angleOffset) * (math.pi / 180))
         translationY = temp
 
         # FOR FUTURE ROBOTICS PEOPLE: These usually would require the rotX to be multiplied by (robotLength or robotWidth / 2). 
@@ -380,3 +381,14 @@ class SwerveDrive(commands2.SubsystemBase):
         Values between 0-1 are accepted, 0 being 0% power and 1 being maximum power.
         """
         self.defaultTranslationMultiplier = newDefSpeed
+
+    def addToAngleOffset(self, num: float) -> None:
+        """
+        Adds the given number to the current angle offset.
+
+        Angle offset is used when calculating FOD while moving. This provides an easy way to correct incorrect starting gyro angles.
+
+        Angle offset is capped between -180 and 180.
+        """
+        self.angleOffset =  max(min(self.angleOffset + num, 180), -180)
+        wpilib.SmartDashboard.putNumber("Angle Offset", self.angleOffset)
