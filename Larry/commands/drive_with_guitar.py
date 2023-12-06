@@ -34,9 +34,10 @@ class DriveWithGuitar(commands2.CommandBase):
         self.drive.reset()
         self.drive.getPosFromOffState()
 
-    def initialize(self) -> None:
-        
         self.drive.navX.reset()
+
+    def initialize(self) -> None:
+        pass
 
     def execute(self) -> None:
 

@@ -22,10 +22,9 @@ class DriveControllerDefault(commands2.CommandBase):
         self.drive.reset()
         self.drive.getPosFromOffState()
 
-    def initialize(self) -> None:
-        
         self.drive.navX.reset()
 
+    def initialize(self) -> None:
         self.drive.setRotationMultiplier(1)
         self.drive.setTranslationMultiplier(1)
 
