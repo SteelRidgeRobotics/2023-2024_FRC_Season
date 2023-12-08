@@ -9,7 +9,7 @@ kDebug = False # Turns off some temporary SmartDashboard values (basically if we
 
 # Larry stats (for ease of access and path tracing) (in meters per second, m/s)
 klarryMaxSpeed = 3.658 # m/s
-klarryMaxRotSpeed = 10.43 # rads/s
+klarryMaxRotSpeed = 10.47197551198692 # rads/s
 #klarryMaxAcceleration = # m/s^2
 
 # PathPlanner options
@@ -38,7 +38,7 @@ kdeadband = 0.15
 # Encoders
 ktimeoutMs = 10
 kF = 0.05282272  # Feed forward
-kP = 0.3  # Proportional
+kP = 0.6  # Proportional
 kI = 0.004  # Integral
 kD = 2  # Derivative
 kIzone = 150

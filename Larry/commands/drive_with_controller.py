@@ -36,6 +36,8 @@ class DriveControllerDefault(CommandBase):
 
         self.angleDecreasePressed = self.angleIncreasePressed = False
 
+        self.drive.navX.reset()
+
     def execute(self) -> None:
         
         # Bumpers

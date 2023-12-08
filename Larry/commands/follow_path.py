@@ -23,6 +23,8 @@ class FollowPath(CommandBase):
     def initialize(self) -> None:
         self.startTime = Timer.getFPGATimestamp()
 
+        self.drive.navX.reset()
+
     def execute(self) -> None:
         currentTime = Timer.getFPGATimestamp()
 
@@ -36,8 +38,8 @@ class FollowPath(CommandBase):
         translationMag = self.pathIndex.velocity
         translationHeading = self.pathIndex.pose.rotation().radians()
         
-        translationX = cos(translationHeading) * translationMag
-        translationY = sin(translationHeading) * translationMag
+        translationX = sin(translationHeading) * -translationMag
+        translationY = cos(translationHeading) * -translationMag
 
         # Convert to magnitudes
         rotationX /= klarryMaxRotSpeed
@@ -50,7 +52,7 @@ class FollowPath(CommandBase):
         translationY = max(-1, min(1, translationY))
 
         # Send to SwerveDrive
-        self.drive.translateAndTurn(translationX, translationY, rotationX,
+        self.drive.translateAndTurn(translationX, translationY, 0,
                                     applyTranslationMultiplier=False, applyRotationMultiplier=False, applySpeedModifier=False)
 
     def end(self, interrupted: bool) -> None:
