@@ -25,7 +25,6 @@ class RobotContainer:
         self.autoChooser.addOption("Charge Station", ChargeStation(self.swerveDrive))
         self.autoChooser.addOption("PathPlanner Test 1", FollowPath(self.swerveDrive, "Test 1", pathConstraints=PathConstraints(1.0, 3.0), isReversed=True))
         self.autoChooser.addOption("PathPlanner Test 2", FollowPath(self.swerveDrive, "Test 2", pathConstraints=PathConstraints(1.0, 3.0)))
-        self.autoChooser.addOption("PathPlanner Test 2 (reversed)", FollowPath(self.swerveDrive, "Test 2", pathConstraints=PathConstraints(1.0, 3.0), isReversed=True))
 
         SmartDashboard.putData("Auto", self.autoChooser)
 
