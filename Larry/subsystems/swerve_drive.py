@@ -53,10 +53,10 @@ class SwerveDrive(SubsystemBase):
         self.rrCANcoder = CANCoder(krrCANcoderID)
 
         # init swerve modules
-        self.leftFrontSwerveModule = SwerveWheel(self.leftFrontDirection, self.leftFrontSpeed, self.flCANcoder, kflCANoffset, 0.0)
-        self.leftRearSwerveModule = SwerveWheel(self.leftRearDirection, self.leftRearSpeed, self.rlCANcoder, krlCANoffset, 0.0)
-        self.rightFrontSwerveModule = SwerveWheel(self.rightFrontDirection, self.rightFrontSpeed, self.frCANcoder, kfrCANoffset, 0.0)
-        self.rightRearSwerveModule = SwerveWheel(self.rightRearDirection, self.rightRearSpeed, self.rrCANcoder, krrCANoffset, 0.0)
+        self.leftFrontWheel = SwerveWheel(self.leftFrontDirection, self.leftFrontSpeed, self.flCANcoder, kflCANoffset, 0.0)
+        self.leftRearWheel = SwerveWheel(self.leftRearDirection, self.leftRearSpeed, self.rlCANcoder, krlCANoffset, 0.0)
+        self.rightFrontWheel = SwerveWheel(self.rightFrontDirection, self.rightFrontSpeed, self.frCANcoder, kfrCANoffset, 0.0)
+        self.rightRearWheel = SwerveWheel(self.rightRearDirection, self.rightRearSpeed, self.rrCANcoder, krrCANoffset, 0.0)
 
         self.navX = navx.AHRS.create_spi()
         self.angleOffset = 0
@@ -70,8 +70,8 @@ class SwerveDrive(SubsystemBase):
         self.kinematics = SwerveDrive4Kinematics(self.leftFrontPosition, self.rightFrontPosition, self.leftRearPosition, self.rightRearPosition)
 
         self.odometry = SwerveDrive4Odometry(self.kinematics, Rotation2d.fromDegrees(self.getYaw()),
-                                             (self.leftFrontSwerveModule.getPosition(), self.rightFrontSwerveModule.getPosition(),
-                                              self.leftRearSwerveModule.getPosition(), self.rightRearSwerveModule.getPosition()))
+                                             (self.leftFrontWheel.getPosition(), self.rightFrontWheel.getPosition(),
+                                              self.leftRearWheel.getPosition(), self.rightRearWheel.getPosition()))
         
         self.PDP = PowerDistribution(0, PowerDistribution.ModuleType.kCTRE)
 
@@ -121,10 +121,10 @@ class SwerveDrive(SubsystemBase):
         if applySpeedMultiplier:
             magnitude *= self.speedMultiplier
 
-        self.turnWheel(self.leftFrontSwerveModule, direction, magnitude)
-        self.turnWheel(self.leftRearSwerveModule, direction, magnitude)
-        self.turnWheel(self.rightFrontSwerveModule, direction, magnitude)
-        self.turnWheel(self.rightRearSwerveModule, direction, magnitude)
+        self.turnWheel(self.leftFrontWheel, direction, magnitude)
+        self.turnWheel(self.leftRearWheel, direction, magnitude)
+        self.turnWheel(self.rightFrontWheel, direction, magnitude)
+        self.turnWheel(self.rightRearWheel, direction, magnitude)
 
     def translateAndTurn(self, translationX: float, translationY: float, rotX: float, 
                          applyTranslationMultiplier: bool=True, applyRotationMultiplier: bool=True, applySpeedModifier: bool=True) -> None:
@@ -192,10 +192,10 @@ class SwerveDrive(SubsystemBase):
             bottomRight[0] /= highestSpeed
 
         if RobotBase.isReal() and kDebug:
-            SmartDashboard.putNumber("topRightRealAngle", self.rightFrontSwerveModule.getCurrentAngle() % 360)
-            SmartDashboard.putNumber("topLeftRealAngle", self.leftFrontSwerveModule.getCurrentAngle() % 360)
-            SmartDashboard.putNumber("bottomLeftRealAngle", self.leftRearSwerveModule.getCurrentAngle() % 360)
-            SmartDashboard.putNumber("bottomRightRealAngle", self.rightRearSwerveModule.getCurrentAngle() % 360)
+            SmartDashboard.putNumber("topRightRealAngle", self.rightFrontWheel.getCurrentAngle() % 360)
+            SmartDashboard.putNumber("topLeftRealAngle", self.leftFrontWheel.getCurrentAngle() % 360)
+            SmartDashboard.putNumber("bottomLeftRealAngle", self.leftRearWheel.getCurrentAngle() % 360)
+            SmartDashboard.putNumber("bottomRightRealAngle", self.rightRearWheel.getCurrentAngle() % 360)
         
         # Stops robot from moving while no controller values are being returned
         if translationX == 0 and translationY == 0 and rotX == 0:
@@ -210,10 +210,10 @@ class SwerveDrive(SubsystemBase):
             bottomRight[0] *= self.speedMultiplier
 
         # Turn wheels :D
-        self.turnWheel(self.leftFrontSwerveModule, topLeft[1], topLeft[0])
-        self.turnWheel(self.rightFrontSwerveModule, topRight[1], topRight[0])
-        self.turnWheel(self.leftRearSwerveModule, bottomLeft[1], bottomLeft[0])
-        self.turnWheel(self.rightRearSwerveModule, bottomRight[1], bottomRight[0])
+        self.turnWheel(self.leftFrontWheel, topLeft[1], topLeft[0])
+        self.turnWheel(self.rightFrontWheel, topRight[1], topRight[0])
+        self.turnWheel(self.leftRearWheel, bottomLeft[1], bottomLeft[0])
+        self.turnWheel(self.rightRearWheel, bottomRight[1], bottomRight[0])
 
     def turnInPlace(self, turnPower: float, applyRotationMultiplier: bool=True, applySpeedMultiplier: bool=True) -> None:
         """
@@ -228,19 +228,19 @@ class SwerveDrive(SubsystemBase):
         if applySpeedMultiplier:
             turnPower *= self.speedMultiplier
 
-        self.turnWheel(self.leftFrontSwerveModule, 45.0, turnPower)
-        self.turnWheel(self.rightFrontSwerveModule, 135.0, turnPower)
-        self.turnWheel(self.rightRearSwerveModule, 225.0, turnPower)
-        self.turnWheel(self.leftRearSwerveModule, 315.0, turnPower)
+        self.turnWheel(self.leftFrontWheel, 45.0, turnPower)
+        self.turnWheel(self.rightFrontWheel, 135.0, turnPower)
+        self.turnWheel(self.rightRearWheel, 225.0, turnPower)
+        self.turnWheel(self.leftRearWheel, 315.0, turnPower)
 
     def stopAllMotors(self):
         """
         Stops all motors.
         """
-        self.leftFrontSwerveModule.stopAllMotors()
-        self.leftRearSwerveModule.stopAllMotors()
-        self.rightFrontSwerveModule.stopAllMotors()
-        self.rightRearSwerveModule.stopAllMotors()
+        self.leftFrontWheel.stopAllMotors()
+        self.leftRearWheel.stopAllMotors()
+        self.rightFrontWheel.stopAllMotors()
+        self.rightRearWheel.stopAllMotors()
 
     def getYaw(self):
         """
@@ -262,20 +262,20 @@ class SwerveDrive(SubsystemBase):
         """
         Sets all swerve wheels to angle 0 with 0 magnitude, then stops.
         """
-        self.turnWheel(self.leftFrontSwerveModule, 0.0, 0.0)
-        self.turnWheel(self.leftRearSwerveModule, 0.0, 0.0)
-        self.turnWheel(self.rightFrontSwerveModule, 0.0, 0.0)
-        self.turnWheel(self.rightRearSwerveModule, 0.0, 0.0)
+        self.turnWheel(self.leftFrontWheel, 0.0, 0.0)
+        self.turnWheel(self.leftRearWheel, 0.0, 0.0)
+        self.turnWheel(self.rightFrontWheel, 0.0, 0.0)
+        self.turnWheel(self.rightRearWheel, 0.0, 0.0)
         self.stopAllMotors()
 
     def getPosFromOffState(self):
         """
         Moves all motors to the correct position on startup.
         """
-        self.leftFrontSwerveModule.CANtoTalon()
-        self.leftRearSwerveModule.CANtoTalon()
-        self.rightFrontSwerveModule.CANtoTalon()
-        self.rightRearSwerveModule.CANtoTalon()
+        self.leftFrontWheel.CANtoTalon()
+        self.leftRearWheel.CANtoTalon()
+        self.rightFrontWheel.CANtoTalon()
+        self.rightRearWheel.CANtoTalon()
 
     def reset(self):
         """
@@ -416,10 +416,10 @@ class SwerveDrive(SubsystemBase):
     def updateOdometry(self) -> None:
         gyroAngle = Rotation2d.fromDegrees(self.getYaw())
 
-        self.odometry.update(gyroAngle, self.leftFrontSwerveModule.getPosition(), self.rightFrontSwerveModule.getPosition(), self.leftRearSwerveModule.getPosition(), self.rightRearSwerveModule.getPosition())
+        self.odometry.update(gyroAngle, self.leftFrontWheel.getPosition(), self.rightFrontWheel.getPosition(), self.leftRearWheel.getPosition(), self.rightRearWheel.getPosition())
 
     def updateWheelPositions(self) -> None:
-        self.leftFrontSwerveModule.updatePostion()
-        self.rightFrontSwerveModule.updatePostion()
-        self.leftRearSwerveModule.updatePostion()
-        self.rightRearSwerveModule.updatePostion()
+        self.leftFrontWheel.updatePostion()
+        self.rightFrontWheel.updatePostion()
+        self.leftRearWheel.updatePostion()
+        self.rightRearWheel.updatePostion()
