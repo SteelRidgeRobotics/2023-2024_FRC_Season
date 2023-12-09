@@ -4,6 +4,7 @@ from ctre.sensors import CANCoder
 from math import fabs, pi
 from wpilib import RobotBase, SmartDashboard
 from wpimath.kinematics import SwerveModulePosition
+from wpimath.geometry import Rotation2d
 
 class SwerveWheel():
     def __init__(self, directionMotor: ctre.TalonFX, speedMotor: ctre.TalonFX, 
@@ -164,7 +165,7 @@ class SwerveWheel():
         return self.position
     
     def updatePostion(self) -> None:
-        self.position = self.speedMotor.getSelectedSensorPosition() * (((klarryWheelSize / 2) * pi * 2) / (ksteeringGearRatio * 2048.0))
+        self.position = SwerveModulePosition(self.speedMotor.getSelectedSensorPosition() * (((klarryWheelSize / 2) * pi * 2) / (ksteeringGearRatio * 2048.0)), Rotation2d.fromDegrees(self.getCurrentAngle()))
 
     def getCurrentAngle(self):
         return (self.directionMotor.getSelectedSensorPosition() / ksteeringGearRatio) * (360 / 2048)
