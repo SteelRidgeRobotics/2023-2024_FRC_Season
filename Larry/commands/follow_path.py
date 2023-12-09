@@ -32,7 +32,9 @@ class FollowPath(CommandBase):
 
         self.pathIndex = self.path.sample(self.sampleTime)
 
-        rotationX = self.pathIndex.asWPILibState().curvature * self.pathIndex.asWPILibState().velocity
+        rotationX = self.pathIndex.holonomicAngularVelocity
+
+        print(rotationX)
 
         # Use trig to get translationX and translationY
         translationMag = self.pathIndex.velocity
@@ -51,8 +53,10 @@ class FollowPath(CommandBase):
         translationX = max(-1, min(1, translationX))
         translationY = max(-1, min(1, translationY))
 
+        
+
         # Send to SwerveDrive
-        self.drive.translateAndTurn(translationX, translationY, 0,
+        self.drive.translateAndTurn(translationX, translationY, rotationX,
                                     applyTranslationMultiplier=False, applyRotationMultiplier=False, applySpeedModifier=False)
 
     def end(self, interrupted: bool) -> None:

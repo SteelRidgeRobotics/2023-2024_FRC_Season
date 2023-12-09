@@ -1,6 +1,7 @@
 from commands2 import CommandScheduler, TimedCommandRobot
 from robotcontainer import RobotContainer
 from wpilib import run
+from wpimath.geometry import Rotation2d
 
 class MyRobot(TimedCommandRobot):
     def robotInit(self):
@@ -11,6 +12,8 @@ class MyRobot(TimedCommandRobot):
     def robotPeriodic(self):
 
         CommandScheduler.getInstance().run()
+
+        self.container.getSwerveDrive().updateOdometry()
 
     def autonomousInit(self):
         self.autoCommand = self.container.getAutonomousCommand()

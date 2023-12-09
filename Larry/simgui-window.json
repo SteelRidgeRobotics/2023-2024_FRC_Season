@@ -5,13 +5,13 @@
   "MainWindow": {
     "GLOBAL": {
       "fps": "0",
-      "height": "991",
-      "maximized": "1",
+      "height": "1369",
+      "maximized": "0",
       "style": "1",
       "userScale": "2",
-      "width": "1920",
-      "xpos": "0",
-      "ypos": "23"
+      "width": "2560",
+      "xpos": "1727",
+      "ypos": "519"
     }
   },
   "Table": {
@@ -96,7 +96,7 @@
     "###Timing": {
       "Collapsed": "1",
       "Pos": "9,671",
-      "Size": "162,142"
+      "Size": "135,127"
     },
     "Debug##Default": {
       "Collapsed": "0",

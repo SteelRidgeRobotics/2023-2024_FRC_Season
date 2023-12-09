@@ -31,6 +31,9 @@ kleftRearDirectionID = 5
 krightFrontDirectionID = 6
 krightRearDirectionID = 7
 
+# Odometry and Kinematics
+krobotSize = 0.381
+
 # Controllers
 kdriverControllerPort = 0
 kdeadband = 0.15

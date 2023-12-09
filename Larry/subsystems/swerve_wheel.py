@@ -3,6 +3,7 @@ import ctre
 from ctre.sensors import CANCoder
 from math import fabs
 from wpilib import RobotBase, SmartDashboard
+from wpimath.kinematics import SwerveModulePosition
 
 class SwerveWheel():
     def __init__(self, directionMotor: ctre.TalonFX, speedMotor: ctre.TalonFX, 
@@ -67,6 +68,8 @@ class SwerveWheel():
         self.directionTargetPos = 0.0
         self.directionTargetAngle = 0.0
         self.isInverted = False
+
+        self.position = SwerveModulePosition()
 
     def turnToOptimizedAngle(self, desiredAngle) -> bool:
         """
@@ -156,6 +159,9 @@ class SwerveWheel():
         # Prevents SmartDashboard desync
         if kDebug:
             SmartDashboard.putNumber(str(self.speedMotor.getDeviceID()) + " Mag", 0)
+
+    def getPosition(self) -> SwerveModulePosition:
+        return self.position
 
     def getCurrentAngle(self):
         return (self.directionMotor.getSelectedSensorPosition() / ksteeringGearRatio) * (360 / 2048)

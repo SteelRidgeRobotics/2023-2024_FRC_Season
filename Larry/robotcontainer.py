@@ -60,5 +60,5 @@ class RobotContainer:
     def getDrivingMode(self) -> Command:
         return self.profileChooser.getSelected()
     
-    def getSwerveDrive(self) -> SubsystemBase:
+    def getSwerveDrive(self) -> SwerveDrive:
         return self.swerveDrive

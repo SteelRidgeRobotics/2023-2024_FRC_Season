@@ -6,6 +6,8 @@ from math import *
 import navx
 from subsystems.swerve_wheel import SwerveWheel
 from wpilib import PowerDistribution, RobotBase, SmartDashboard
+from wpimath.geometry import Rotation2d, Translation2d
+from wpimath.kinematics import SwerveDrive4Kinematics, SwerveDrive4Odometry
 
 
 class SwerveDrive(SubsystemBase):
@@ -53,12 +55,23 @@ class SwerveDrive(SubsystemBase):
         # init swerve modules
         self.leftFrontSwerveModule = SwerveWheel(self.leftFrontDirection, self.leftFrontSpeed, self.flCANcoder, kflCANoffset, 0.0)
         self.leftRearSwerveModule = SwerveWheel(self.leftRearDirection, self.leftRearSpeed, self.rlCANcoder, krlCANoffset, 0.0)
-
         self.rightFrontSwerveModule = SwerveWheel(self.rightFrontDirection, self.rightFrontSpeed, self.frCANcoder, kfrCANoffset, 0.0)
         self.rightRearSwerveModule = SwerveWheel(self.rightRearDirection, self.rightRearSpeed, self.rrCANcoder, krrCANoffset, 0.0)
 
         self.navX = navx.AHRS.create_spi()
         self.angleOffset = 0
+
+        # module positions
+        self.leftFrontPosition = Translation2d(krobotSize, krobotSize)
+        self.rightFrontPosition = Translation2d(krobotSize, -krobotSize)
+        self.leftRearPosition = Translation2d(-krobotSize, krobotSize)
+        self.rightRearPosition = Translation2d(-krobotSize, -krobotSize)
+
+        self.kinematics = SwerveDrive4Kinematics(self.leftFrontPosition, self.rightFrontPosition, self.leftRearPosition, self.rightRearPosition)
+
+        self.odometry = SwerveDrive4Odometry(self.kinematics, Rotation2d.fromDegrees(self.getYaw()),
+                                             (self.leftFrontSwerveModule.getPosition(), self.rightFrontSwerveModule.getPosition(),
+                                              self.leftRearSwerveModule.getPosition(), self.rightRearSwerveModule.getPosition()))
         
         self.PDP = PowerDistribution(0, PowerDistribution.ModuleType.kCTRE)
 
@@ -396,3 +409,11 @@ class SwerveDrive(SubsystemBase):
         """
         self.angleOffset =  max(min(self.angleOffset + num, 180), -180)
         SmartDashboard.putNumber("Angle Offset", self.angleOffset)
+
+    def getOdometry(self) -> SwerveDrive4Odometry:
+        return self.odometry
+    
+    def updateOdometry(self) -> None:
+        gyroAngle = Rotation2d.fromDegrees(self.getYaw())
+
+        self.odometry.update(gyroAngle, self.leftFrontSwerveModule.getPosition(), self.rightFrontSwerveModule.getPosition(), self.leftRearSwerveModule.getPosition(), self.rightRearSwerveModule.getPosition())
