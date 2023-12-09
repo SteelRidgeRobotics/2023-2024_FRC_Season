@@ -1,7 +1,7 @@
 from constants import *
 import ctre
 from ctre.sensors import CANCoder
-from math import fabs
+from math import fabs, pi
 from wpilib import RobotBase, SmartDashboard
 from wpimath.kinematics import SwerveModulePosition
 
@@ -162,6 +162,9 @@ class SwerveWheel():
 
     def getPosition(self) -> SwerveModulePosition:
         return self.position
+    
+    def updatePostion(self) -> None:
+        self.position = self.speedMotor.getSelectedSensorPosition() * (((klarryWheelSize / 2) * pi * 2) / (ksteeringGearRatio * 2048.0))
 
     def getCurrentAngle(self):
         return (self.directionMotor.getSelectedSensorPosition() / ksteeringGearRatio) * (360 / 2048)

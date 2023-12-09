@@ -417,3 +417,9 @@ class SwerveDrive(SubsystemBase):
         gyroAngle = Rotation2d.fromDegrees(self.getYaw())
 
         self.odometry.update(gyroAngle, self.leftFrontSwerveModule.getPosition(), self.rightFrontSwerveModule.getPosition(), self.leftRearSwerveModule.getPosition(), self.rightRearSwerveModule.getPosition())
+
+    def updateWheelPositions(self) -> None:
+        self.leftFrontSwerveModule.updatePostion()
+        self.rightFrontSwerveModule.updatePostion()
+        self.leftRearSwerveModule.updatePostion()
+        self.rightRearSwerveModule.updatePostion()

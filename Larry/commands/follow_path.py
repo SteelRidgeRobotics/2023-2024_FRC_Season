@@ -34,8 +34,6 @@ class FollowPath(CommandBase):
 
         rotationX = self.pathIndex.holonomicAngularVelocity
 
-        print(rotationX)
-
         # Use trig to get translationX and translationY
         translationMag = self.pathIndex.velocity
         translationHeading = self.pathIndex.pose.rotation().radians()
@@ -52,8 +50,6 @@ class FollowPath(CommandBase):
         rotationX = max(-1, min(1, rotationX))
         translationX = max(-1, min(1, translationX))
         translationY = max(-1, min(1, translationY))
-
-        
 
         # Send to SwerveDrive
         self.drive.translateAndTurn(translationX, translationY, rotationX,

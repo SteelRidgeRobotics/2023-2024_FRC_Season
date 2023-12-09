@@ -13,6 +13,7 @@ class MyRobot(TimedCommandRobot):
 
         CommandScheduler.getInstance().run()
 
+        self.container.getSwerveDrive().updateWheelPositions()
         self.container.getSwerveDrive().updateOdometry()
 
     def autonomousInit(self):

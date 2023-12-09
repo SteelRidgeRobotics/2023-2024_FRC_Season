@@ -11,6 +11,7 @@ kDebug = False # Turns off some temporary SmartDashboard values (basically if we
 klarryMaxSpeed = 3.658 # m/s
 klarryMaxRotSpeed = 10.47197551198692 # rads/s
 #klarryMaxAcceleration = # m/s^2
+klarryWheelSize = 4 / 12 * 3.28
 
 # PathPlanner options
 kdefaultPathConstraints = PathConstraints(4.0, 3.0)
