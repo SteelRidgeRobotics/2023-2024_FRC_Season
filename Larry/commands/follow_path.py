@@ -24,6 +24,8 @@ class FollowPath(CommandBase):
         self.startTime = Timer.getFPGATimestamp()
 
         self.desiredAngle = 0
+        self.desiredPosX = self.path.getInitialPose().X()
+        self.desiredPosY = self.path.getInitialPose().Y()
         self.drive.navX.reset()
 
     def execute(self) -> None:
@@ -37,14 +39,14 @@ class FollowPath(CommandBase):
 
         rotationX = self.pathIndex.holonomicAngularVelocity
 
-        # calculate drift
-        if RobotBase.isReal():
-            self.desiredAngle += degrees(rotationX) / 50
-            angleDrift = self.desiredAngle - self.drive.getYaw()
+        self.desiredAngle += degrees(rotationX) / 50 # gets degrees per tick
+        self.desiredPosX = self.pathIndex.pose.X()
+        self.desiredPosY = self.pathIndex.pose.Y()
 
-            mult = 3
-            # This increases the rotationX depending on how far off we are currently
-            rotationX += 1 / ((180 / mult)**3) * (angleDrift ** 3)
+        # Fix drift
+        if RobotBase.isReal():
+            angleDrift = self.desiredAngle - self.drive.getYaw()
+            rotationX += 1 / ((180 / krotationMagnitudeMM)**3) * (angleDrift ** 3) # This increases the rotationX depending on how far off we are currently
 
         # Convert to magnitudes
         rotationX /= klarryMaxRotSpeed

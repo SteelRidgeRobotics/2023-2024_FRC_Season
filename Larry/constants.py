@@ -15,6 +15,7 @@ klarryWheelSize = 4 / 12 * 3.28
 
 # PathPlanner options
 kdefaultPathConstraints = PathConstraints(4.0, 3.0)
+krotationMagnitudeMM = 20 # (this basically just says at x degrees off, add +- 1 to the magnitude.) Decrease if angle is offset too much,
 
 # Multipliers
 kDefaultSpeedMultplier = 1.0
