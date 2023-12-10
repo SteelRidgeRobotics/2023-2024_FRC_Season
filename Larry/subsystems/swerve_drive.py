@@ -60,6 +60,7 @@ class SwerveDrive(SubsystemBase):
 
         self.navX = navx.AHRS.create_spi()
         self.angleOffset = 0
+        SmartDashboard.putNumber("Angle Offset", self.angleOffset)
 
         # module positions
         self.leftFrontPosition = Translation2d(krobotSize, krobotSize)

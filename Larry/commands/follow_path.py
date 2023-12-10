@@ -1,9 +1,9 @@
 from commands2 import CommandBase
 from constants import *
-from math import cos, sin
+from math import cos, sin, degrees
 from pathplannerlib import PathPlanner
 from subsystems.swerve_drive import SwerveDrive
-from wpilib import Timer
+from wpilib import RobotBase, Timer
 
 
 class FollowPath(CommandBase):
@@ -23,23 +23,28 @@ class FollowPath(CommandBase):
     def initialize(self) -> None:
         self.startTime = Timer.getFPGATimestamp()
 
+        self.desiredAngle = 0
         self.drive.navX.reset()
 
     def execute(self) -> None:
-        currentTime = Timer.getFPGATimestamp()
-
-        self.sampleTime = currentTime - self.startTime
-
+        self.sampleTime = Timer.getFPGATimestamp() - self.startTime
         self.pathIndex = self.path.sample(self.sampleTime)
+
+        # Use trig to get translationX and translationY
+        translationHeading = self.pathIndex.pose.rotation().radians()
+        translationX = sin(translationHeading) * -self.pathIndex.velocity
+        translationY = cos(translationHeading) * -self.pathIndex.velocity
 
         rotationX = self.pathIndex.holonomicAngularVelocity
 
-        # Use trig to get translationX and translationY
-        translationMag = self.pathIndex.velocity
-        translationHeading = self.pathIndex.pose.rotation().radians()
-        
-        translationX = sin(translationHeading) * -translationMag
-        translationY = cos(translationHeading) * -translationMag
+        # calculate drift
+        if RobotBase.isReal():
+            self.desiredAngle += degrees(rotationX) / 50
+            angleDrift = self.desiredAngle - self.drive.getYaw()
+
+            mult = 3
+            # This increases the rotationX depending on how far off we are currently
+            rotationX += 1 / ((180 / mult)**3) * (angleDrift ** 3)
 
         # Convert to magnitudes
         rotationX /= klarryMaxRotSpeed
