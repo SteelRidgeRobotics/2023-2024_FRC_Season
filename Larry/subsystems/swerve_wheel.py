@@ -163,8 +163,12 @@ class SwerveWheel():
         return self.position
     
     def updatePostion(self) -> None:
-        self.position = SwerveModulePosition(self.speedMotor.getSelectedSensorPosition() * (((klarryWheelSize / 2) * pi * 2) / (ksteeringGearRatio * 2048.0)), Rotation2d.fromDegrees(self.getCurrentAngle()))
+        self.position = SwerveModulePosition(posToMeters(self.speedMotor.getSelectedSensorPosition()), Rotation2d.fromDegrees(self.getCurrentAngle()))
+        SmartDashboard.putNumber(str(self.speedMotor.getDeviceID()) + " posMeters", self.position.distance)
 
     def getCurrentAngle(self):
         return (self.directionMotor.getSelectedSensorPosition() / ksteeringGearRatio) * (360 / 2048)
+    
+def posToMeters(pos) -> float:
+    return pos * (((klarryWheelSize / 2) * pi * 2) / (ksteeringGearRatio * 2048.0))
     
