@@ -152,10 +152,8 @@ class SwerveWheel():
         if kDebug:
             SmartDashboard.putNumber(str(self.speedMotor.getDeviceID()) + " Mag", input * slowdownMult)
 
-    def stopAllMotors(self):
-        self.directionMotor.set(ctre.TalonFXControlMode.PercentOutput, 0.0)
+    def stop(self):
         self.speedMotor.set(ctre.TalonFXControlMode.PercentOutput, 0.0)
-        self.directionMotor.setNeutralMode(ctre.NeutralMode.Coast)
 
         # Prevents SmartDashboard desync
         if kDebug:

@@ -238,10 +238,10 @@ class SwerveDrive(SubsystemBase):
         """
         Stops all motors.
         """
-        self.leftFrontWheel.stopAllMotors()
-        self.leftRearWheel.stopAllMotors()
-        self.rightFrontWheel.stopAllMotors()
-        self.rightRearWheel.stopAllMotors()
+        self.leftFrontWheel.stop()
+        self.leftRearWheel.stop()
+        self.rightFrontWheel.stop()
+        self.rightRearWheel.stop()
 
     def getYaw(self):
         """
