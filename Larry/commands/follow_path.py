@@ -70,4 +70,46 @@ class FollowPath(CommandBase):
 
     def isFinished(self) -> bool:
         return (self.sampleTime >= self.path.getTotalTime())
+    
+class FollowPathNoRotation(CommandBase):
+    """
+    Follows the specified PathPlanner path without rotation.
+
+    Due to current development deadline limitations, following a path from PathPlanner with rotation is currently unavailable.
+    """
+
+    def __init__(self) -> None:
+        super().__init__()
+
+    def initialize(self) -> None:
+        pass
+
+    def execute(self) -> None:
+        pass
+
+    def end(self, interrupted: bool) -> None:
+        pass
+
+    def isFinished(self) -> bool:
+        return True
+    
+class AutoRotate(CommandBase):
+    """
+    Rotates the robot to the specified degree related to the NavX sensor.
+    """
+
+    def __init__(self) -> None:
+        super().__init__()
+
+    def initialize(self) -> None:
+        pass
+
+    def execute(self) -> None:
+        pass
+
+    def end(self, interrupted: bool) -> None:
+        pass
+
+    def isFinished(self) -> bool:
+        return True
 
