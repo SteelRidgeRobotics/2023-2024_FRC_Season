@@ -44,10 +44,13 @@ class FollowPath(CommandBase):
         self.desiredPosY = self.pathIndex.pose.Y()
 
         # Fix drift
+        """
         if RobotBase.isReal():
             angleDrift = self.desiredAngle - self.drive.getYaw()
-            rotationX += 1 / ((180 / krotationMagnitudeMM)**3) * (angleDrift ** 3) # This increases the rotationX depending on how far off we are currently
+            print(angleDrift)
+            rotationX -= 1 / ((180 / krotationMagnitudeMM)**3) * (angleDrift ** 3) # This increases the rotationX depending on how far off we are currently
 
+        """
         # Convert to magnitudes
         rotationX /= klarryMaxRotSpeed
         translationX /= klarryMaxSpeed
