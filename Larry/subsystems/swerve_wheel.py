@@ -163,6 +163,10 @@ class SwerveWheel():
     def getCurrentAngle(self):
         return (self.directionMotor.getSelectedSensorPosition() / ksteeringGearRatio) * (360 / 2048)
     
+    def isAtCorrectAngle(self, error :float = 1.0) -> bool:
+        angle = self.getCurrentAngle()
+        return self.directionTargetAngle - abs(error) <= angle <= self.directionTargetAngle + abs(error)
+    
 def posToMeters(pos) -> float:
     return pos * (((klarryWheelSize / 2) * pi * 2) / (ksteeringGearRatio * 2048.0))
     

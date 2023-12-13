@@ -6,7 +6,7 @@ from math import *
 import navx
 from subsystems.swerve_wheel import SwerveWheel
 from wpilib import PowerDistribution, RobotBase, SmartDashboard
-from wpimath.geometry import Rotation2d, Translation2d
+from wpimath.geometry import Pose2d, Rotation2d, Translation2d
 from wpimath.kinematics import SwerveDrive4Kinematics, SwerveDrive4Odometry
 
 
@@ -231,6 +231,26 @@ class SwerveDrive(SubsystemBase):
         self.turnWheel(self.rightRearWheel, 225.0, turnPower)
         self.turnWheel(self.leftRearWheel, 315.0, turnPower)
 
+    def pointWheelsAtAngle(self, angle: float) -> None:
+        """
+        Points wheels at the desired angle.
+        """
+        self.leftFrontWheel.turnToOptimizedAngle(angle)
+        self.rightFrontWheel.turnToOptimizedAngle(angle)
+        self.leftRearWheel.turnToOptimizedAngle(angle)
+        self.rightRearWheel.turnToOptimizedAngle(angle)
+
+    def moveAtConstantMagnitude(self, mag: float) -> None:
+        """
+        Moves wheels at a constant magnitude.
+
+        Mainly used in combination with pointWheelsAtAngle(angle)
+        """
+        self.leftFrontWheel.move(mag, slowdownWhenFar=False)
+        self.rightFrontWheel.move(mag, slowdownWhenFar=False)
+        self.leftRearWheel.move(mag, slowdownWhenFar=False)
+        self.rightRearWheel.move(mag, slowdownWhenFar=False)
+
     def stopAllMotors(self):
         """
         Stops all motors.
@@ -289,6 +309,9 @@ class SwerveDrive(SubsystemBase):
         self.rightFrontSpeed.setSelectedSensorPosition(0.0, kPIDLoopIdx, ktimeoutMs)
         self.rightRearDirection.setSelectedSensorPosition(0.0, kPIDLoopIdx, ktimeoutMs)
         self.rightRearSpeed.setSelectedSensorPosition(0.0, kPIDLoopIdx, ktimeoutMs)
+
+    def areWheelsAtCorrectAngle(self) -> bool:
+        return self.leftFrontWheel.isAtCorrectAngle() and self.leftRearWheel.isAtCorrectAngle() and self.rightFrontWheel.isAtCorrectAngle() and self.rightRearWheel.isAtCorrectAngle()
 
     """
     DRIVING MULTIPLIERS
@@ -408,8 +431,8 @@ class SwerveDrive(SubsystemBase):
         self.angleOffset =  max(min(self.angleOffset + num, 180), -180)
         SmartDashboard.putNumber("Angle Offset", self.angleOffset)
 
-    def getOdometry(self) -> SwerveDrive4Odometry:
-        return self.odometry
+    def getPose(self) -> Pose2d:
+        return self.odometry.getPose()
     
     def updateOdometry(self) -> None:
         self.updateWheelPositions()
