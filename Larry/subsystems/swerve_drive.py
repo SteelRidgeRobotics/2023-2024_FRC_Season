@@ -18,9 +18,8 @@ class SwerveDrive(SubsystemBase):
     """
 
     def __init__(self) -> None:
-
         super().__init__()
-        # init motors
+
         self.leftFrontDirection = ctre.TalonFX(kleftFrontDirectionID)
         self.leftFrontSpeed = ctre.TalonFX(kleftFrontSpeedID)
 
@@ -33,7 +32,6 @@ class SwerveDrive(SubsystemBase):
         self.rightRearDirection = ctre.TalonFX(krightRearDirectionID)
         self.rightRearSpeed = ctre.TalonFX(krightRearSpeedID)
 
-        # fix inverse
         self.leftFrontSpeed.setInverted(True)
         self.leftRearSpeed.setInverted(True)
 
@@ -46,28 +44,27 @@ class SwerveDrive(SubsystemBase):
         self.rightFrontDirection.setInverted(False)
         self.rightRearDirection.setInverted(False)
 
-        # init CAN coders
+        # CANcoders
         self.flCANcoder = CANCoder(kflCANcoderID)
         self.rlCANcoder = CANCoder(krlCANcoderID)
         self.frCANcoder = CANCoder(kfrCANcoderID)
         self.rrCANcoder = CANCoder(krrCANcoderID)
 
-        # init swerve modules
-        self.leftFrontWheel = SwerveWheel(self.leftFrontDirection, self.leftFrontSpeed, self.flCANcoder, kflCANoffset, 0.0)
-        self.leftRearWheel = SwerveWheel(self.leftRearDirection, self.leftRearSpeed, self.rlCANcoder, krlCANoffset, 0.0)
-        self.rightFrontWheel = SwerveWheel(self.rightFrontDirection, self.rightFrontSpeed, self.frCANcoder, kfrCANoffset, 0.0)
-        self.rightRearWheel = SwerveWheel(self.rightRearDirection, self.rightRearSpeed, self.rrCANcoder, krrCANoffset, 0.0)
+        # SwerveWheel's
+        self.leftFrontWheel = SwerveWheel(self.leftFrontDirection, self.leftFrontSpeed, self.flCANcoder, kflCANoffset, "LF")
+        self.leftRearWheel = SwerveWheel(self.leftRearDirection, self.leftRearSpeed, self.rlCANcoder, krlCANoffset, "LR")
+        self.rightFrontWheel = SwerveWheel(self.rightFrontDirection, self.rightFrontSpeed, self.frCANcoder, kfrCANoffset, "RF")
+        self.rightRearWheel = SwerveWheel(self.rightRearDirection, self.rightRearSpeed, self.rrCANcoder, krrCANoffset, "RR")
 
         self.navX = navx.AHRS.create_spi()
         self.angleOffset = 0
-        SmartDashboard.putNumber("Angle Offset", self.angleOffset)
+        SmartDashboard.putNumber("Angle Offset", 0)
 
-        # module positions
+
         self.leftFrontPosition = Translation2d(krobotSize, krobotSize)
         self.rightFrontPosition = Translation2d(krobotSize, -krobotSize)
         self.leftRearPosition = Translation2d(-krobotSize, krobotSize)
         self.rightRearPosition = Translation2d(-krobotSize, -krobotSize)
-
         self.kinematics = SwerveDrive4Kinematics(self.leftFrontPosition, self.rightFrontPosition, self.leftRearPosition, self.rightRearPosition)
 
         self.odometry = SwerveDrive4Odometry(self.kinematics, Rotation2d.fromDegrees(self.getYaw()),
@@ -415,9 +412,12 @@ class SwerveDrive(SubsystemBase):
         return self.odometry
     
     def updateOdometry(self) -> None:
-        gyroAngle = Rotation2d.fromDegrees(self.getYaw())
+        self.updateWheelPositions()
+        self.odometry.update(Rotation2d.fromDegrees(self.getYaw()), self.leftFrontWheel.getPosition(), self.rightFrontWheel.getPosition(), self.leftRearWheel.getPosition(), self.rightRearWheel.getPosition())
 
-        self.odometry.update(gyroAngle, self.leftFrontWheel.getPosition(), self.rightFrontWheel.getPosition(), self.leftRearWheel.getPosition(), self.rightRearWheel.getPosition())
+        pose = self.odometry.getPose()
+        SmartDashboard.putNumber("Odom X", pose.X())
+        SmartDashboard.putNumber("Odom Y", pose.Y())
 
     def updateWheelPositions(self) -> None:
         self.leftFrontWheel.updatePostion()

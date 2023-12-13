@@ -1,7 +1,6 @@
 from constants import *
 import ctre
 from ctre.sensors import CANCoder
-from ctre import TalonFXSimCollection
 from math import fabs, pi
 from wpilib import RobotBase, SmartDashboard
 from wpimath.kinematics import SwerveModulePosition
@@ -9,8 +8,7 @@ from wpimath.geometry import Rotation2d
 
 class SwerveWheel():
     def __init__(self, directionMotor: ctre.TalonFX, speedMotor: ctre.TalonFX, 
-                 CANCoder: CANCoder, MagOffset: float, 
-                 manualOffset: float) -> None:
+                 CANCoder: CANCoder, MagOffset: float, name: str) -> None:
 
         self.directionMotor = directionMotor
         self.speedMotor = speedMotor
@@ -67,14 +65,13 @@ class SwerveWheel():
         self.CANCoder.configSensorDirection(True, ktimeoutMs)
         self.CANCoder.configMagnetOffset(MagOffset)
 
-        self.speedMotorSim = self.speedMotor.getSimCollection()
-        self.directionMotorSim = self.directionMotor.getSimCollection()
-
         self.directionTargetPos = 0.0
         self.directionTargetAngle = 0.0
         self.isInverted = False
 
         self.position = SwerveModulePosition()
+
+        self.name = name
 
     def turnToOptimizedAngle(self, desiredAngle) -> bool:
         """
@@ -128,9 +125,8 @@ class SwerveWheel():
         self.directionTargetAngle = targetAngle
 
         if kDebug:
-            SmartDashboard.putNumber(str(self.speedMotor.getDeviceID()) + " dirTargetAngle", self.directionTargetAngle)
-            SmartDashboard.putNumber(str(self.speedMotor.getDeviceID()) + " dirTargetPos", self.directionTargetPos)
-            SmartDashboard.putBoolean(str(self.speedMotor.getDeviceID()) + " Inverted?", self.isInverted)
+            SmartDashboard.putNumber(self.name + " dirTargetAngle", self.directionTargetAngle)
+            SmartDashboard.putBoolean(self.name + " Inverted?", self.isInverted)
 
         # Now we can actually turn the motor after like 60 lines lmao
         self.directionMotor.set(ctre.TalonFXControlMode.MotionMagic, self.directionTargetPos * ksteeringGearRatio)
@@ -155,22 +151,16 @@ class SwerveWheel():
         self.speedMotor.set(ctre.TalonFXControlMode.PercentOutput, input * slowdownMult)
         self.speedMotor.getSimCollection().addIntegratedSensorPosition(int(input * klarryMaxRotSpeed))
 
-        SmartDashboard.putNumber(str(self.speedMotor.getDeviceID()) + " Mag", input * slowdownMult)
-        SmartDashboard.putNumber(str(self.speedMotor.getDeviceID()) + " Pos", self.speedMotor.getSelectedSensorPosition())
-
     def stop(self):
         self.speedMotor.set(ctre.TalonFXControlMode.PercentOutput, 0.0)
-
-        # Prevents SmartDashboard desync
-        if kDebug:
-            SmartDashboard.putNumber(str(self.speedMotor.getDeviceID()) + " Mag", 0)
 
     def getPosition(self) -> SwerveModulePosition:
         return self.position
     
     def updatePostion(self) -> None:
-        self.position = SwerveModulePosition(posToMeters(self.speedMotor.getSelectedSensorPosition()), Rotation2d.fromDegrees(self.getCurrentAngle()))
-        SmartDashboard.putNumber(str(self.speedMotor.getDeviceID()) + " posMeters", self.position.distance)
+        currentAngle = self.getCurrentAngle()
+        currentPos = self.speedMotor.getSelectedSensorPosition()
+        self.position = SwerveModulePosition(posToMeters(currentPos), Rotation2d.fromDegrees(currentAngle))
 
     def getCurrentAngle(self):
         return (self.directionMotor.getSelectedSensorPosition() / ksteeringGearRatio) * (360 / 2048)
