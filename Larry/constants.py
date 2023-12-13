@@ -17,7 +17,7 @@ klarryWheelSize = 4 / 12 * 3.28
 kmaxWheelSpeed = 1000 # in TalonFX native units (PLACEHOLDER)
 
 # PathPlanner
-kdefaultPathConstraints = PathConstraints(4.0, 3.0)
+kdefaultPathConstraints = PathConstraints(0.5, 3.0)
 
 # Multipliers
 kDefaultSpeedMultplier = 1.0
