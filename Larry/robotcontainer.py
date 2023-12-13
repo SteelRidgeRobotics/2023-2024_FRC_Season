@@ -1,9 +1,9 @@
-from commands2 import Command, SubsystemBase
+from commands2 import Command
 from constants import *
-from commands.drive_with_controller import DriveControllerDefault, DriveControllerDefaultSlow, DriveControllerWyatt
+from commands.driving_profiles import DriveControllerDefault, DriveControllerDefaultSlow, DriveControllerWyatt
 from commands.drive_with_guitar import DriveWithGuitar
 from commands.charge_station import ChargeStation
-from commands.follow_path import FollowPath
+from commands.autonomous import FollowPath
 from frc6343.controller.guitar.guitar import Guitar
 from subsystems.swerve_drive import SwerveDrive
 from wpilib import SendableChooser, SmartDashboard, Timer, XboxController
@@ -23,9 +23,9 @@ class RobotContainer:
 
         # Add commands to auto command chooser
         self.autoChooser.addOption("Charge Station", ChargeStation(self.swerveDrive))
-        self.autoChooser.addOption("PathPlanner Test 1", FollowPath(self.swerveDrive, "Test 1", pathConstraints=PathConstraints(1.0, 3.0), isReversed=True))
-        self.autoChooser.addOption("PathPlanner Test 2", FollowPath(self.swerveDrive, "Test 2", pathConstraints=PathConstraints(1.0, 3.0)))
-        self.autoChooser.addOption("PathPlanner Test 3", FollowPath(self.swerveDrive, "Test 3", pathConstraints=PathConstraints(1.0, 3.0)))
+        self.autoChooser.addOption("PathPlanner Test 1", FollowPath(self.swerveDrive, "Test 1", isReversed=True))
+        self.autoChooser.addOption("PathPlanner Test 2", FollowPath(self.swerveDrive, "Test 2"))
+        self.autoChooser.addOption("PathPlanner Test 3", FollowPath(self.swerveDrive, "Test 3"))
 
         SmartDashboard.putData("Auto", self.autoChooser)
 

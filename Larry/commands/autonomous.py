@@ -69,7 +69,7 @@ class FollowPath(CommandBase):
         self.drive.stopAllMotors()
 
     def isFinished(self) -> bool:
-        return (self.sampleTime >= self.path.getTotalTime())
+        return self.sampleTime >= self.path.getTotalTime()
     
 class FollowPathNoRotation(CommandBase):
     """
@@ -78,7 +78,8 @@ class FollowPathNoRotation(CommandBase):
     Due to current development deadline limitations, following a path from PathPlanner with rotation is currently unavailable.
     """
 
-    def __init__(self) -> None:
+    def __init__(self, swerveDrive: SwerveDrive, pathName: str, 
+                 pathConstraints: PathConstraints=kdefaultPathConstraints, isReversed: bool = False) -> None:
         super().__init__()
 
     def initialize(self) -> None:
