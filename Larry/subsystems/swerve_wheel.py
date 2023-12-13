@@ -73,15 +73,13 @@ class SwerveWheel():
 
         self.name = name
 
-    def turnToOptimizedAngle(self, desiredAngle) -> bool:
+    def turnToOptimizedAngle(self, desiredAngle) -> None:
         """
         Takes the desired angle for the motor, then:
         1. Turn to the opposite angle and invert the speed motor, and
         2. Turns the wheel clockwise or counter clockwise
 
         :params desiredAngle: The angle that we want the wheel to turn to.
-
-        :returns: True if the magnitude was inverted.
         """
         desiredAngle %= 360 # just making sure ;) (0-359)
 
