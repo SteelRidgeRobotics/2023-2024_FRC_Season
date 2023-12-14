@@ -1,6 +1,8 @@
-from commands2 import CommandBase
 from typing import Callable
+
+from commands2 import CommandBase
 from subsystems.swerve_drive import SwerveDrive
+
 
 class DriveWithGuitar(CommandBase):
     """

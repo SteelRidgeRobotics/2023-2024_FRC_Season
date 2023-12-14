@@ -1,10 +1,12 @@
-from constants import *
-import ctre
-from ctre.sensors import CANCoder
 from math import fabs, pi
+
+import ctre
+from constants import *
+from ctre.sensors import CANCoder
 from wpilib import RobotBase, SmartDashboard
-from wpimath.kinematics import SwerveModulePosition
 from wpimath.geometry import Rotation2d
+from wpimath.kinematics import SwerveModulePosition
+
 
 class SwerveWheel():
     def __init__(self, directionMotor: ctre.TalonFX, speedMotor: ctre.TalonFX, 
@@ -147,7 +149,7 @@ class SwerveWheel():
             slowdownMult = 1
 
         self.speedMotor.set(ctre.TalonFXControlMode.PercentOutput, input * slowdownMult)
-        self.speedMotor.getSimCollection().addIntegratedSensorPosition(int(input * klarryMaxRotSpeed))
+        self.speedMotor.getSimCollection().addIntegratedSensorPosition(int(input * kmaxWheelSpeed))
 
     def stop(self):
         self.speedMotor.set(ctre.TalonFXControlMode.PercentOutput, 0.0)

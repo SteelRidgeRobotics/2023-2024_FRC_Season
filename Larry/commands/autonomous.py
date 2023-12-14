@@ -1,9 +1,10 @@
+from math import atan2, cos, degrees, pi, sin
+
 from commands2 import CommandBase
 from constants import *
-from math import cos, sin, degrees
 from pathplannerlib import PathPlanner
 from subsystems.swerve_drive import SwerveDrive
-from wpilib import RobotBase, Timer
+from wpilib import RobotBase, SmartDashboard, Timer
 
 
 class FollowPath(CommandBase):
@@ -70,6 +71,51 @@ class FollowPath(CommandBase):
 
     def isFinished(self) -> bool:
         return self.sampleTime >= self.path.getTotalTime()
+    
+class MoveMeters(CommandBase):
+    """
+    Moves the robot in a straight line the chosen amount of meters.
+    """
+    def __init__(self, drive: SwerveDrive, distanceX: float, distanceY: float) -> None:
+        super().__init__()
+
+        self.drive = drive
+        self.addRequirements([self.drive])
+
+        self.distanceX = distanceX
+        self.distanceY = distanceY
+
+    def initialize(self) -> None:
+        pose = self.drive.getPose()
+        self.finalDispX = self.distanceX - pose.X() # Adjacent angle
+        self.finalDispY = self.distanceY - pose.Y() # Opposite angle
+        self.finalX = self.distanceX + pose.X()
+        self.finalY = self.distanceY + pose.Y()
+
+        # Trajectory angle
+        self.trajAngle = atan2(self.finalDispX, self.finalDispY) * (180 / pi)
+        if self.trajAngle < 0:
+            self.trajAngle += 360
+
+        self.drive.pointWheelsAtAngle(self.trajAngle)
+        self.magnitude = 0
+
+    def execute(self) -> None:
+        if not self.drive.areWheelsAtCorrectAngle():
+            self.drive.stopAllMotors()
+            self.drive.pointWheelsAtAngle(self.trajAngle)
+            return
+        
+        self.magnitude += kdefaultMagIncrease
+        self.magnitude = min(kmagMax, max(-kmagMax, self.magnitude))
+        self.drive.moveAtConstantMagnitude(self.magnitude)
+
+    def end(self, interrupted: bool) -> None:
+        self.drive.stopAllMotors()
+
+    def isFinished(self) -> bool:
+        pose = self.drive.getPose()
+        return pose.X() == self.finalX and pose.Y() == self.finalY
     
 class FollowPathNoRotation(CommandBase):
     """

@@ -1,4 +1,5 @@
 from pathplannerlib import PathConstraints
+
 """
 CONSTANTS
 """
@@ -16,8 +17,10 @@ klarryWheelSize = 4 / 12 * 3.28
 # Wheels
 kmaxWheelSpeed = 1000 # in TalonFX native units (PLACEHOLDER)
 
-# PathPlanner
+# Autonomous
 kdefaultPathConstraints = PathConstraints(0.5, 3.0)
+kdefaultMagIncrease = 0.0101702007 # Per wpilib tick PS: Don't change, I calculated it trust -Nay
+kmagMax = 0.5
 
 # Multipliers
 kDefaultSpeedMultplier = 1.0

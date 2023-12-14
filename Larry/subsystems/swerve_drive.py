@@ -1,9 +1,10 @@
+from math import *
+
+import ctre
+import navx
 from commands2 import SubsystemBase
 from constants import *
-import ctre
 from ctre.sensors import CANCoder
-from math import *
-import navx
 from subsystems.swerve_wheel import SwerveWheel
 from wpilib import PowerDistribution, RobotBase, SmartDashboard
 from wpimath.geometry import Pose2d, Rotation2d, Translation2d
@@ -154,9 +155,8 @@ class SwerveDrive(SubsystemBase):
             rotX *= self.rotationMultiplier
 
         # Field Orientated Drive (aka complicated math so the robot doesn't rotate while we translate or somthin idrk)
-        temp = translationY * cos((self.getYaw() + self.angleOffset) * (pi / 180)) + translationX * sin((self.getYaw() + self.angleOffset) * (pi / 180))
+        translationY = translationY * cos((self.getYaw() + self.angleOffset) * (pi / 180)) + translationX * sin((self.getYaw() + self.angleOffset) * (pi / 180))
         translationX = -translationY * sin((self.getYaw() + self.angleOffset) * (pi / 180)) + translationX * cos((self.getYaw() + self.angleOffset) * (pi / 180))
-        translationY = temp
 
         # FOR FUTURE ROBOTICS PEOPLE: These usually would require the rotX to be multiplied by (robotLength or robotWidth / 2). 
         # However, since Larry is a square, we don't use this. I'm leaving the code there just in case someone reads this and uses it.
@@ -311,7 +311,7 @@ class SwerveDrive(SubsystemBase):
         self.rightRearSpeed.setSelectedSensorPosition(0.0, kPIDLoopIdx, ktimeoutMs)
 
     def areWheelsAtCorrectAngle(self) -> bool:
-        return self.leftFrontWheel.isAtCorrectAngle() and self.leftRearWheel.isAtCorrectAngle() and self.rightFrontWheel.isAtCorrectAngle() and self.rightRearWheel.isAtCorrectAngle()
+        return (self.leftFrontWheel.isAtCorrectAngle() and self.leftRearWheel.isAtCorrectAngle() and self.rightFrontWheel.isAtCorrectAngle() and self.rightRearWheel.isAtCorrectAngle()) or not RobotBase.isReal()
 
     """
     DRIVING MULTIPLIERS

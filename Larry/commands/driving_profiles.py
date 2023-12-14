@@ -1,9 +1,11 @@
+from typing import Callable
+
 from commands2 import CommandBase
 from constants import *
 from frc6343.controller.deadband import deadband
 from subsystems.swerve_drive import SwerveDrive
-from typing import Callable
 from wpilib import SmartDashboard
+
 
 class DriveControllerDefault(CommandBase):
     def __init__(self, swerveDrive: SwerveDrive, 

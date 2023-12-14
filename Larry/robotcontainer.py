@@ -1,12 +1,15 @@
 from commands2 import Command
-from constants import *
-from commands.driving_profiles import DriveControllerDefault, DriveControllerDefaultSlow, DriveControllerWyatt
-from commands.drive_with_guitar import DriveWithGuitar
+from commands.autonomous import *
 from commands.charge_station import ChargeStation
-from commands.autonomous import FollowPath
+from commands.drive_with_guitar import DriveWithGuitar
+from commands.driving_profiles import (DriveControllerDefault,
+                                       DriveControllerDefaultSlow,
+                                       DriveControllerWyatt)
+from constants import *
 from frc6343.controller.guitar.guitar import Guitar
 from subsystems.swerve_drive import SwerveDrive
 from wpilib import SendableChooser, SmartDashboard, Timer, XboxController
+
 
 class RobotContainer:
     def __init__(self) -> None:
@@ -22,10 +25,15 @@ class RobotContainer:
         self.autoChooser = SendableChooser()
 
         # Add commands to auto command chooser
-        self.autoChooser.addOption("Charge Station", ChargeStation(self.swerveDrive))
-        self.autoChooser.addOption("PathPlanner Test 1", FollowPath(self.swerveDrive, "Test 1", isReversed=True))
-        self.autoChooser.addOption("PathPlanner Test 2", FollowPath(self.swerveDrive, "Test 2"))
-        self.autoChooser.addOption("PathPlanner Test 3", FollowPath(self.swerveDrive, "Test 3"))
+        self.autoChooser.setDefaultOption("Charge Station", ChargeStation(self.swerveDrive))
+        #self.autoChooser.addOption("PathPlanner Test 1", FollowPath(self.swerveDrive, "Test 1", isReversed=True))
+        #self.autoChooser.addOption("PathPlanner Test 2", FollowPath(self.swerveDrive, "Test 2"))
+        #self.autoChooser.addOption("PathPlanner Test 3", FollowPath(self.swerveDrive, "Test 3"))
+        self.autoChooser.addOption("Move Forward 1", MoveMeters(self.swerveDrive, 0.0, 1.0))
+        self.autoChooser.addOption("Move Backward 1", MoveMeters(self.swerveDrive, 0.0, -1.0))
+        self.autoChooser.addOption("Move Left 1", MoveMeters(self.swerveDrive, -1.0, 0.0))
+        self.autoChooser.addOption("Move Right 1", MoveMeters(self.swerveDrive, 1.0, 0.0))
+        self.autoChooser.addOption("Move Forward Right 1", MoveMeters(self.swerveDrive, 1.0, 1.0))
 
         SmartDashboard.putData("Auto", self.autoChooser)
 

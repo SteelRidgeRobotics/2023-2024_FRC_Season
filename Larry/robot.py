@@ -1,6 +1,7 @@
+import wpilib
 from commands2 import CommandScheduler, TimedCommandRobot
 from robotcontainer import RobotContainer
-import wpilib
+
 
 class Larry(TimedCommandRobot):
     def robotInit(self):
