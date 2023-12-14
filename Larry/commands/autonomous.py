@@ -117,6 +117,39 @@ class MoveMeters(CommandBase):
         pose = self.drive.getPose()
         return pose.X() == self.finalX and pose.Y() == self.finalY
     
+class RotateToDegree(CommandBase):
+
+    def __init__(self, drive: SwerveDrive, angle: float) -> None:
+        super().__init__()
+
+        self.drive = drive
+        self.addRequirements([self.drive])
+
+        self.desAngle = angle
+
+    def initialize(self) -> None:
+        self.drive.turnInPlace(0)
+
+    def execute(self) -> None:
+        if not self.drive.areWheelsAtCorrectAngle():
+            return
+        
+        angleDiff = (self.drive.getYaw() + 180) - self.desAngle
+        if angleDiff < 0:
+            angleDiff += 360
+
+        if angleDiff > 180:
+            self.drive.turnInPlace(-0.05, applyRotationMultiplier=False, applySpeedMultiplier=False)
+
+        else:
+            self.drive.turnInPlace(0.05, applyRotationMultiplier=False, applySpeedMultiplier=False)
+
+    def end(self, interrupted: bool) -> None:
+        self.drive.stopAllMotors()
+
+    def isFinished(self) -> bool:
+        return (round(self.desAngle) == round(self.drive.getYaw() + 180))
+    
 class FollowPathNoRotation(CommandBase):
     """
     Follows the specified PathPlanner path without rotation.
