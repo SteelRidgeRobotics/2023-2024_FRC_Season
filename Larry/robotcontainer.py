@@ -4,6 +4,7 @@ from commands.charge_station import ChargeStation
 from commands.drive_with_guitar import DriveWithGuitar
 from commands.driving_profiles import (DriveControllerDefault,
                                        DriveControllerDefaultSlow,
+                                       DriveControllerCaden,
                                        DriveControllerWyatt)
 from constants import *
 from frc6343.controller.guitar.guitar import Guitar
@@ -42,6 +43,7 @@ class RobotContainer:
         self.profileChooser.setDefaultOption("Default", DriveControllerDefault(self.swerveDrive, lambda: self.driverController.getLeftX(), lambda: self.driverController.getLeftY(), lambda: self.driverController.getRightX(), lambda: self.driverController.getLeftBumper(), lambda: self.driverController.getRightBumper(), lambda: self.driverController.getBackButton(), lambda: self.driverController.getStartButton()))
         self.profileChooser.addOption("Default Slow", DriveControllerDefaultSlow(self.swerveDrive, lambda: self.driverController.getLeftX(), lambda: self.driverController.getLeftY(), lambda: self.driverController.getRightX(), lambda: self.driverController.getLeftBumper(), lambda: self.driverController.getRightBumper(), lambda: self.driverController.getBackButton(), lambda: self.driverController.getStartButton()))
         self.profileChooser.addOption("Wyatt", DriveControllerWyatt(self.swerveDrive, lambda: self.driverController.getLeftX(), lambda: self.driverController.getLeftY(), lambda: self.driverController.getRightX(), lambda: self.driverController.getLeftBumper(), lambda: self.driverController.getRightBumper(), lambda: self.driverController.getLeftTriggerAxis(), lambda: self.driverController.getRightTriggerAxis()))
+        self.profileChooser.addOption("Caden", DriveControllerCaden(self.swerveDrive, lambda: self.driverController.getLeftX(), lambda: self.driverController.getLeftY(), lambda: self.driverController.getRightX(), lambda: self.driverController.getLeftBumper(), lambda: self.driverController.getRightBumper(), lambda: self.driverController.getLeftTriggerAxis(), lambda: self.driverController.getRightTriggerAxis()))
 
         SmartDashboard.putData("Profile", self.profileChooser)
 

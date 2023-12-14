@@ -210,3 +210,59 @@ class DriveControllerWyatt(CommandBase):
 
     def isFinished(self) -> bool:
         return True if self.drive.getDefaultCommand() != self else False
+    
+class DriveControllerCaden(CommandBase):
+
+    def __init__(self, swerveDrive: SwerveDrive, 
+                x: Callable[[], float], y: Callable[[], float],rightx: Callable[[], float],
+                leftBumper: Callable[[], bool], rightBumper: Callable[[], bool],
+                leftTrigger: Callable[[], float], rightTrigger: Callable[[], float]) -> None:
+        super().__init__()
+
+        self.drive = swerveDrive
+        self.x = x
+        self.y = y
+        self.rightx = rightx
+        self.leftBumper = leftBumper
+        self.rightBumper = rightBumper
+        self.leftTrigger = leftTrigger
+        self.rightTrigger = rightTrigger
+        self.addRequirements([self.drive])
+        self.drive.reset()
+        self.drive.getPosFromOffState()
+
+    def initialize(self) -> None:
+        self.defSpeedMult = 1
+        self.leftBumperFactor = self.rightBumperFactor = 0.5
+
+        self.drive.navX.reset()
+
+        self.drive.setDefaultSpeedMultiplier(1)
+        self.drive.setDefaultTranslationMultiplier(1)
+        self.drive.setDefaultRotationMultiplier(1)
+
+    def execute(self) -> None:
+        # Bumpers
+        if self.leftBumper() and self.rightBumper():
+            self.drive.setSpeedMultiplier(self.defSpeedMult * self.leftBumperFactor * self.rightBumperFactor)
+        elif self.leftBumper():
+            self.drive.setSpeedMultiplier(self.defSpeedMult * self.leftBumperFactor)
+        elif self.rightBumper():
+            self.drive.setSpeedMultiplier(self.defSpeedMult * self.rightBumperFactor)
+        else:
+            self.drive.setSpeedMultiplier(self.defSpeedMult)
+
+        SmartDashboard.putNumber("Rot Mult.", self.drive.getRotationMultiplier())
+        SmartDashboard.putNumber("Speed Mult.", self.drive.getSpeedMultiplier())
+        SmartDashboard.putNumber("Translation Mult.", self.drive.getTranslationMultiplier())
+        
+        translationX = deadband(self.x(), kdeadband)
+        rotationX = deadband(self.rightx(), kdeadband)
+
+        self.drive.translateAndTurn(translationX, self.rightTrigger() - self.leftTrigger(), rotationX)
+
+    def end(self, interrupted: bool) -> None:
+        self.drive.stopAllMotors()
+
+    def isFinished(self) -> bool:
+        return True if self.drive.getDefaultCommand() != self else False
