@@ -82,8 +82,6 @@ class SwerveWheel():
     def setDesiredState(self, desiredState: SwerveModuleState) -> None:
         desiredState = self.optimizeAngle(desiredState, Rotation2d.fromDegrees(self.getCurrentAngle()))
 
-        #SmartDashboard.putNumber(self.name +" velocity", desiredState.speed_fps)
-
         velocity = mpsToFalcon(desiredState.speed, klarryWheelSize, ksteeringGearRatio)
 
         self.speedMotor.set(ctre.ControlMode.Velocity, velocity, ctre.DemandType.ArbitraryFeedForward,
@@ -103,15 +101,38 @@ class SwerveWheel():
         #SmartDashboard.putNumber(self.name + " Direction Pos", degreesToFalcon(angle, 1))
 
     def optimizeAngle(self, desiredState: SwerveModuleState, currentAngle: Rotation2d) -> SwerveModuleState:
-        desiredAngle = desiredState.angle.degrees() % 360
-        angleDist = fabs(desiredAngle - currentAngle.degrees())
+        targetAngle = self.placeAngleInScope(currentAngle.degrees(), desiredState.angle.degrees())
+        targetSpeed = desiredState.speed
+        delta = targetAngle - currentAngle.degrees()
+        if (fabs(delta) > 90):
+            targetSpeed *= -1
+            if delta > 90:
+                targetAngle -= 180
+            else:
+                targetAngle += 180
+        return SwerveModuleState(targetSpeed, Rotation2d.fromDegrees(targetAngle))
 
-        if (angleDist > 90 and angleDist < 270):
-            targetAngle = (desiredAngle + 180) % 360
-            return SwerveModuleState(-desiredState.speed, Rotation2d.fromDegrees(targetAngle))
+
+    def placeAngleInScope(self, scopeReference: float, newAngle: float) -> float:
+        lowerBound = None
+        upperBound = None
+
+        lowerOffset = scopeReference % 360
+        if lowerOffset >= 0:
+            lowerBound = scopeReference - lowerOffset
+            upperBound = scopeReference + (360 - lowerOffset)
         else:
-            targetAngle = desiredAngle
-            return desiredState
+            upperBound = scopeReference - lowerOffset
+            lowerBound = scopeReference - (360 + lowerOffset)
+        while newAngle < lowerBound:
+            newAngle += 360
+        while newAngle > upperBound:
+            newAngle -= 360
+        if newAngle - scopeReference > 180:
+            newAngle -= 360
+        elif newAngle - scopeReference < -180:
+            newAngle += 360
+        return newAngle
 
     def turnToOptimizedAngle(self, desiredAngle) -> None:
         """
