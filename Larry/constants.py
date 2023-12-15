@@ -43,7 +43,7 @@ krobotSize = 0.381
 
 # Controllers
 kdriverControllerPort = 0
-kdeadband = 0.15
+kdeadband = 0.2
 
 # Encoders
 ktimeoutMs = 10

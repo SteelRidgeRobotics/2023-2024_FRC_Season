@@ -5,7 +5,8 @@ from constants import *
 from ctre.sensors import CANCoder
 from wpilib import RobotBase, SmartDashboard
 from wpimath.geometry import Rotation2d
-from wpimath.kinematics import SwerveModulePosition
+from wpimath.kinematics import SwerveModulePosition, SwerveModuleState
+from wpimath.controller import SimpleMotorFeedforwardMeters
 
 
 class SwerveWheel():
@@ -74,6 +75,43 @@ class SwerveWheel():
         self.position = SwerveModulePosition()
 
         self.name = name
+
+        self.feedForward = SimpleMotorFeedforwardMeters(kS=1, kV=1, kA=0)
+        self.lastAngle = 0
+
+    def setDesiredState(self, desiredState: SwerveModuleState) -> None:
+        desiredState = self.optimizeAngle(desiredState, Rotation2d.fromDegrees(self.getCurrentAngle()))
+
+        #SmartDashboard.putNumber(self.name +" velocity", desiredState.speed_fps)
+
+        velocity = mpsToFalcon(desiredState.speed, klarryWheelSize, ksteeringGearRatio)
+
+        self.speedMotor.set(ctre.ControlMode.Velocity, velocity, ctre.DemandType.ArbitraryFeedForward,
+                            self.feedForward.calculate(desiredState.speed))
+
+        if fabs(desiredState.speed) <= klarryMaxSpeed * 0.01:
+            angle = self.lastAngle
+        else:
+            angle = desiredState.angle.degrees() # Prevents jittering
+
+        self.directionMotor.set(ctre.ControlMode.Position,
+            degreesToFalcon(angle, ksteeringGearRatio))
+        SmartDashboard.putNumber(self.name + "eeeee", degreesToFalcon(angle, 1))
+        self.lastAngle = angle
+
+        #SmartDashboard.putNumber(self.name + " Speed", posToMeters(velocity))
+        #SmartDashboard.putNumber(self.name + " Direction Pos", degreesToFalcon(angle, 1))
+
+    def optimizeAngle(self, desiredState: SwerveModuleState, currentAngle: Rotation2d) -> SwerveModuleState:
+        desiredAngle = desiredState.angle.degrees() % 360
+        angleDist = fabs(desiredAngle - currentAngle.degrees())
+
+        if (angleDist > 90 and angleDist < 270):
+            targetAngle = (desiredAngle + 180) % 360
+            return SwerveModuleState(-desiredState.speed, Rotation2d.fromDegrees(targetAngle))
+        else:
+            targetAngle = desiredAngle
+            return desiredState
 
     def turnToOptimizedAngle(self, desiredAngle) -> None:
         """
@@ -163,7 +201,10 @@ class SwerveWheel():
         self.position = SwerveModulePosition(posToMeters(currentPos), Rotation2d.fromDegrees(currentAngle))
 
     def getCurrentAngle(self):
-        return (self.directionMotor.getSelectedSensorPosition() / ksteeringGearRatio) * (360 / 2048)
+        if not RobotBase.isReal():
+            return 0
+        else:
+            return (self.directionMotor.getSelectedSensorPosition() / ksteeringGearRatio) * (360 / 2048)
     
     def isAtCorrectAngle(self, error :float = 1.0) -> bool:
         angle = self.getCurrentAngle()
@@ -171,4 +212,17 @@ class SwerveWheel():
     
 def posToMeters(pos) -> float:
     return pos * (((klarryWheelSize / 2) * pi * 2) / (ksteeringGearRatio * 2048.0))
+
+def mpsToFalcon(velocity: float, circumference: float, gearRatio: float) -> float:
+    wheelRPM = ((velocity * 60) / circumference)
+    wheelVelocity = rpmToFalcon(wheelRPM, gearRatio)
+    return wheelVelocity
+
+def rpmToFalcon(rpm: float, gearRatio: float) -> float:
+    motorRPM = rpm * gearRatio
+    sensorCounts = motorRPM * (2048.0 / 600.0)
+    return sensorCounts
+
+def degreesToFalcon(degrees: float, gearRatio: float) -> float:
+    return degrees / (360.0 / (gearRatio * 2048.0))
     

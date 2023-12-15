@@ -5,7 +5,8 @@ from commands.drive_with_guitar import DriveWithGuitar
 from commands.driving_profiles import (DriveControllerDefault,
                                        DriveControllerDefaultSlow,
                                        DriveControllerCaden,
-                                       DriveControllerWyatt)
+                                       DriveControllerWyatt,
+                                       DriveWithKinematics)
 from constants import *
 from frc6343.controller.guitar.guitar import Guitar
 from subsystems.swerve_drive import SwerveDrive
@@ -44,6 +45,7 @@ class RobotContainer:
         self.profileChooser.addOption("Default Slow", DriveControllerDefaultSlow(self.swerveDrive, lambda: self.driverController.getLeftX(), lambda: self.driverController.getLeftY(), lambda: self.driverController.getRightX(), lambda: self.driverController.getLeftBumper(), lambda: self.driverController.getRightBumper(), lambda: self.driverController.getBackButton(), lambda: self.driverController.getStartButton()))
         self.profileChooser.addOption("Wyatt", DriveControllerWyatt(self.swerveDrive, lambda: self.driverController.getLeftX(), lambda: self.driverController.getLeftY(), lambda: self.driverController.getRightX(), lambda: self.driverController.getLeftBumper(), lambda: self.driverController.getRightBumper(), lambda: self.driverController.getLeftTriggerAxis(), lambda: self.driverController.getRightTriggerAxis()))
         self.profileChooser.addOption("Caden", DriveControllerCaden(self.swerveDrive, lambda: self.driverController.getLeftX(), lambda: self.driverController.getLeftY(), lambda: self.driverController.getRightX(), lambda: self.driverController.getLeftBumper(), lambda: self.driverController.getRightBumper(), lambda: self.driverController.getLeftTriggerAxis(), lambda: self.driverController.getRightTriggerAxis()))
+        self.profileChooser.addOption("KINEMATICS TEST", DriveWithKinematics(self.swerveDrive, lambda: self.driverController, True))
 
         SmartDashboard.putData("Profile", self.profileChooser)
 

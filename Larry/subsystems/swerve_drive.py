@@ -8,7 +8,7 @@ from ctre.sensors import CANCoder
 from subsystems.swerve_wheel import SwerveWheel
 from wpilib import PowerDistribution, RobotBase, SmartDashboard
 from wpimath.geometry import Pose2d, Rotation2d, Translation2d
-from wpimath.kinematics import SwerveDrive4Kinematics, SwerveDrive4Odometry
+from wpimath.kinematics import ChassisSpeeds, SwerveDrive4Kinematics, SwerveDrive4Odometry
 
 
 class SwerveDrive(SubsystemBase):
@@ -312,6 +312,19 @@ class SwerveDrive(SubsystemBase):
 
     def areWheelsAtCorrectAngle(self) -> bool:
         return (self.leftFrontWheel.isAtCorrectAngle() and self.leftRearWheel.isAtCorrectAngle() and self.rightFrontWheel.isAtCorrectAngle() and self.rightRearWheel.isAtCorrectAngle()) or not RobotBase.isReal()
+    
+    def drive(self, translation: Translation2d, rotation: Rotation2d, fieldRelative: bool=True) -> None:
+        if fieldRelative:
+            swerveModuleStates = self.kinematics.toSwerveModuleStates(ChassisSpeeds.fromFieldRelativeSpeeds(translation.X(), translation.Y(), rotation, Rotation2d.fromDegrees(self.getYaw())))
+        else:
+            swerveModuleStates = self.kinematics.toSwerveModuleStates(ChassisSpeeds(translation.X(), translation.Y(), rotation))
+
+        SwerveDrive4Kinematics.desaturateWheelSpeeds(swerveModuleStates, klarryMaxSpeed)
+
+        self.leftFrontWheel.setDesiredState(swerveModuleStates[0])
+        self.rightFrontWheel.setDesiredState(swerveModuleStates[1])
+        self.leftRearWheel.setDesiredState(swerveModuleStates[2])
+        self.rightRearWheel.setDesiredState(swerveModuleStates[3])
 
     """
     DRIVING MULTIPLIERS
