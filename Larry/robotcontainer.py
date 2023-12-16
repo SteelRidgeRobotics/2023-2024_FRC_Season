@@ -29,14 +29,6 @@ class RobotContainer:
 
         # Add commands to auto command chooser
         self.autoChooser.setDefaultOption("Charge Station", ChargeStation(self.swerveDrive))
-        #self.autoChooser.addOption("PathPlanner Test 1", FollowPath(self.swerveDrive, "Test 1", isReversed=True))
-        #self.autoChooser.addOption("PathPlanner Test 2", FollowPath(self.swerveDrive, "Test 2"))
-        #self.autoChooser.addOption("PathPlanner Test 3", FollowPath(self.swerveDrive, "Test 3"))
-        self.autoChooser.addOption("Move Forward 1", MoveMeters(self.swerveDrive, 0.0, 1.0))
-        self.autoChooser.addOption("Move Backward 1", MoveMeters(self.swerveDrive, 0.0, -1.0))
-        self.autoChooser.addOption("Move Left 1", MoveMeters(self.swerveDrive, -1.0, 0.0))
-        self.autoChooser.addOption("Move Right 1", MoveMeters(self.swerveDrive, 1.0, 0.0))
-        self.autoChooser.addOption("Move Forward Right 1", MoveMeters(self.swerveDrive, 1.0, 1.0))
         self.autoChooser.addOption("Move Forward 1 (NEW)", TestForward(self.swerveDrive))
 
         SmartDashboard.putData("Auto", self.autoChooser)
