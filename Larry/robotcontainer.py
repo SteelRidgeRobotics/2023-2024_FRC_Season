@@ -10,6 +10,7 @@ from commands.driving_profiles import (DriveControllerDefault,
 from constants import *
 from frc6343.controller.guitar.guitar import Guitar
 from subsystems.swerve_drive import SwerveDrive
+from autos.tests import *
 from wpilib import SendableChooser, SmartDashboard, Timer, XboxController
 
 
@@ -36,6 +37,7 @@ class RobotContainer:
         self.autoChooser.addOption("Move Left 1", MoveMeters(self.swerveDrive, -1.0, 0.0))
         self.autoChooser.addOption("Move Right 1", MoveMeters(self.swerveDrive, 1.0, 0.0))
         self.autoChooser.addOption("Move Forward Right 1", MoveMeters(self.swerveDrive, 1.0, 1.0))
+        self.autoChooser.addOption("Move Forward 1 (NEW)", TestForward(self.swerveDrive))
 
         SmartDashboard.putData("Auto", self.autoChooser)
 

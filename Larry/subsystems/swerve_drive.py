@@ -8,7 +8,7 @@ from ctre.sensors import CANCoder
 from subsystems.swerve_wheel import SwerveWheel
 from wpilib import PowerDistribution, RobotBase, SmartDashboard
 from wpimath.geometry import Pose2d, Rotation2d, Translation2d
-from wpimath.kinematics import ChassisSpeeds, SwerveDrive4Kinematics, SwerveDrive4Odometry
+from wpimath.kinematics import ChassisSpeeds, SwerveDrive4Kinematics, SwerveDrive4Odometry, SwerveModuleState
 
 
 class SwerveDrive(SubsystemBase):
@@ -460,3 +460,15 @@ class SwerveDrive(SubsystemBase):
         self.rightFrontWheel.updatePostion()
         self.leftRearWheel.updatePostion()
         self.rightRearWheel.updatePostion()
+
+    def getKinematics(self) -> SwerveDrive4Kinematics:
+        return self.kinematics
+    
+    #we reeeeally gotta re-sort this class someday..
+    def setModuleStates(self, moduleStates: tuple[SwerveModuleState, SwerveModuleState, SwerveModuleState, SwerveModuleState]) -> None:
+        SwerveDrive4Kinematics.desaturateWheelSpeeds(moduleStates, klarryMaxSpeed)
+
+        self.leftFrontWheel.setDesiredState(moduleStates[0])
+        self.rightFrontWheel.setDesiredState(moduleStates[1])
+        self.leftRearWheel.setDesiredState(moduleStates[2])
+        self.rightRearWheel.setDesiredState(moduleStates[3])

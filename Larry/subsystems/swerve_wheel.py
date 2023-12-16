@@ -86,6 +86,8 @@ class SwerveWheel():
 
         self.speedMotor.set(ctre.ControlMode.Velocity, velocity, ctre.DemandType.ArbitraryFeedForward,
                             self.feedForward.calculate(desiredState.speed))
+        
+        self.speedMotor.getSimCollection().addIntegratedSensorPosition(int(velocity))
 
         if fabs(desiredState.speed) <= klarryMaxSpeed * 0.01:
             angle = self.lastAngle
@@ -94,7 +96,7 @@ class SwerveWheel():
 
         self.directionMotor.set(ctre.ControlMode.Position,
             degreesToFalcon(angle, ksteeringGearRatio))
-        SmartDashboard.putNumber(self.name + "eeeee", degreesToFalcon(angle, 1))
+        self.directionMotor.getSimCollection().setIntegratedSensorRawPosition(int(degreesToFalcon(angle, ksteeringGearRatio)))
         self.lastAngle = angle
 
         #SmartDashboard.putNumber(self.name + " Speed", posToMeters(velocity))
@@ -222,10 +224,10 @@ class SwerveWheel():
         self.position = SwerveModulePosition(posToMeters(currentPos), Rotation2d.fromDegrees(currentAngle))
 
     def getCurrentAngle(self):
-        if not RobotBase.isReal():
-            return 0
-        else:
-            return (self.directionMotor.getSelectedSensorPosition() / ksteeringGearRatio) * (360 / 2048)
+        #if not RobotBase.isReal():
+            #return 0
+        #else:
+        return (self.directionMotor.getSelectedSensorPosition() / ksteeringGearRatio) * (360 / 2048)
     
     def isAtCorrectAngle(self, error :float = 1.0) -> bool:
         angle = self.getCurrentAngle()

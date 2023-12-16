@@ -1,8 +1,16 @@
 from pathplannerlib import PathConstraints
+from wpimath.trajectory import TrapezoidProfileRadians
 
 """
 CONSTANTS
 """
+
+class AutoConstants:
+    kPTheta = 0.0
+    kThetaControllerRestraints = TrapezoidProfileRadians.Constraints()
+
+    kPXController = 0.0
+    kPYController = 0.0
 
 # Options
 kUsingGuitarController = False
@@ -15,10 +23,10 @@ klarryMaxRotSpeed = 10.47197551198692 # rads/s
 klarryWheelSize = 4 / 12 * 3.28
 
 # Wheels
-kmaxWheelSpeed = 1000 # in TalonFX native units (PLACEHOLDER)
+kmaxWheelSpeed = 1 # in TalonFX native units (PLACEHOLDER)
 
 # Autonomous
-kdefaultPathConstraints = PathConstraints(0.5, 3.0)
+kdefaultPathConstraints = PathConstraints(2, 3.0)
 kdefaultMagIncrease = 0.0101702007 # Per wpilib tick PS: Don't change, I calculated it trust -Nay
 kmagMax = 0.5
 
@@ -43,7 +51,7 @@ krobotSize = 0.381
 
 # Controllers
 kdriverControllerPort = 0
-kdeadband = 0.2
+kdeadband = 0.15
 
 # Encoders
 ktimeoutMs = 10
