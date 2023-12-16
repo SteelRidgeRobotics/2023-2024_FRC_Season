@@ -13,7 +13,7 @@ class SwerveDriveControllerCommand(CommandBase):
 
     def __init__(self, trajectory: PathPlannerTrajectory, pose: Callable[[], Pose2d], kinematics: SwerveDrive4Kinematics,
                  xController: PIDController, yController: PIDController, thetaController: ProfiledPIDControllerRadians,
-                 outputModuleStates: Callable[[tuple[SwerveModuleState, SwerveModuleState, SwerveModuleState, SwerveModuleState]], None], requirements: tuple[Subsystem]) -> None:
+                 outputModuleStates: Callable[[tuple[SwerveModuleState, SwerveModuleState, SwerveModuleState, SwerveModuleState]], None], requirements: list[Subsystem]) -> None:
         super().__init__()
 
         self.timer = Timer()
@@ -23,7 +23,7 @@ class SwerveDriveControllerCommand(CommandBase):
         self.controller = HolonomicDriveController(xController, yController, thetaController)
         self.outputModuleStates = outputModuleStates
 
-        #self.addRequirements(*requirements)
+        self.addRequirements(requirements)
 
     def initialize(self) -> None:
         self.timer.reset()
