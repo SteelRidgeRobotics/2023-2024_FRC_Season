@@ -20,7 +20,7 @@ class TestForward(AutoBase):
 
         self.addCommands(
             InstantCommand(lambda: swerve.navX.reset()),
-            # Reset odometry here (TODO)
+            InstantCommand(lambda: swerve.resetOdometry()),
             command1
         )
 

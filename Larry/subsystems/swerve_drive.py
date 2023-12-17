@@ -461,6 +461,12 @@ class SwerveDrive(SubsystemBase):
         self.leftRearWheel.updatePostion()
         self.rightRearWheel.updatePostion()
 
+    def resetOdometry(self) -> None:
+        self.odometry.resetPosition(Rotation2d(), Pose2d(), self.leftFrontWheel.getPosition(), self.rightFrontWheel.getPosition(), self.leftRearWheel.getPosition(), self.rightRearWheel.getPosition())
+        pose = self.odometry.getPose()
+        SmartDashboard.putNumber("Odom X", pose.X())
+        SmartDashboard.putNumber("Odom Y", pose.Y())
+
     def getKinematics(self) -> SwerveDrive4Kinematics:
         return self.kinematics
     

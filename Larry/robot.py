@@ -8,6 +8,7 @@ class Larry(TimedCommandRobot):
 
         self.container = RobotContainer()
         self.autoCommand = self.container.getAutonomousCommand()
+        self.container.getSwerveDrive().resetOdometry()
 
     def robotPeriodic(self):
 

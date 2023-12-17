@@ -1,8 +1,9 @@
 from math import fabs, pi
 
 import ctre
+from ctre import TalonFXConfiguration
 from constants import *
-from ctre.sensors import CANCoder
+from ctre.sensors import CANCoder, SensorInitializationStrategy
 from wpilib import RobotBase, SmartDashboard
 from wpimath.geometry import Rotation2d
 from wpimath.kinematics import SwerveModulePosition, SwerveModuleState
@@ -14,57 +15,56 @@ class SwerveWheel():
                  CANCoder: CANCoder, MagOffset: float, name: str) -> None:
 
         self.directionMotor = directionMotor
-        self.speedMotor = speedMotor
+        self.driveMotor = speedMotor
 
         self.directionMotor.configSelectedFeedbackSensor(ctre.FeedbackDevice.IntegratedSensor, 0, ktimeoutMs)
-        self.speedMotor.configSelectedFeedbackSensor(ctre.FeedbackDevice.IntegratedSensor, 0, ktimeoutMs)
+        self.driveMotor.configSelectedFeedbackSensor(ctre.FeedbackDevice.IntegratedSensor, 0, ktimeoutMs)
 
         self.directionMotor.config_kF(0, kF, ktimeoutMs)
-        self.speedMotor.config_kF(0, kF, ktimeoutMs)
+        self.driveMotor.config_kF(0, kF, ktimeoutMs)
 
         self.directionMotor.config_kP(0, kP, ktimeoutMs)
-        self.speedMotor.config_kP(0, kP, ktimeoutMs)
+        self.driveMotor.config_kP(0, kP, ktimeoutMs)
 
         self.directionMotor.config_kI(0, kI, ktimeoutMs)
-        self.speedMotor.config_kI(0, kI, ktimeoutMs)
+        self.driveMotor.config_kI(0, kI, ktimeoutMs)
 
         self.directionMotor.config_kD(0, kD, ktimeoutMs)
-        self.speedMotor.config_kD(0, kD, ktimeoutMs)
+        self.driveMotor.config_kD(0, kD, ktimeoutMs)
 
         self.directionMotor.config_IntegralZone(0, kIzone, ktimeoutMs)
-        self.speedMotor.config_IntegralZone(0, kIzone, ktimeoutMs)
+        self.driveMotor.config_IntegralZone(0, kIzone, ktimeoutMs)
 
-        # MOTOR CONFIG
-        self.directionMotor.configNominalOutputForward(0, ktimeoutMs)
-        self.speedMotor.configNominalOutputForward(0, ktimeoutMs)
+        directionConfig = TalonFXConfiguration()
+        directionConfig.nominalOutputForward = 0
+        directionConfig.nominalOutputReverse = 0
+        directionConfig.peakOutputForward = 1
+        directionConfig.peakOutputReverse = -1
+        directionConfig.motionCruiseVelocity = kcruiseVel
+        directionConfig.motionAcceleration = kcruiseAccel
 
-        self.directionMotor.configNominalOutputReverse(0, ktimeoutMs)
-        self.speedMotor.configNominalOutputReverse(0, ktimeoutMs)
+        driveConfig = TalonFXConfiguration()
+        driveConfig.nominalOutputForward = 0
+        driveConfig.nominalOutputReverse = 0
+        driveConfig.peakOutputForward = 1
+        driveConfig.peakOutputReverse = -1
+        driveConfig.motionCruiseVelocity = kcruiseVel
+        driveConfig.motionAcceleration = kcruiseAccel
 
-        self.directionMotor.configPeakOutputForward(1, ktimeoutMs)
-        self.speedMotor.configPeakOutputForward(1, ktimeoutMs)
-
-        self.directionMotor.configPeakOutputReverse(-1, ktimeoutMs)
-        self.speedMotor.configPeakOutputReverse(-1, ktimeoutMs)
+        self.directionMotor.configAllSettings(directionConfig)
+        self.driveMotor.configAllSettings(driveConfig)
 
         self.directionMotor.selectProfileSlot(kSlotIdx, kPIDLoopIdx)
-        self.speedMotor.selectProfileSlot(kSlotIdx, kPIDLoopIdx)
-
-        self.directionMotor.configMotionCruiseVelocity(kcruiseVel, ktimeoutMs)
-        self.speedMotor.configMotionCruiseVelocity(kcruiseVel, ktimeoutMs)
-
-        self.directionMotor.configMotionAcceleration(kcruiseAccel, ktimeoutMs)
-        self.speedMotor.configMotionAcceleration(kcruiseAccel, ktimeoutMs)
+        self.driveMotor.selectProfileSlot(kSlotIdx, kPIDLoopIdx)
 
         self.directionMotor.setNeutralMode(ctre.NeutralMode.Brake)
-        self.speedMotor.setNeutralMode(ctre.NeutralMode.Brake)
+        self.driveMotor.setNeutralMode(ctre.NeutralMode.Brake)
 
         self.directionMotor.setSelectedSensorPosition(0.0, kPIDLoopIdx, ktimeoutMs)
-        self.speedMotor.setSelectedSensorPosition(0.0, kPIDLoopIdx, ktimeoutMs)
+        self.driveMotor.setSelectedSensorPosition(0.0, kPIDLoopIdx, ktimeoutMs)
 
         self.CANCoder = CANCoder
-        
-        self.CANCoder.configSensorInitializationStrategy(ctre.SensorInitializationStrategy.BootToAbsolutePosition, ktimeoutMs)
+        self.CANCoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition, ktimeoutMs)
         self.CANCoder.configSensorDirection(True, ktimeoutMs)
         self.CANCoder.configMagnetOffset(MagOffset)
 
@@ -84,10 +84,10 @@ class SwerveWheel():
 
         velocity = mpsToFalcon(desiredState.speed, klarryWheelSize, ksteeringGearRatio)
 
-        self.speedMotor.set(ctre.ControlMode.Velocity, velocity, ctre.DemandType.ArbitraryFeedForward,
+        self.driveMotor.set(ctre.ControlMode.Velocity, velocity, ctre.DemandType.ArbitraryFeedForward,
                             self.feedForward.calculate(desiredState.speed))
         
-        self.speedMotor.getSimCollection().addIntegratedSensorPosition(int(velocity))
+        self.driveMotor.getSimCollection().addIntegratedSensorPosition(int(velocity))
 
         if fabs(desiredState.speed) <= klarryMaxSpeed * 0.01:
             angle = self.lastAngle
@@ -98,9 +98,6 @@ class SwerveWheel():
             degreesToFalcon(angle, ksteeringGearRatio))
         self.directionMotor.getSimCollection().setIntegratedSensorRawPosition(int(degreesToFalcon(angle, ksteeringGearRatio)))
         self.lastAngle = angle
-
-        #SmartDashboard.putNumber(self.name + " Speed", posToMeters(velocity))
-        #SmartDashboard.putNumber(self.name + " Direction Pos", degreesToFalcon(angle, 1))
 
     def optimizeAngle(self, desiredState: SwerveModuleState, currentAngle: Rotation2d) -> SwerveModuleState:
         targetAngle = self.placeAngleInScope(currentAngle.degrees(), desiredState.angle.degrees())
@@ -113,7 +110,6 @@ class SwerveWheel():
             else:
                 targetAngle += 180
         return SwerveModuleState(targetSpeed, Rotation2d.fromDegrees(targetAngle))
-
 
     def placeAngleInScope(self, scopeReference: float, newAngle: float) -> float:
         lowerBound = None
@@ -209,24 +205,21 @@ class SwerveWheel():
         if not RobotBase.isReal() or not slowdownWhenFar:
             slowdownMult = 1
 
-        self.speedMotor.set(ctre.TalonFXControlMode.PercentOutput, input * slowdownMult)
-        self.speedMotor.getSimCollection().addIntegratedSensorPosition(int(input * kmaxWheelSpeed))
+        self.driveMotor.set(ctre.TalonFXControlMode.PercentOutput, input * slowdownMult)
+        self.driveMotor.getSimCollection().addIntegratedSensorPosition(int(input * kmaxWheelSpeed))
 
     def stop(self):
-        self.speedMotor.set(ctre.TalonFXControlMode.PercentOutput, 0.0)
+        self.driveMotor.set(ctre.TalonFXControlMode.PercentOutput, 0.0)
 
     def getPosition(self) -> SwerveModulePosition:
         return self.position
     
     def updatePostion(self) -> None:
         currentAngle = self.getCurrentAngle()
-        currentPos = self.speedMotor.getSelectedSensorPosition()
+        currentPos = self.driveMotor.getSelectedSensorPosition() / ksteeringGearRatio
         self.position = SwerveModulePosition(posToMeters(currentPos), Rotation2d.fromDegrees(currentAngle))
 
     def getCurrentAngle(self):
-        #if not RobotBase.isReal():
-            #return 0
-        #else:
         return (self.directionMotor.getSelectedSensorPosition() / ksteeringGearRatio) * (360 / 2048)
     
     def isAtCorrectAngle(self, error :float = 1.0) -> bool:
