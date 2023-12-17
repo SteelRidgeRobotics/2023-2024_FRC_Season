@@ -30,6 +30,7 @@ class RobotContainer:
         # Add commands to auto command chooser
         self.autoChooser.setDefaultOption("Charge Station", ChargeStation(self.swerveDrive))
         self.autoChooser.addOption("Move Forward 1 (NEW)", TestForward(self.swerveDrive))
+        self.autoChooser.addOption("Move Foward (NOT PP)", TestForwardNoPP(self.swerveDrive))
 
         SmartDashboard.putData("Auto", self.autoChooser)
 

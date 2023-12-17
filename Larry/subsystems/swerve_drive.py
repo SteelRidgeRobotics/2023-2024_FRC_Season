@@ -317,7 +317,7 @@ class SwerveDrive(SubsystemBase):
         if fieldRelative:
             swerveModuleStates = self.kinematics.toSwerveModuleStates(ChassisSpeeds.fromFieldRelativeSpeeds(translation.X(), translation.Y(), rotation, Rotation2d.fromDegrees(self.getYaw())))
         else:
-            swerveModuleStates = self.kinematics.toSwerveModuleStates(ChassisSpeeds(translation.X(), translation.Y(), rotation))
+            swerveModuleStates = self.kinematics.toSwerveModuleStates(ChassisSpeeds(translation.X(), translation.Y(), rotation.radians()))
 
         SwerveDrive4Kinematics.desaturateWheelSpeeds(swerveModuleStates, klarryMaxSpeed)
 
