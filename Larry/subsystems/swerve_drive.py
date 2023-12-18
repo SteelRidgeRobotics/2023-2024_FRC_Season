@@ -478,3 +478,9 @@ class SwerveDrive(SubsystemBase):
         self.rightFrontWheel.setDesiredState(moduleStates[1])
         self.leftRearWheel.setDesiredState(moduleStates[2])
         self.rightRearWheel.setDesiredState(moduleStates[3])
+
+    def sendVoltagesToSmartDashboard(self) -> None:
+        SmartDashboard.putNumber("LF Volt.", self.leftFrontSpeed.getMotorOutputVoltage())
+        SmartDashboard.putNumber("RF Volt.", self.rightFrontSpeed.getMotorOutputVoltage())
+        SmartDashboard.putNumber("LR Volt.", self.leftRearSpeed.getMotorOutputVoltage())
+        SmartDashboard.putNumber("RR Volt.", self.rightRearSpeed.getMotorOutputVoltage())

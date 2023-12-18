@@ -14,6 +14,7 @@ class Larry(TimedCommandRobot):
 
         CommandScheduler.getInstance().run()
         self.container.getSwerveDrive().updateOdometry()
+        self.container.getSwerveDrive().sendVoltagesToSmartDashboard()
 
     def autonomousInit(self):
         self.autoCommand = self.container.getAutonomousCommand()

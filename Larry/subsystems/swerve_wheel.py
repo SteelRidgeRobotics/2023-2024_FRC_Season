@@ -76,7 +76,7 @@ class SwerveWheel():
 
         self.name = name
 
-        self.feedForward = SimpleMotorFeedforwardMeters(kS=1, kV=1, kA=0)
+        self.feedForward = SimpleMotorFeedforwardMeters(kS=0, kV=1, kA=1) # kS = Vintercept btw from the whitepaper (see Tuning Larry Google Doc in Programming)
         self.lastAngle = 0
 
     def setDesiredState(self, desiredState: SwerveModuleState) -> None:
