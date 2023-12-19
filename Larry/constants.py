@@ -54,7 +54,7 @@ kdriverControllerPort = 0
 kdeadband = 0.15
 
 # Encoders
-ktimeoutMs = 10
+ktimeoutMs = 20
 kF = 0.05282272  # Feed forward
 kP = 0.6  # Proportional
 kI = 0.004  # Integral

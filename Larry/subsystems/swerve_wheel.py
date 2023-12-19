@@ -11,11 +11,11 @@ from wpimath.controller import SimpleMotorFeedforwardMeters
 
 
 class SwerveWheel():
-    def __init__(self, directionMotor: ctre.TalonFX, speedMotor: ctre.TalonFX, 
+    def __init__(self, directionMotor: ctre.TalonFX, driveMotor: ctre.TalonFX, 
                  CANCoder: CANCoder, MagOffset: float, name: str) -> None:
 
         self.directionMotor = directionMotor
-        self.driveMotor = speedMotor
+        self.driveMotor = driveMotor
 
         self.directionMotor.configSelectedFeedbackSensor(ctre.FeedbackDevice.IntegratedSensor, 0, ktimeoutMs)
         self.driveMotor.configSelectedFeedbackSensor(ctre.FeedbackDevice.IntegratedSensor, 0, ktimeoutMs)
@@ -35,6 +35,26 @@ class SwerveWheel():
         self.directionMotor.config_IntegralZone(0, kIzone, ktimeoutMs)
         self.driveMotor.config_IntegralZone(0, kIzone, ktimeoutMs)
 
+        # MOTOR CONFIG
+        self.directionMotor.configNominalOutputForward(0, ktimeoutMs)
+        self.driveMotor.configNominalOutputForward(0, ktimeoutMs)
+
+        self.directionMotor.configNominalOutputReverse(0, ktimeoutMs)
+        self.driveMotor.configNominalOutputReverse(0, ktimeoutMs)
+
+        self.directionMotor.configPeakOutputForward(1, ktimeoutMs)
+        self.driveMotor.configPeakOutputForward(1, ktimeoutMs)
+
+        self.directionMotor.configPeakOutputReverse(-1, ktimeoutMs)
+        self.driveMotor.configPeakOutputReverse(-1, ktimeoutMs)
+
+        self.directionMotor.configMotionCruiseVelocity(kcruiseVel, ktimeoutMs)
+        self.driveMotor.configMotionCruiseVelocity(kcruiseVel, ktimeoutMs)
+
+        self.directionMotor.configMotionAcceleration(kcruiseAccel, ktimeoutMs)
+        self.driveMotor.configMotionAcceleration(kcruiseAccel, ktimeoutMs)
+
+        """
         directionConfig = TalonFXConfiguration()
         directionConfig.nominalOutputForward = 0
         directionConfig.nominalOutputReverse = 0
@@ -53,6 +73,7 @@ class SwerveWheel():
 
         self.directionMotor.configAllSettings(directionConfig)
         self.driveMotor.configAllSettings(driveConfig)
+        """
 
         self.directionMotor.selectProfileSlot(kSlotIdx, kPIDLoopIdx)
         self.driveMotor.selectProfileSlot(kSlotIdx, kPIDLoopIdx)
