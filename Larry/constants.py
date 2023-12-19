@@ -20,7 +20,7 @@ kDebug = False # Turns off some temporary SmartDashboard values (basically if we
 klarryMaxSpeed = 3.658 # m/s
 klarryMaxRotSpeed = 10.47197551198692 # rads/s
 #klarryMaxAcceleration = # m/s^2
-klarryWheelRadius = 4 / 12 * 3.28 # in meters
+klarryWheelRadius = 1.5 / 12 / 3.28 # in meters, 1.5 is the radius in inches
 
 # Wheels
 kmaxWheelSpeed = 1 # in TalonFX native units (PLACEHOLDER)
