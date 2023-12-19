@@ -69,8 +69,8 @@ class SwerveDrive(SubsystemBase):
         self.kinematics = SwerveDrive4Kinematics(self.leftFrontPosition, self.rightFrontPosition, self.leftRearPosition, self.rightRearPosition)
 
         self.odometry = SwerveDrive4Odometry(self.kinematics, Rotation2d.fromDegrees(self.getYaw()),
-                                             (self.leftFrontWheel.getPosition(), self.rightFrontWheel.getPosition(),
-                                              self.leftRearWheel.getPosition(), self.rightRearWheel.getPosition()))
+                                             (self.leftFrontWheel.getPositionMeters(), self.rightFrontWheel.getPositionMeters(),
+                                              self.leftRearWheel.getPositionMeters(), self.rightRearWheel.getPositionMeters()))
         
         self.PDP = PowerDistribution(0, PowerDistribution.ModuleType.kCTRE)
 
@@ -448,27 +448,21 @@ class SwerveDrive(SubsystemBase):
         return self.odometry.getPose()
     
     def updateOdometry(self) -> None:
-        self.updateWheelPositions()
-        self.odometry.update(Rotation2d.fromDegrees(self.getYaw()), self.leftFrontWheel.getPosition(), self.rightFrontWheel.getPosition(), self.leftRearWheel.getPosition(), self.rightRearWheel.getPosition())
+        self.odometry.update(Rotation2d.fromDegrees(self.getYaw()), 
+                             self.leftFrontWheel.getPositionMeters(), 
+                             self.rightFrontWheel.getPositionMeters(), 
+                             self.leftRearWheel.getPositionMeters(), 
+                             self.rightRearWheel.getPositionMeters())
 
         pose = self.odometry.getPose()
         SmartDashboard.putNumber("Odom X", pose.X())
         SmartDashboard.putNumber("Odom Y", pose.Y())
-
-    def updateWheelPositions(self) -> None:
-        self.leftFrontWheel.updatePostion()
-        self.rightFrontWheel.updatePostion()
-        self.leftRearWheel.updatePostion()
-        self.rightRearWheel.updatePostion()
 
     def resetOdometry(self) -> None:
-        self.odometry.resetPosition(Rotation2d(), Pose2d(), self.leftFrontWheel.getPosition(), self.rightFrontWheel.getPosition(), self.leftRearWheel.getPosition(), self.rightRearWheel.getPosition())
+        self.odometry.resetPosition(Rotation2d(), Pose2d(), self.leftFrontWheel.getPositionMeters(), self.rightFrontWheel.getPositionMeters(), self.leftRearWheel.getPositionMeters(), self.rightRearWheel.getPositionMeters())
         pose = self.odometry.getPose()
         SmartDashboard.putNumber("Odom X", pose.X())
         SmartDashboard.putNumber("Odom Y", pose.Y())
-
-    def getKinematics(self) -> SwerveDrive4Kinematics:
-        return self.kinematics
     
     #we reeeeally gotta re-sort this class someday..
     def setModuleStates(self, moduleStates: tuple[SwerveModuleState, SwerveModuleState, SwerveModuleState, SwerveModuleState]) -> None:

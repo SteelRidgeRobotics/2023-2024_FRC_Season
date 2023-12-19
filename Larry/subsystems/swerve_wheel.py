@@ -1,7 +1,6 @@
 from math import fabs, pi
 
 import ctre
-from ctre import TalonFXConfiguration
 from constants import *
 from ctre.sensors import CANCoder, SensorInitializationStrategy
 from wpilib import RobotBase, SmartDashboard
@@ -54,27 +53,6 @@ class SwerveWheel():
         self.directionMotor.configMotionAcceleration(kcruiseAccel, ktimeoutMs)
         self.driveMotor.configMotionAcceleration(kcruiseAccel, ktimeoutMs)
 
-        """
-        directionConfig = TalonFXConfiguration()
-        directionConfig.nominalOutputForward = 0
-        directionConfig.nominalOutputReverse = 0
-        directionConfig.peakOutputForward = 1
-        directionConfig.peakOutputReverse = -1
-        directionConfig.motionCruiseVelocity = kcruiseVel
-        directionConfig.motionAcceleration = kcruiseAccel
-
-        driveConfig = TalonFXConfiguration()
-        driveConfig.nominalOutputForward = 0
-        driveConfig.nominalOutputReverse = 0
-        driveConfig.peakOutputForward = 1
-        driveConfig.peakOutputReverse = -1
-        driveConfig.motionCruiseVelocity = kcruiseVel
-        driveConfig.motionAcceleration = kcruiseAccel
-
-        self.directionMotor.configAllSettings(directionConfig)
-        self.driveMotor.configAllSettings(driveConfig)
-        """
-
         self.directionMotor.selectProfileSlot(kSlotIdx, kPIDLoopIdx)
         self.driveMotor.selectProfileSlot(kSlotIdx, kPIDLoopIdx)
 
@@ -103,11 +81,9 @@ class SwerveWheel():
     def setDesiredState(self, desiredState: SwerveModuleState) -> None:
         desiredState = self.optimizeAngle(desiredState, Rotation2d.fromDegrees(self.getCurrentAngle()))
 
-        velocity = mpsToFalcon(desiredState.speed, klarryWheelSize, ksteeringGearRatio)
-
+        velocity = mpsToFalcon(desiredState.speed, klarryWheelRadius, ksteeringGearRatio)
         self.driveMotor.set(ctre.ControlMode.Velocity, velocity, ctre.DemandType.ArbitraryFeedForward,
                             self.feedForward.calculate(desiredState.speed))
-        
         self.driveMotor.getSimCollection().addIntegratedSensorPosition(int(velocity))
 
         if fabs(desiredState.speed) <= klarryMaxSpeed * 0.01:
@@ -212,6 +188,7 @@ class SwerveWheel():
 
     def CANtoTalon(self):
         self.directionMotor.setSelectedSensorPosition(ksteeringGearRatio * (self.CANCoder.getAbsolutePosition() * (2048 / 360)), 0, ktimeoutMs)
+        self.directionMotor.getSimCollection().setIntegratedSensorRawPosition(int(ksteeringGearRatio * (self.CANCoder.getAbsolutePosition() * (2048 / 360))))
     
     def move(self, input: float, slowdownWhenFar: bool=True) -> None:
         if self.isInverted:
@@ -232,13 +209,10 @@ class SwerveWheel():
     def stop(self):
         self.driveMotor.set(ctre.TalonFXControlMode.PercentOutput, 0.0)
 
-    def getPosition(self) -> SwerveModulePosition:
-        return self.position
-    
-    def updatePostion(self) -> None:
-        currentAngle = self.getCurrentAngle()
-        currentPos = self.driveMotor.getSelectedSensorPosition() / ksteeringGearRatio
-        self.position = SwerveModulePosition(posToMeters(currentPos), Rotation2d.fromDegrees(currentAngle))
+    def getPositionMeters(self) -> SwerveModulePosition:
+        rots = self.driveMotor.getSelectedSensorPosition() / ksteeringGearRatio / 2048
+        distance = 2 * pi * klarryWheelRadius * rots
+        return SwerveModulePosition(distance, Rotation2d.fromDegrees(self.getCurrentAngle()))
 
     def getCurrentAngle(self):
         return (self.directionMotor.getSelectedSensorPosition() / ksteeringGearRatio) * (360 / 2048)
@@ -248,7 +222,7 @@ class SwerveWheel():
         return self.directionTargetAngle - abs(error) <= angle <= self.directionTargetAngle + abs(error)
     
 def posToMeters(pos) -> float:
-    return pos * (((klarryWheelSize / 2) * pi * 2) / (ksteeringGearRatio * 2048.0))
+    return pos * (((klarryWheelRadius / 2) * pi * 2) / (ksteeringGearRatio * 2048.0))
 
 def mpsToFalcon(velocity: float, circumference: float, gearRatio: float) -> float:
     wheelRPM = ((velocity * 60) / circumference)
