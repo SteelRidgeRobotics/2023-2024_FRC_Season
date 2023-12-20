@@ -4,17 +4,21 @@ from robotcontainer import RobotContainer
 
 
 class Larry(TimedCommandRobot):
+    field = wpilib.Field2d()
+
     def robotInit(self):
 
         self.container = RobotContainer()
         self.autoCommand = self.container.getAutonomousCommand()
         self.container.getSwerveDrive().resetOdometry()
+        self.container.getSwerveDrive().updateFieldPose(self.field)
 
     def robotPeriodic(self):
 
         CommandScheduler.getInstance().run()
         self.container.getSwerveDrive().updateOdometry()
         self.container.getSwerveDrive().sendVoltagesToSmartDashboard()
+        self.container.getSwerveDrive().updateFieldPose(self.field)
 
     def autonomousInit(self):
         self.autoCommand = self.container.getAutonomousCommand()

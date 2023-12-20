@@ -19,6 +19,7 @@
       "/LiveWindow/Ungrouped/navX-Sensor[4]": "Gyro",
       "/SmartDashboard/Auto": "String Chooser",
       "/SmartDashboard/Autonomous Code": "String Chooser",
+      "/SmartDashboard/Field": "Field2d",
       "/SmartDashboard/Profile": "String Chooser",
       "/SmartDashboard/Selected Driver Profile": "String Chooser"
     },
@@ -45,7 +46,7 @@
     "precision": 3,
     "transitory": {
       "SmartDashboard": {
-        "Profile": {
+        "Field": {
           "open": true
         },
         "open": true

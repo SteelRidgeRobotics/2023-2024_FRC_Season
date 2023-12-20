@@ -82,9 +82,10 @@ class SwerveWheel():
         desiredState = self.optimizeAngle(desiredState, Rotation2d.fromDegrees(self.getCurrentAngle()))
 
         velocity = mpsToFalcon(desiredState.speed, klarryWheelRadius, ksteeringGearRatio)
+        feedForward = self.feedForward.calculate(desiredState.speed)
         self.driveMotor.set(ctre.ControlMode.Velocity, velocity, ctre.DemandType.ArbitraryFeedForward,
-                            self.feedForward.calculate(desiredState.speed))
-        self.driveMotor.getSimCollection().addIntegratedSensorPosition(int(velocity))
+                            feedForward)
+        self.driveMotor.getSimCollection().addIntegratedSensorPosition(int(velocity / 31.035))
 
         if fabs(desiredState.speed) <= klarryMaxSpeed * 0.01:
             angle = self.lastAngle
@@ -211,6 +212,7 @@ class SwerveWheel():
 
     def getPositionMeters(self) -> SwerveModulePosition:
         rots = self.driveMotor.getSelectedSensorPosition() / ksteeringGearRatio / 2048
+        SmartDashboard.putNumber(self.name + " rots", self.driveMotor.getSelectedSensorPosition() / ksteeringGearRatio)
         distance = 2 * pi * klarryWheelRadius * rots
         return SwerveModulePosition(distance, Rotation2d.fromDegrees(self.getCurrentAngle()))
 

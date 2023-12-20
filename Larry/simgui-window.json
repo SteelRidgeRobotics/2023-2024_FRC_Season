@@ -45,7 +45,7 @@
     },
     "###/SmartDashboard/Profile": {
       "Collapsed": "0",
-      "Pos": "162,69",
+      "Pos": "167,63",
       "Size": "254,54"
     },
     "###FMS": {
@@ -55,7 +55,7 @@
     },
     "###Joysticks": {
       "Collapsed": "0",
-      "Pos": "-13,898",
+      "Pos": "85,932",
       "Size": "796,240"
     },
     "###Keyboard 0 Settings": {
@@ -65,7 +65,7 @@
     },
     "###NetworkTables": {
       "Collapsed": "0",
-      "Pos": "509,4",
+      "Pos": "522,26",
       "Size": "1254,904"
     },
     "###NetworkTables Info": {
@@ -75,7 +75,7 @@
     },
     "###Other Devices": {
       "Collapsed": "0",
-      "Pos": "1575,29",
+      "Pos": "2005,89",
       "Size": "312,868"
     },
     "###Plot <0>": {

@@ -6,7 +6,7 @@ from commands2 import SubsystemBase
 from constants import *
 from ctre.sensors import CANCoder
 from subsystems.swerve_wheel import SwerveWheel
-from wpilib import PowerDistribution, RobotBase, SmartDashboard
+from wpilib import Field2d, PowerDistribution, RobotBase, SmartDashboard
 from wpimath.geometry import Pose2d, Rotation2d, Translation2d
 from wpimath.kinematics import ChassisSpeeds, SwerveDrive4Kinematics, SwerveDrive4Odometry, SwerveModuleState
 
@@ -33,11 +33,11 @@ class SwerveDrive(SubsystemBase):
         self.rightRearDirection = ctre.TalonFX(krightRearDirectionID)
         self.rightRearSpeed = ctre.TalonFX(krightRearSpeedID)
 
-        self.leftFrontSpeed.setInverted(True)
-        self.leftRearSpeed.setInverted(True)
+        self.leftFrontSpeed.setInverted(False)
+        self.leftRearSpeed.setInverted(False)
 
-        self.rightFrontSpeed.setInverted(True)
-        self.rightRearSpeed.setInverted(True)
+        self.rightFrontSpeed.setInverted(False)
+        self.rightRearSpeed.setInverted(False)
 
         self.leftFrontDirection.setInverted(False)
         self.leftRearDirection.setInverted(False)
@@ -478,3 +478,7 @@ class SwerveDrive(SubsystemBase):
         SmartDashboard.putNumber("RF Volt.", self.rightFrontSpeed.getMotorOutputVoltage())
         SmartDashboard.putNumber("LR Volt.", self.leftRearSpeed.getMotorOutputVoltage())
         SmartDashboard.putNumber("RR Volt.", self.rightRearSpeed.getMotorOutputVoltage())
+
+    def updateFieldPose(self, field: Field2d) -> None:
+        field.setRobotPose(self.odometry.getPose().X(), self.getPose().Y(), self.getPose().rotation())
+        SmartDashboard.putData("Field", field)
