@@ -59,13 +59,10 @@ class SwerveWheel:
         self.direction_motor.setSelectedSensorPosition(0.0, kPIDLoopIdx, ktimeoutMs)
         self.speed_motor.setSelectedSensorPosition(0.0, kPIDLoopIdx, ktimeoutMs)
 
-        self.speed_motor.setInverted(True)
+        self.speed_motor.setInverted(False)
         
-        self.cancoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition, ktimeoutMs)
-        self.cancoder.configSensorDirection(True, ktimeoutMs)
-
-        # Sim CANCoder
-        self.cancoder_sim = CANCoderSimCollection(self.cancoder)
+        #self.cancoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition, ktimeoutMs)
+        #self.cancoder.configSensorDirection(True, ktimeoutMs)
 
         self.directionTargetPos = 0.0
         self.directionTargetAngle = 0.0
@@ -164,8 +161,11 @@ class SwerveWheel:
         """
         ACTUALLY MOVING
         """
+
         if self.isInverted:
-            self.desiredSpeed *= -1
+            self.speed_motor.setInverted(True)
+        else:
+            self.speed_motor.setInverted(False)
 
         # Slows down motor at a curve depending on how far the motor angle is from the target angle.
         # Don't worry about the actual equation, I just eyeballed the numbers lmao

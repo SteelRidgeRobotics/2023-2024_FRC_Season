@@ -6,10 +6,9 @@ from ctre.sensors import CANCoder
 from frc6343.controller.deadband import deadband
 import magicbot
 import navx
+from pathplannerlib import PathConstraints, PathPlanner
 import wpilib
 from wpilib import SmartDashboard
-from wpilib.simulation import FlywheelSim
-from wpimath.system.plant import DCMotor
 
 class Larry(magicbot.MagicRobot):
     swerve_drive: SwerveDrive
@@ -33,7 +32,7 @@ class Larry(magicbot.MagicRobot):
         self.rear_left_speed_motor = TalonFX(kleftRearSpeedID)
         self.rear_left_direction_motor = TalonFX(kleftRearDirectionID)
         self.rear_left_cancoder = CANCoder(krlCANcoderID)
-        self.rear_left_cancoder.configMagnetOffset(krlCANcoderID)
+        self.rear_left_cancoder.configMagnetOffset(krlCANoffset)
 
         self.rear_right_speed_motor = TalonFX(krightRearSpeedID)
         self.rear_right_direction_motor = TalonFX(krightRearDirectionID)
@@ -47,6 +46,9 @@ class Larry(magicbot.MagicRobot):
         if not self.isReal():
             self.field2d = wpilib.Field2d()
             SmartDashboard.putData("Field", self.field2d)
+
+        # PathPlanner
+        self.testAutoPath1 = PathPlanner.loadPath("Test 1", PathConstraints(4.0, 3.0))
 
 
     def teleopInit(self):

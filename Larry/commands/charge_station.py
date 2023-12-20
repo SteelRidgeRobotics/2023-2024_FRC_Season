@@ -1,21 +1,22 @@
-import commands2
-import constants
+from commands2 import CommandBase
+from constants import *
 from subsystems.swerve_drive import SwerveDrive
-import wpilib
+from wpilib import SmartDashboard, Timer
 from wpimath.controller import PIDController
 
-class ChargeStation(commands2.CommandBase):
+
+class ChargeStation(CommandBase):
 
     def __init__(self, swerveDrive: SwerveDrive):
 
         super().__init__()
 
         self.drive = swerveDrive
-        self.timer = wpilib.Timer()
+        self.timer = Timer()
 
         self.addRequirements([self.drive])
 
-        self.pidController = PIDController(constants.kChargeP, constants.kChargeI, constants.kChargeD)
+        self.pidController = PIDController(kChargeP, kChargeI, kChargeD)
         self.onChargeStation = False
 
     def initialize(self):
@@ -26,13 +27,13 @@ class ChargeStation(commands2.CommandBase):
 
     def execute(self):
 
-        wpilib.SmartDashboard.putNumber("Yaw", self.drive.getYaw())
-        wpilib.SmartDashboard.putNumber("Pitch", self.drive.getPitch())
+        SmartDashboard.putNumber("Yaw", self.drive.getYaw())
+        SmartDashboard.putNumber("Pitch", self.drive.getPitch())
 
         if self.drive.getPitch() <= 7.5 and not self.onChargeStation:
 
             self.drive.translate(0, 0.3)
-            wpilib.SmartDashboard.putString("Auto Status", "Driving to Station")
+            SmartDashboard.putString("Auto Status", "Driving to Station")
 
         elif self.timer.get() <= 1:
 
@@ -43,18 +44,18 @@ class ChargeStation(commands2.CommandBase):
 
             power = (self.pidController.calculate(self.drive.getPitch(), 0.0))
 
-            wpilib.SmartDashboard.putString("Auto Status", "PID Control")
+            SmartDashboard.putString("Auto Status", "PID Control")
 
             if abs(power) <= 0.5:
 
                 self.drive.translate(0, power)
 
-        wpilib.SmartDashboard.putBoolean("Running", True)
+        SmartDashboard.putBoolean("Running", True)
 
     def end(self, interrupted: bool):
 
         self.drive.translate(0, 0)
-        wpilib.SmartDashboard.putBoolean("Running", False)
+        SmartDashboard.putBoolean("Running", False)
 
     def isFinished(self):
 

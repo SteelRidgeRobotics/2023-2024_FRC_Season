@@ -1,20 +1,24 @@
-import commands2
 import wpilib
-
+from commands2 import CommandScheduler, TimedCommandRobot
 from robotcontainer import RobotContainer
 
 
-# vision setup
+class Larry(TimedCommandRobot):
+    field = wpilib.Field2d()
 
-class MyRobot(commands2.TimedCommandRobot):
     def robotInit(self):
 
         self.container = RobotContainer()
         self.autoCommand = self.container.getAutonomousCommand()
+        self.container.getSwerveDrive().resetOdometry()
+        self.container.getSwerveDrive().updateFieldPose(self.field)
 
     def robotPeriodic(self):
 
-        commands2.CommandScheduler.getInstance().run()
+        CommandScheduler.getInstance().run()
+        self.container.getSwerveDrive().updateOdometry()
+        self.container.getSwerveDrive().sendVoltagesToSmartDashboard()
+        self.container.getSwerveDrive().updateFieldPose(self.field)
 
     def autonomousInit(self):
         self.autoCommand = self.container.getAutonomousCommand()
@@ -42,8 +46,8 @@ class MyRobot(commands2.TimedCommandRobot):
 
     def testInit(self):
 
-        commands2.CommandScheduler.getInstance().cancelAll()
+        CommandScheduler.getInstance().cancelAll()
 
 
 if __name__ == "__main__":
-    wpilib.run(MyRobot)
+    wpilib.run(Larry)

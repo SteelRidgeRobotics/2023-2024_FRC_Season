@@ -1,10 +1,34 @@
+from pathplannerlib import PathConstraints
+from wpimath.trajectory import TrapezoidProfileRadians
+
 """
 CONSTANTS
 """
 
+class AutoConstants:
+    kPTheta = 0.0
+    kThetaControllerRestraints = TrapezoidProfileRadians.Constraints()
+
+    kPXController = 0.0
+    kPYController = 0.0
+
 # Options
 kUsingGuitarController = False
-kDebug = True # Turns off some temporary SmartDashboard values (basically if we dont want to clutter up things ;))
+kDebug = False # Turns off some temporary SmartDashboard values (basically if we dont want to clutter up things ;))
+
+# Larry stats (for ease of access and path tracing) (in meters per second, m/s)
+klarryMaxSpeed = 3.658 # m/s
+klarryMaxRotSpeed = 10.47197551198692 # rads/s
+#klarryMaxAcceleration = # m/s^2
+klarryWheelRadius = 1.5 / 12 / 3.28 # in meters, 1.5 is the radius in inches
+
+# Wheels
+kmaxWheelSpeed = 1 # in TalonFX native units (PLACEHOLDER)
+
+# Autonomous
+kdefaultPathConstraints = PathConstraints(2, 3.0)
+kdefaultMagIncrease = 0.0101702007 # Per wpilib tick PS: Don't change, I calculated it trust -Nay
+kmagMax = 0.5
 
 # Multipliers
 kDefaultSpeedMultplier = 1.0
@@ -22,14 +46,17 @@ kleftRearDirectionID = 5
 krightFrontDirectionID = 6
 krightRearDirectionID = 7
 
+# Odometry and Kinematics
+krobotSize = 0.381
+
 # Controllers
 kdriverControllerPort = 0
 kdeadband = 0.15
 
 # Encoders
-ktimeoutMs = 10
+ktimeoutMs = 20
 kF = 0.05282272  # Feed forward
-kP = 0.3  # Proportional
+kP = 0.6  # Proportional
 kI = 0.004  # Integral
 kD = 2  # Derivative
 kIzone = 150
