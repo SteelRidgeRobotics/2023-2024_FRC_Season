@@ -315,7 +315,7 @@ class SwerveDrive(SubsystemBase):
     
     def drive(self, translation: Translation2d, rotation: Rotation2d, fieldRelative: bool=True) -> None:
         if fieldRelative:
-            swerveModuleStates = self.kinematics.toSwerveModuleStates(ChassisSpeeds.fromFieldRelativeSpeeds(translation.X(), translation.Y(), rotation, Rotation2d.fromDegrees(self.getYaw())))
+            swerveModuleStates = self.kinematics.toSwerveModuleStates(ChassisSpeeds.fromFieldRelativeSpeeds(translation.X(), translation.Y(), rotation.radians(), Rotation2d.fromDegrees(self.getYaw())))
         else:
             swerveModuleStates = self.kinematics.toSwerveModuleStates(ChassisSpeeds(translation.X(), translation.Y(), rotation.radians()))
 

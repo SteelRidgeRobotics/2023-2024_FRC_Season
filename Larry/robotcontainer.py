@@ -41,6 +41,7 @@ class RobotContainer:
         self.profileChooser.addOption("Wyatt", DriveControllerWyatt(self.swerveDrive, lambda: self.driverController.getLeftX(), lambda: self.driverController.getLeftY(), lambda: self.driverController.getRightX(), lambda: self.driverController.getLeftBumper(), lambda: self.driverController.getRightBumper(), lambda: self.driverController.getLeftTriggerAxis(), lambda: self.driverController.getRightTriggerAxis()))
         self.profileChooser.addOption("Caden", DriveControllerCaden(self.swerveDrive, lambda: self.driverController.getLeftX(), lambda: self.driverController.getLeftY(), lambda: self.driverController.getRightX(), lambda: self.driverController.getLeftBumper(), lambda: self.driverController.getRightBumper(), lambda: self.driverController.getLeftTriggerAxis(), lambda: self.driverController.getRightTriggerAxis()))
         self.profileChooser.addOption("KINEMATICS TEST", DriveWithKinematics(self.swerveDrive, lambda: self.driverController, True))
+        self.profileChooser.addOption("KINEMATICS TEST (non-field relative)", DriveWithKinematics(self.swerveDrive, lambda: self.driverController, False))
 
         SmartDashboard.putData("Profile", self.profileChooser)
 

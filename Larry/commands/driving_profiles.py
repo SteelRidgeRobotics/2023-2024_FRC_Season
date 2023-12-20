@@ -5,7 +5,7 @@ from constants import *
 from frc6343.controller.deadband import deadband
 from subsystems.swerve_drive import SwerveDrive
 from wpilib import SmartDashboard, XboxController
-from wpimath.geometry import Translation2d
+from wpimath.geometry import Rotation2d, Translation2d
 
 
 class DriveControllerDefault(CommandBase):
@@ -177,7 +177,7 @@ class DriveWithKinematics(CommandBase):
 
         translation = Translation2d(translationY * klarryMaxSpeed, translationX * klarryMaxSpeed)
         rotation = rotation * klarryMaxRotSpeed
-        self.swerveDrive.drive(translation, rotation, self.fieldRelative)
+        self.swerveDrive.drive(translation, Rotation2d(rotation), self.fieldRelative)
     
 """
 idk what the variable default speed does but translational default 25% and rotation default 100%

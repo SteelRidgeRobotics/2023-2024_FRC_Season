@@ -49,6 +49,9 @@
         "Field": {
           "open": true
         },
+        "Profile": {
+          "open": true
+        },
         "open": true
       }
     }
