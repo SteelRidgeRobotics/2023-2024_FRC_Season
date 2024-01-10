@@ -46,6 +46,7 @@ Basically, when creating your branch, ask yourself the following:
 + "Can I tell what I'm adding/fixing?"
 + "Is this a stupid idea?"
 + "Why the hell did I think I would enjoy this?"
++ "chiken burgur
 
 > [!IMPORTANT]
 > NAME YOUR COMMITS WELL TOO, I'M TIRED OF SEEING "code" AND "fixed something" AND "forgot to push this last time" PLEASE NAME THEM WELL AND REMEMBER TO PUSH YOUR CODE 😭
