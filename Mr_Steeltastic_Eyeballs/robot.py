@@ -3,9 +3,13 @@ from cscore import CameraServer
 
 class MrSteeltasticsEyes(wpilib.TimedRobot):
     def robotInit(self) -> None:
-
-        wpilib.CameraServer.launch('vision.py:main')
+        
+        wpilib.CameraServer.launch('vision2.py:main')
         
         return super().robotInit()
-        
+
+    def __init__(self):
+        pass
+if __name__ == "__main__":
+    wpilib.run(MrSteeltasticsEyes)
     
