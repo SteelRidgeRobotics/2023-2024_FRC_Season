@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
     Motor Tester control code
 """
@@ -13,10 +12,10 @@ class MyRobot(wpilib.TimedRobot):
         This function is called upon program startup and
         should be used for any initialization code.
         """
-        self.left_motor = wpilib.Spark(0)
-        self.right_motor = wpilib.Spark(1)
+        self.left_motor = wpilib.Talon(0)
+        self.right_motor = wpilib.Talon(1)
         self.drive = wpilib.drive.DifferentialDrive(self.left_motor, self.right_motor)
-        self.stick = wpilib.Joystick(1)
+        self.stick = wpilib.Joystick(0)
         self.timer = wpilib.Timer()
 
     def autonomousInit(self):
