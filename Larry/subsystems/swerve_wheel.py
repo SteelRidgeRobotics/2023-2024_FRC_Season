@@ -1,12 +1,13 @@
 # import commands2
-import ctre
+import phoenix5 as ctre
+from phoenix5.sensors import CANCoder, SensorInitializationStrategy
 import math
 import wpilib
 from constants import *
 
 class SwerveWheel():
     def __init__(self, directionMotor: ctre.TalonFX, speedMotor: ctre.TalonFX, 
-                 CANCoder: ctre.CANCoder, MagOffset: float, 
+                 CANCoder: CANCoder, MagOffset: float,
                  manualOffset: float) -> None:
 
         self.directionMotor = directionMotor
@@ -60,7 +61,7 @@ class SwerveWheel():
 
         self.CANCoder = CANCoder
         
-        self.CANCoder.configSensorInitializationStrategy(ctre.SensorInitializationStrategy.BootToAbsolutePosition, ktimeoutMs)
+        self.CANCoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition, ktimeoutMs)
         self.CANCoder.configSensorDirection(True, ktimeoutMs)
         self.CANCoder.configMagnetOffset(MagOffset)
 

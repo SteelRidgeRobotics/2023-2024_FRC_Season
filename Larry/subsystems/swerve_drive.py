@@ -3,7 +3,8 @@ import math
 from constants import MultiplierOptions, TriggerOptions
 import commands2
 import constants
-import ctre
+import phoenix5 as ctre
+from phoenix5.sensors import CANCoder
 import wpilib
 import navx
 from subsystems.swerve_wheel import SwerveWheel
@@ -46,10 +47,10 @@ class SwerveDrive(commands2.SubsystemBase):
         self.rightRearDirection.setInverted(False)
 
         # init CAN coders
-        self.flCANcoder = ctre.CANCoder(constants.kflCANcoderID)
-        self.rlCANcoder = ctre.CANCoder(constants.krlCANcoderID)
-        self.frCANcoder = ctre.CANCoder(constants.kfrCANcoderID)
-        self.rrCANcoder = ctre.CANCoder(constants.krrCANcoderID)
+        self.flCANcoder = CANCoder(constants.kflCANcoderID)
+        self.rlCANcoder = CANCoder(constants.krlCANcoderID)
+        self.frCANcoder = CANCoder(constants.kfrCANcoderID)
+        self.rrCANcoder = CANCoder(constants.krrCANcoderID)
 
         # init swerve modules
         self.leftFrontSwerveModule = SwerveWheel(self.leftFrontDirection, self.leftFrontSpeed, self.flCANcoder, constants.kflCANoffset, 0.0)

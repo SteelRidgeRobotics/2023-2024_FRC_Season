@@ -23,7 +23,7 @@ class DriveWithController(commands2.CommandBase):
         self.rightBumper = rightBumper
         self.leftTrigger = leftTrigger
         self.rightTrigger = rightTrigger
-        self.addRequirements([self.drive])
+        self.addRequirements(self.drive)
         self.drive.reset()
         self.drive.getPosFromOffState()
 

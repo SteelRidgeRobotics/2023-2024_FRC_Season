@@ -13,7 +13,7 @@ class ChargeStation(commands2.CommandBase):
         self.drive = swerveDrive
         self.timer = wpilib.Timer()
 
-        self.addRequirements([self.drive])
+        self.addRequirements(self.drive)
 
         self.pidController = PIDController(constants.kChargeP, constants.kChargeI, constants.kChargeD)
         self.onChargeStation = False

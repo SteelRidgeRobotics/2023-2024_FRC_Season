@@ -17,10 +17,11 @@ class MyRobot(commands2.TimedCommandRobot):
         commands2.CommandScheduler.getInstance().run()
 
     def autonomousInit(self):
-        self.autoCommand = self.container.getAutonomousCommand()
+        pass
+        # self.autoCommand = self.container.getAutonomousCommand()
 
-        if self.autoCommand:
-            self.autoCommand.schedule()
+        # if self.autoCommand:
+        #     self.autoCommand.schedule()
 
     def autonomousPeriodic(self):
         pass
