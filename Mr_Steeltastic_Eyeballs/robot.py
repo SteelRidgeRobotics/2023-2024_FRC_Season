@@ -1,5 +1,6 @@
 import wpilib
 from cscore import CameraServer
+import cv2
 
 class MrSteeltasticsEyes(wpilib.TimedRobot):
     def robotInit(self) -> None:
