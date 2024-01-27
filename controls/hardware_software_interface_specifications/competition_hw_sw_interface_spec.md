@@ -54,6 +54,24 @@ However, the motor will likely be a Falcon 500._
 
 #### Intake Pivot
 
+The intake rotates around a pivot at the top of the lift.
+The pivot is driven by a single motor and gearbox.
+The pivot will rotate the intake to a predetermined rotation position along its range of motion.
+The retracted, or parked, position is at one extreme of the pivot's range of motion where the intake is fully inside the robot's frame perimeter.
+The extended, or deployed, position is at the other extreme of the pivot's range of motion.
+The extended position is used when capturing game pieces directly off the floor.
+
+In the preferred control implementation, the control algorithm can rotate the pivot to an arbitrary angle and hold the intake in that position for the duration of a match. 
+The specific implementation is _TBD_, but something like Phoenix 6 Motion Magic or the WPI ProfiledPID Controller would likely work well.
+
+The home position of the pivot is the fully retracted position. 
+The robot will start the match in the fully retracted position, so the robot code can set this as the home position during robot initialization.
+An incremental quadrature encoder will be used to track the position of the pivot.
+A in match re-homing algorithm is not included in the design, so the motor current must be limited to prevent motor controller brown out / black out.
+
+An alternative position sensor approaches include using an absolute position sensor.
+An alternative approach to homing the pivot would through the use of a micro-switch or a magnet and Hall effect sensor. 
+
 _Note: At the time of this writing, the specific motor and gearbox gear ratio is TBD.
 However, the motor will likely be a Falcon 500 and the gear ratio will likely be 48:1._
 
