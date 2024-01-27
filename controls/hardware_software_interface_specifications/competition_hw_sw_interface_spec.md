@@ -95,7 +95,24 @@ This list should be used to guide trade off decisions to ensure that lower prior
 
 ## Motion Control Rules
 
+_Note: The high level motion control rules for the robot are under development._
+
+The high level motion control rules describe the allowed interactions between the various robot subsystems.
+
+### Lift and Intake Rules
+These rule govern the interaction between the lift and intake mechanisms.
+1. Only move one mechanism at a time.
+2. Only move the intake pivot when the lift is in the low position.
+3. Only raise the lift when the intake is not in the retracted position.
+4. Automatically retract the intake when a game piece is captured by the intake.
+5. Run the feeder in the in capture direction when the intake is empty and not in the retracted position.
+
 ## Robot Controllers
+
+The robot implements a CTRE style robot control system.
+A generic CTRE control system is shown below.
+
+![Generic CTRE Control System](https://docs.wpilib.org/en/stable/_images/frc-control-system-layout.svg)
 
 This robot uses a single RoboRIO 2 as the only robot controller.
 The robot code is implemented in Python using the 2024 RobotPy framework.
@@ -150,7 +167,7 @@ The following table lists all the sensors used in the robot.
 ## OpenMesh Radio
 
 The OpenMesh radio is connected directly to the RoboRIO 2 through an Ethernet cable. The radio is powered from the
-VRM's 12V, 2A output which is connected to the DC barrel connector on the radio.
+The VRM's 12V, 2A output is connected to a Radio Power Module (RPM) with provides power to the radio through the Ethernet cable.
 
 ## Crimp Inspection Log
 
