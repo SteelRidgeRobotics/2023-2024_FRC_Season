@@ -1,6 +1,6 @@
 # Controls Software Specification
 
-Robot Name: Larry
+Robot Name: TBD
 
 ## Description
 
