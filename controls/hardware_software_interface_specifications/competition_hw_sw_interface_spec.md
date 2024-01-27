@@ -1,4 +1,4 @@
-# Hardware Software Specification
+# Hardware Software Interface Specification
 
 Robot Name: _TBD_
 
@@ -18,6 +18,7 @@ The swerve drive utilizes the Swerve Drive Specialties MK4i module.
 The steering gear ratio of the MK4i is 150/7:1.
 The drive gear ratio of the MK4i is 27/4:1.
 This is the V2, or medium speed, version of the module.
+Each steering mechanism includes a CANcoder absolute position encoder.
 
 [SDS MK4i Webpage](https://www.swervedrivespecialties.com/products/mk4i-swerve-module?variant=39598777172081)
 
@@ -92,11 +93,14 @@ This list should be used to guide trade off decisions to ensure that lower prior
 3. Amplifier Lift
 4. Climber
 
+## Motion Control Rules
+
 ## Robot Controllers
 
 This robot uses a single RoboRIO 2 as the only robot controller.
 The robot code is implemented in Python using the 2024 RobotPy framework.
-Major software versions are shown in the following table.  
+Major software versions are shown in the following table.
+Motor controller and sensor software versions are listed elsewhere in this document.
 
 | Software Component        | Version   |
 |---------------------------|-----------|
@@ -115,19 +119,33 @@ Major software versions are shown in the following table.
 
 ## Motor Controllers
 
-| Motor          | Controller   | FW     | Motor    | CAN Addr | PDP Port | Breaker |
-|----------------|--------------|--------|----------|:--------:|:--------:|---------|
-| Swerve 0 Drive | Talon FX     | 2023.3 | Falcon   |    1     |    0     | 40 A    |
-| Swerve 0 Steer | Talon FX     |        | Falcon   |    2     |    0     | 30 A    |
-| Swerve 1 Drive | Talon FX     |        | Falcon   |    3     |    0     | 40 A    |
-| Swerve 1 Steer | Talon FX     |        | Falcon   |    4     |    0     | 30 A    |
-| Swerve 2 Drive | Talon FX     |        | Falcon   |    5     |    0     | 40 A    |
-| Swerve 2 Steer | Talon FX     |        | Falcon   |    6     |    0     | 30 A    |
-| Swerve 3 Drive | Talon FX     |        | Falcon   |    7     |    0     | 40 A    |
-| Swerve 3 Steer | Talon FX     |        | Falcon   |    8     |    0     | 30 A    |
-| Lift           | Talon FX     |        | Falcon   |    9     |    0     | 40 A    |
-| Intake Pivot   | Talon FX     |        | Falcon   |    10    |    0     | 40 A    |
-| Intake Feeder  | Talon FX     |        | Falcon   |    11    |    0     | 30 A    |
+The following table lists all the motor controllers used in the robot.
+
+| Function       | Controller   | FW     | Motor    | CAN Addr | PDP Port | Breaker |
+|----------------|--------------|--------|----------|:--------:|:--------:|:-------:|
+| Swerve 0 Drive | Talon FX     | 2023.3 | Falcon   |    1     |    0     |  40 A   |
+| Swerve 0 Steer | Talon FX     |        | Falcon   |    2     |    0     |  30 A   |
+| Swerve 1 Drive | Talon FX     |        | Falcon   |    3     |    0     |  40 A   |
+| Swerve 1 Steer | Talon FX     |        | Falcon   |    4     |    0     |  30 A   |
+| Swerve 2 Drive | Talon FX     |        | Falcon   |    5     |    0     |  40 A   |
+| Swerve 2 Steer | Talon FX     |        | Falcon   |    6     |    0     |  30 A   |
+| Swerve 3 Drive | Talon FX     |        | Falcon   |    7     |    0     |  40 A   |
+| Swerve 3 Steer | Talon FX     |        | Falcon   |    8     |    0     |  30 A   |
+| Lift           | Talon FX     |        | Falcon   |    9     |    0     |  40 A   |
+| Intake Pivot   | Talon FX     |        | Falcon   |    10    |    0     |  40 A   |
+| Intake Feeder  | Talon FX     |        | Falcon   |    11    |    0     |  30 A   |
+
+
+## Sensors
+
+The following table lists all the sensors used in the robot.
+
+| Function       | Sensor   | FW | Motor | CAN Addr | PDP / VRM | Breaker |
+|----------------|----------|----|-------|:--------:|-----------|:-------:|
+| Swerve 0 Steer | CANcoder |    |       |          | VRM 5V/2A |   N/A   |
+| Swerve 1 Steer | CANcoder |    |       |          |           |         |
+| Swerve 2 Steer | CANcoder |    |       |          |           |         |
+| Swerve 3 Steer | CANcoder |    |       |          |           |         |
 
 ## OpenMesh Radio
 
