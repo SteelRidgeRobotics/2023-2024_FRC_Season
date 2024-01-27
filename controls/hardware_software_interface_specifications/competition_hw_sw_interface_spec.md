@@ -136,4 +136,15 @@ VRM's 12V, 2A output which is connected to the DC barrel connector on the radio.
 
 ## Crimp Inspection Log
 
-The crimp inspections on this robot are undocumented.
+The following wiring crimps were inspected by someone certified in Basic Controls or an approved mentor.
+
+| No. | Color | Type | Description  | Technician | Inspector | Date |
+|-----|-------|------|--------------|------------|-----------|------|
+|     |       |      |              |            |           |      |
+|     |       |      |              |            |           |      |
+|     |       |      |              |            |           |      |
+
+Colors: K=Black, R=Red, Y=Yellow, B=Blue, W=White, G=Green
+
+Types: WR=Wire Ferrule, PP45=PowerPole 45, BS=Butt Splice, CL=6 AWG Compression Lug, PWM=PWM / DuPont
+
