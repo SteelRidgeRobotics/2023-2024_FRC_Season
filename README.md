@@ -1,18 +1,18 @@
 # 2023-2024 FRC Season
 All of our code for the 2023-2024 FIRST® Robotics Competition CRESCENDO, Presented by HAAS and projects in the offseason.
 
-# Programming Convention
-We use [Trunk Based Development](https://trunkbaseddevelopment.com/).
-
 This repository includes the following:
-+ [The Training Folder<sup>TM</sup>](https://github.com/SteelRidgeRobotics/2023-2024_FRC_Season/tree/main), which contains all the training projects our newest programmers coded and worked on to get familiar with our \*amazing\* workflow.
-+ Our [Trunk or Treat Bot, Telepatata](https://github.com/SteelRidgeRobotics/2023-2024_FRC_Season/tree/main/TrunkOrTreatRobot), which (shockingly) is our robot code for Trunk or Treat.
++ [The Training Folder<sup>TM</sup>](Training), which contains all the training projects our newest programmers coded and worked on to get familiar with our \*amazing\* workflow.
++ Our [Trunk or Treat Bot, Telepatata](TrunkOrTreatRobot), which (shockingly) is our robot code for Trunk or Treat.
++ [Larry](Larry), our team's first working Swerve Drive.
++ [Larry, again](Larry_MagicBot), which is Larry re-written in the robotpy MagicBot framework.
 + Other stuff later, probably ;)
 
-## The Basics
-Trunk Based Development makes it easier to have a team of people working together on one project. It works by seperating everyone's work into seperate branches that can be committed and pushed to independently without having to update every change thats made in main.
+# Programming Convention
+We use [Trunk Based Development](https://trunkbaseddevelopment.com/).
+Trunk Based Development makes it easier to have a team of people working together on one project. It works by seperating everyone's work into seperate branches that can be committed and pushed independently without having to update every change thats made in main.
 
-As of `10/26/2023` we have 8 programmers, which may not seem like a big deal, but it's literally more than double from how much we had last year. Because of this, we'll try and enforce Trunk Based more.
+As of `12/3/2023` we have 7 full-time programmers, which may not seem like a big deal, but it's literally more than double from how much we had last year. Because of this, we'll try and enforce Trunk Based more.
 
 ## The Art of Not Pissing Off The Other Programmers, by [Pickle_Face5](https://github.com/PickleFace5)
 > "Um... I don't even know where to start with you. I mean, do you even know who you're talkin' to?"
@@ -46,6 +46,7 @@ Basically, when creating your branch, ask yourself the following:
 + "Can I tell what I'm adding/fixing?"
 + "Is this a stupid idea?"
 + "Why the hell did I think I would enjoy this?"
++ "chiken burgur
 
 > [!IMPORTANT]
 > NAME YOUR COMMITS WELL TOO, I'M TIRED OF SEEING "code" AND "fixed something" AND "forgot to push this last time" PLEASE NAME THEM WELL AND REMEMBER TO PUSH YOUR CODE 😭
