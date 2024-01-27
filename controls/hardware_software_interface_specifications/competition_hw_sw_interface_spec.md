@@ -23,7 +23,9 @@ Major software versions are shown in the following table.
 | RobotRIO Image Version: | 2024 v2.1  |
 | Python                  | 3.11.7     |
 | OpenMesh Radio Firmware | TBD        |
-| _Python Packages_       |            |
+
+| Python Packages         | Version    |
+|-------------------------|------------|
 | robotpy                 | 2024.2.2.1 |
 | robotpy-commands-v2     | 2024.2.1   |
 | frc6343                 | 0.2        |
