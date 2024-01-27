@@ -23,7 +23,7 @@ Robot Name: _TBD_
 
 ## Description
 
-This document describes the interface between the hardware and software of the competition robot for the 20024 Crescendo FRC Season.
+This document describes the interface between the hardware and software of the competition robot for the 2024 Crescendo FRC Season.
 The robot consists of a swerve drive chassis, an elevator mechanism, and an intake.
 The swerve drive uses the Swerve Drive Specialties MK4i module arranged on a square chassis.
 The elevator mechanism, known as the lift, consists of two telescoping lifts that support the Touch It, Own It (TITO) intake mechansim.
