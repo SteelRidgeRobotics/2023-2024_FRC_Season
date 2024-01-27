@@ -1,13 +1,13 @@
 # Hardware Software Specification
 
-Robot Name: TBD
+Robot Name: _TBD_
 
 ## Description
 
 This document describes the interface between the hardware and software of the competition robot for the 20024 Crescendo FRC Season.
 The robot consists of a swerve drive chassis, an elevator mechanism, and an intake.
 The swerve drive uses the Swerve Drive Specialties MK4i module arranged on a square chassis.
-The elevator mechanism, known as the lift, consists of two telescoping lifts that support the intake mechansim.
+The elevator mechanism, known as the lift, consists of two telescoping lifts that support the Touch It, Own It (TITO) intake mechansim.
 The lift also includes a pair of hooks that can allow the robot to climb the chain in the end game.
 The intake uses horizontal rollers that grab and hold on to the game piece.
 The intake pivots between a retracted position inside the frame perimeter and a deployed position that reaches over the bumper.
@@ -77,7 +77,20 @@ However, the motor will likely be a Falcon 500 and the gear ratio will likely be
 
 #### Intake Feeder
 
+The intake feeder will be driven by a single motor.
+The use of an encoder for speed control is _TBD_.
+A beam break sensor will detect when the intake is populated with a game piece.
+
 _Note: At the time of this writing, the specific motor and gearbox gear ratio is TBD._
+
+## Program Priorities
+
+The various robot capabilities will be developed using the following priority list.
+This list should be used to guide trade off decisions to ensure that lower priority subsystems are not preventing progress on higher priority subsystems.
+1. Drivetrain, Chassis & Bumpers
+2. Touch It, Own It (TIOI) Intake
+3. Amplifier Lift
+4. Climber
 
 ## Robot Controllers
 
@@ -85,11 +98,13 @@ This robot uses a single RoboRIO 2 as the only robot controller.
 The robot code is implemented in Python using the 2024 RobotPy framework.
 Major software versions are shown in the following table.  
 
-| Software Component      | Version    |
-|-------------------------|------------|
-| RobotRIO Image Version: | 2024 v2.1  |
-| Python                  | 3.11.7     |
-| OpenMesh Radio Firmware | TBD        |
+| Software Component        | Version   |
+|---------------------------|-----------|
+| RobotRIO Image            | 2024 v2.1 |
+| Python                    | 3.11.7    |
+| Power Distribution Module | _TBD_     |
+| OpenMesh Radio            | _TBD_     |
+| CTRE Motion Control       | Phoenix 6 |
 
 | Python Packages         | Version    |
 |-------------------------|------------|
