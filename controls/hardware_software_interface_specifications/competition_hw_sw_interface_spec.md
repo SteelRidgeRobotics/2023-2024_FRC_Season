@@ -2,6 +2,25 @@
 
 Robot Name: _TBD_
 
+<!-- TOC -->
+* [Hardware Software Interface Specification](#hardware-software-interface-specification)
+  * [Description](#description)
+    * [Swerve Drive Mechanism](#swerve-drive-mechanism)
+    * [Game Piece Handling Mechanisms](#game-piece-handling-mechanisms)
+      * [Lift](#lift)
+      * [Intake Pivot](#intake-pivot)
+      * [Intake Feeder](#intake-feeder)
+  * [Program Priorities](#program-priorities)
+  * [Motion Control Rules](#motion-control-rules)
+    * [Lift and Intake Rules](#lift-and-intake-rules)
+  * [Robot Controllers](#robot-controllers)
+  * [Motor Controllers](#motor-controllers)
+  * [Sensors](#sensors)
+  * [OpenMesh Radio](#openmesh-radio)
+  * [Useful Links](#useful-links)
+  * [Crimp Inspection Log](#crimp-inspection-log)
+<!-- TOC -->
+
 ## Description
 
 This document describes the interface between the hardware and software of the competition robot for the 20024 Crescendo FRC Season.
@@ -168,6 +187,10 @@ The following table lists all the sensors used in the robot.
 
 The OpenMesh radio is connected directly to the RoboRIO 2 through an Ethernet cable. The radio is powered from the
 The VRM's 12V, 2A output is connected to a Radio Power Module (RPM) with provides power to the radio through the Ethernet cable.
+
+## Useful Links
+
+[2024 Crescendo Game Resources](https://www.firstinspires.org/resource-library/frc/competition-manual-qa-system)
 
 ## Crimp Inspection Log
 
