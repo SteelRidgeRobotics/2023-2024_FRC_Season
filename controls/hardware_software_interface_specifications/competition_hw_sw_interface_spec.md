@@ -1,4 +1,4 @@
-# Controls Software Specification
+# Hardware Software Specification
 
 Robot Name: TBD
 
