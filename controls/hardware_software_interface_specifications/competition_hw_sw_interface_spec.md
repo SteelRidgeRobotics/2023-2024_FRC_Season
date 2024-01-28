@@ -131,11 +131,19 @@ These rule govern the interaction between the lift and intake mechanisms.
 The robot implements a CTRE style robot control system.
 A generic CTRE control system is shown below.
 
+<!DOCTYPE html>
+<html>
+<head>
 <style>
-img {background-color: #FFFFFF;}
+img {
+  background-color: #FFFFFF;
+}
 </style>
-<img alt="Generic CTRE Control System" src="https://docs.wpilib.org/en/stable/_images/frc-control-system-layout.svg"/>
-
+</head>
+<body>
+<p><img alt="Generic CTRE Control System" src="https://docs.wpilib.org/en/stable/_images/frc-control-system-layout.svg"/></p>
+</body>
+</html>
 
 This robot uses a single RoboRIO 2 as the only robot controller.
 The robot code is implemented in Python using the 2024 RobotPy framework.
