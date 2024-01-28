@@ -131,57 +131,62 @@ These rule govern the interaction between the lift and intake mechanisms.
 The robot implements a CTRE style robot control system.
 A generic CTRE control system is shown below.
 
-![Generic CTRE Control System](https://docs.wpilib.org/en/stable/_images/frc-control-system-layout.svg)
+![](https://github.com/SteelRidgeRobotics/2023-2024_FRC_Season/blob/controls/controls/hardware_software_interface_specifications/frc-control-system-layout.png)
 
 This robot uses a single RoboRIO 2 as the only robot controller.
 The robot code is implemented in Python using the 2024 RobotPy framework.
 Major software versions are shown in the following table.
 Motor controller and sensor software versions are listed elsewhere in this document.
 
-| Software Component        | Version   |
-|---------------------------|-----------|
-| RobotRIO Image            | 2024 v2.1 |
-| Python                    | 3.11.7    |
-| Power Distribution Module | _TBD_     |
-| OpenMesh Radio            | _TBD_     |
-| CTRE Motion Control       | Phoenix 6 |
+| Software Component        | Version       |
+|---------------------------|---------------|
+| RobotRIO Image            | 2024 v2.1     |
+| Python                    | 3.11.7        |
+| Power Distribution Module | 1.4           |
+| OpenMesh Radio            | _TBD_         |
+| CTRE Motion Control       | Phoenix 6 Pro |
 
 | Python Packages         | Version    |
 |-------------------------|------------|
 | robotpy                 | 2024.2.2.1 |
-| robotpy-commands-v2     | 2024.2.1   |
 | frc6343                 | 0.2        |
-
+ 
+Installed Robotpy Modules: commands2, navx, pathplannerlib, phoenix6
 
 ## Motor Controllers
 
 The following table lists all the motor controllers used in the robot.
 
-| Function       | Controller   | FW     | Motor    | CAN Addr | PDP Port | Breaker |
-|----------------|--------------|--------|----------|:--------:|:--------:|:-------:|
-| Swerve 0 Drive | Talon FX     | 2023.3 | Falcon   |    1     |    0     |  40 A   |
-| Swerve 0 Steer | Talon FX     |        | Falcon   |    2     |    0     |  30 A   |
-| Swerve 1 Drive | Talon FX     |        | Falcon   |    3     |    0     |  40 A   |
-| Swerve 1 Steer | Talon FX     |        | Falcon   |    4     |    0     |  30 A   |
-| Swerve 2 Drive | Talon FX     |        | Falcon   |    5     |    0     |  40 A   |
-| Swerve 2 Steer | Talon FX     |        | Falcon   |    6     |    0     |  30 A   |
-| Swerve 3 Drive | Talon FX     |        | Falcon   |    7     |    0     |  40 A   |
-| Swerve 3 Steer | Talon FX     |        | Falcon   |    8     |    0     |  30 A   |
-| Lift           | Talon FX     |        | Falcon   |    9     |    0     |  40 A   |
-| Intake Pivot   | Talon FX     |        | Falcon   |    10    |    0     |  40 A   |
-| Intake Feeder  | Talon FX     |        | Falcon   |    11    |    0     |  30 A   |
+| Function               | Controller  | FW          | Motor    | CAN Addr | PDP Port | Breaker |
+|------------------------|-------------|-------------|----------|:--------:|:--------:|:-------:|
+| Front Left Drive       | Talon FX    | 2024.1.0.0  | Falcon   |    0     |  _TBD_   |  40 A   |
+| Rear Left Drive        | Talon FX    | 2024.1.0.0  | Falcon   |    1     |  _TBD_   |  40 A   |
+| Front Right Drive      | Talon FX    | 2024.1.0.0  | Falcon   |    2     |  _TBD_   |  40 A   |
+| Rear Right Drive       | Talon FX    | 2024.1.0.0  | Falcon   |    3     |  _TBD_   |  40 A   |
+| Front Left Direction   | Talon FX    | 2024.1.0.0  | Falcon   |    4     |  _TBD_   |  30 A   |
+| Rear Left Direction    | Talon FX    | 2024.1.0.0  | Falcon   |    5     |  _TBD_   |  30 A   |
+| Front Right Direction  | Talon FX    | 2024.1.0.0  | Falcon   |    6     |  _TBD_   |  30 A   |
+| Rear Right Direction   | Talon FX    | 2024.1.0.0  | Falcon   |    7     |  _TBD_   |  30 A   |
+| Lift                   | Talon FX    | 2024.1.0.0  | Falcon   |    15    |  _TBD_   |  40 A   |
+| Intake Pivot           | Talon FX    | 2024.1.0.0  | Falcon   |    16    |  _TBD_   |  40 A   |
+| Intake Feeder          | Talon FX    | 2024.1.0.0  | Falcon   |    17    |  _TBD_   |  30 A   |
 
 
 ## Sensors
 
 The following table lists all the sensors used in the robot.
 
-| Function       | Sensor   | FW | Motor | CAN Addr | PDP / VRM | Breaker |
-|----------------|----------|----|-------|:--------:|-----------|:-------:|
-| Swerve 0 Steer | CANcoder |    |       |          | VRM 5V/2A |   N/A   |
-| Swerve 1 Steer | CANcoder |    |       |          |           |         |
-| Swerve 2 Steer | CANcoder |    |       |          |           |         |
-| Swerve 3 Steer | CANcoder |    |       |          |           |         |
+| Function                     | Sensor              |     FW     | Associated Motor      | CAN Addr | PDP / VRM    | Breaker |
+|------------------------------|---------------------|:----------:|-----------------------|:--------:|--------------|:-------:|
+| Front Left Swerve Direction  | CANcoder            | 2024.1.0.0 | Front Left Direction  |    10    | VRM 5V/2A    |   ---   |
+| Rear Left Swerve Direction   | CANcoder            | 2024.1.0.0 | Rear Left Direction   |    11    | VRM 5V/2A    |   ---   |
+| Front Right Swerve Direction | CANcoder            | 2024.1.0.0 | Front Right Direction |    12    | VRM 5V/2A    |   ---   |
+| Rear Right Swerve Direction  | CANcoder            | 2024.1.0.0 | Rear Right Direction  |    13    | VRM 5V/2A    |   ---   |
+| Intake Feeder Beam Break     | Adafruit Beam Break |    ---     | Intake Feeder         |   ---    | VRM 5V/500mA |   ---   |
+
+Notes:
+1.  The VRM is powered through a 20 A fuse at a dedicated port of the PDP.
+2.  Integrated sensors built into Falcon 500 motors are not included in this list.
 
 ## OpenMesh Radio
 
@@ -204,5 +209,5 @@ The following wiring crimps were inspected by someone certified in Basic Control
 
 Colors: K=Black, R=Red, Y=Yellow, B=Blue, W=White, G=Green
 
-Types: WR=Wire Ferrule, PP45=PowerPole 45, BS=Butt Splice, CL=6 AWG Compression Lug, PWM=PWM / DuPont
+Types: WR=Wire Ferrule, PP45=PowerPole 45, BS=Butt Splice, CL=6 AWG Compression Lug, PWM=PWM / DuPont, LNK=3M Link Connector
 
