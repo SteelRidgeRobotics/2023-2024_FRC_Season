@@ -54,23 +54,23 @@ class Swerve(Subsystem):
         for mod in self.mSwerveMods:
             mod.set_desired_state(desired_states[mod.moduleNumber], False)
 
-    def getModuleStates(self, states:SwerveModuleState):
+    def getModuleStates(self)-> SwerveModuleState:
         states = SwerveModuleState[4]
         states = [mod.get_state() for mod in self.mSwerveMods]
         return states
 
-    def getModulePositions(self, positions:SwerveModulePosition):
+    def getModulePositions(self)-> SwerveModulePosition:
         positions = SwerveModulePosition[4]
         positions = [mod.get_position() for mod in self.mSwerveMods]
         return positions
 
-    def getPose(self):
+    def getPose(self)->Pose2d:
         return self.swerveOdometry.getPose()
 
     def setPose(self, pose:Pose2d):
         self.swerveOdometry.resetPosition(self.getGyroYaw(), self.getModulePositions(), pose)
 
-    def getHeading(self):
+    def getHeading(self)-> Rotation2d:
         return self.getPose().rotation()
 
     def setHeading(self, heading:Rotation2d):
@@ -79,7 +79,7 @@ class Swerve(Subsystem):
     def zeroHeading(self):
         self.swerveOdometry.resetPosition(self.getGyroYaw(), self.getModulePositions(), Pose2d(self.getPose().translation(), Rotation2d()))
 
-    def getGyroYaw(self):
+    def getGyroYaw(self)-> Rotation2d:
         return Rotation2d.fromDegrees(self.gyro.getYaw())
 
     def resetModulesToAbsolute(self):

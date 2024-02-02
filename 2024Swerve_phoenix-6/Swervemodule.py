@@ -35,11 +35,11 @@ class SwerveModule:
 
 
         
-    def SwerveModule(self):
+    def SwerveModule(self, moduleNumber:int, moduleConstants:SwerveModuleConstants):
 
-        moduleConstants = SwerveModuleConstants()
+        #moduleConstants = SwerveModuleConstants()
         
-        moduleNumber = int
+        #moduleNumber = int
 
         self.moduleNumber = moduleNumber 
 
@@ -70,7 +70,7 @@ class SwerveModule:
 
     def set_desired_state(self, desired_state:SwerveModuleState, is_open_loop:bool):
         desired_state = SwerveModuleState.optimize(desired_state, self.get_state().angle)
-        self.mAngleMotor.set_control(self.anglePosition.with_position(desired_state.angle.fromDegrees()/360))
+        self.mAngleMotor.set_control(self.anglePosition.with_position(desired_state.angle.degrees()/360))
         self.set_speed(desired_state, is_open_loop)
 
     def set_speed(self, desired_state:SwerveModuleState, is_open_loop:bool):
@@ -87,7 +87,7 @@ class SwerveModule:
         return Rotation2d.fromDegrees(360*self.angleEncoder.get_absolute_position().value)
 
     def reset_to_absolute(self)->None:
-        absolute_position = self.get_cancoder().fromDegrees()/360-self.angleOffset.fromDegrees()/360
+        absolute_position = self.get_cancoder().degrees()/360-self.angleOffset.degrees()/360
         self.mAngleMotor.set_position(absolute_position)
 
     def get_state(self)->SwerveModuleState:
