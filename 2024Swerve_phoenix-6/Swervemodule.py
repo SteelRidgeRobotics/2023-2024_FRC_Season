@@ -76,7 +76,7 @@ class SwerveModule:
     def set_speed(self, desired_state:SwerveModuleState, is_open_loop:bool):
         if is_open_loop:
             self.driveDutyCycle.output = desired_state.speed / Constants.Swerve.maxSpeed
-            self.mDriveMotor.set(self.driveDutyCycle)
+            self.mDriveMotor.set_control(self.driveDutyCycle)
         else:
             self.driveVelocity.velocity = Conversions.MPS_to_RPS(desired_state.speed, Constants.Swerve.wheelCircumference)
             self.driveVelocity.feed_forward = self.driveFeedForward.calculate(desired_state.speed)
