@@ -19,10 +19,10 @@
 
 # The portion of tube (----) and bearing block (====) left in the previous
 # stage when the lift is fully extended
-A = 0.875
+A = 1.0
 
 # The top of the bearing block relative to the top of next outer tube
-B = 0.750
+B = 0.5
 
 # The height the tube extends beyond the next outer tube when the lift is retracted
 C = 2.000
@@ -40,7 +40,7 @@ def tube_length_n(y1, n):
 
 def y1_tube_length(max_height, n_stages):
     """Returns the length of the lowest tube in a n stage lift of a given maximum height"""
-    term = sum(range(n_stages+1)) * C - sum(range(2, n_stages+2)) * A - sum(range(n_stages)) * B
+    term = sum(range(n_stages+1)) * (C - A) - sum(range(n_stages)) * B
     return (max_height - term) / (n_stages + 1)
 
 
@@ -51,7 +51,7 @@ def minimum_height(y1: float, n_stages: int):
 
 def maximum_height(tubes: list[float]):
     """Returns the maximum height of a lift given a list of tubes lengths"""
-    return sum(tubes) - (len(tubes) - 1) * A
+    return sum(tubes)
 
 
 def lift_report(max_height, n_stages):
@@ -80,3 +80,7 @@ lift_report(45.5, 4)
 lift_report(46.25, 3)
 lift_report(47.0, 3)
 lift_report(47.5, 3)
+
+# This is the paper model
+lift_report(27, 3)
+lift_report(24, 3)
