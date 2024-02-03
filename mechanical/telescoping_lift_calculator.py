@@ -1,6 +1,31 @@
-A = 0.875  # The tube left in the previous stage when fully extended
-B = 0.750  # The lower potion of the previous stage that limits the retraction of the tube
-C = 2.000  # The height above the tube to support the next stage
+# Telescoping Lift Calculator
+
+# The telescoping lift consists of a series of consecutively smaller square tubes, one
+# stacked inside the next with the largest tube at the bottom of the stack. A bearing
+# block at the bottom of each inner tube support the tube against the inside of the
+# next larger tube.
+#
+#
+#                     |<------------------- Yn ------------------->|
+#         |<--- A --->|<-- B -->|                                  |<----- C ----->|
+# ---------------------         |                                  |               |
+#         =======================-----------------------------------               |
+#                                ================-----------------------------------
+#                                ================-----------------------------------
+#         =======================-----------------------------------               |
+# ---------------------                                            |               |
+#         |<---------------------- EXTENDED ---------------------->|               |
+#                                |<------------------ RETRACTED ------------------>|
+
+# The portion of tube (----) and bearing block (====) left in the previous
+# stage when the lift is fully extended
+A = 0.875
+
+# The top of the bearing block relative to the top of next outer tube
+B = 0.750
+
+# The height the tube extends beyond the next outer tube when the lift is retracted
+C = 2.000
 
 
 def tube_length_n(y1, n):
@@ -42,7 +67,7 @@ def lift_report(max_height, n_stages):
     print(f"{n_stages} Stage Lift")
     print("----------------")
     for i, val in enumerate(tubes):
-        print(f"Tube {i+1} is {val} inches")
+        print(f"Tube {i+1} exposed tube length is {val} inches")
     print(f"Total maximum height is {max_height} inches")
     print(f"Total minimum height is {min_height} inches")
     print(f"Total dynamic range is {dynamic_range} inches")
