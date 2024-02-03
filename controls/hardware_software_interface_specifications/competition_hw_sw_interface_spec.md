@@ -4,6 +4,7 @@ Robot Name: _TBD_
 
 <!-- TOC -->
 * [Hardware Software Interface Specification](#hardware-software-interface-specification)
+  * [Software Repository](#software-repository)
   * [Description](#description)
     * [Swerve Drive Mechanism](#swerve-drive-mechanism)
     * [Game Piece Handling Mechanisms](#game-piece-handling-mechanisms)
@@ -20,6 +21,10 @@ Robot Name: _TBD_
   * [Useful Links](#useful-links)
   * [Crimp Inspection Log](#crimp-inspection-log)
 <!-- TOC -->
+
+## Software Repository
+The robot source code can be found in this repository:
+
 
 ## Description
 
