@@ -5,6 +5,8 @@
 import wpilib
 import wpilib.drive
 
+from phoenix6 import hardware, configs
+
 
 class MyRobot(wpilib.TimedRobot):
     def robotInit(self):
