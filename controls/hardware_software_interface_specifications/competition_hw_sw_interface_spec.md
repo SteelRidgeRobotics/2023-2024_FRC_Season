@@ -16,10 +16,11 @@ Robot Name: _TBD_
     * [Lift and Intake Rules](#lift-and-intake-rules)
   * [Robot Controllers](#robot-controllers)
   * [Motor Controllers](#motor-controllers)
-  * [Sensors](#sensors)
-  * [OpenMesh Radio](#openmesh-radio)
+  * [Discrete Sensors](#discrete-sensors)
+  * [Ethernet](#ethernet)
+    * [OpenMesh Radio](#openmesh-radio)
+    * [Limelight 3](#limelight-3)
   * [Useful Links](#useful-links)
-  * [Crimp Inspection Log](#crimp-inspection-log)
 <!-- TOC -->
 
 ## Software Repository
