@@ -19,10 +19,10 @@
 
 # The portion of tube (----) and bearing block (====) left in the previous
 # stage when the lift is fully extended
-A = 1.0
+A = 0.875
 
 # The top of the bearing block relative to the top of next outer tube
-B = 0.5
+B = 0.75
 
 # The height the tube extends beyond the next outer tube when the lift is retracted
 C = 2.000
@@ -75,12 +75,13 @@ def lift_report(max_height, n_stages):
 
 
 # Generate some reports
-lift_report(45.5, 3)
-lift_report(45.5, 4)
-lift_report(46.25, 3)
-lift_report(47.0, 3)
-lift_report(47.5, 3)
+# lift_report(45.5, 3)
+lift_report(46.5, 3)
+# lift_report(45.5, 4)
+# lift_report(46.25, 3)
+# lift_report(47.0, 3)
+# lift_report(47.5, 3)
 
 # This is the paper model
-lift_report(27, 3)
-lift_report(24, 3)
+# lift_report(27, 3)
+# lift_report(24, 3)
