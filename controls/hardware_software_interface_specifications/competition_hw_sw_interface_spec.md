@@ -23,7 +23,7 @@ Robot Name: _TBD_
 <!-- TOC -->
 
 ## Software Repository
-The robot source code can be found in this repository:
+The robot source code can be found in this repository: [Competition Robot Code](https://github.com/SteelRidgeRobotics/2024DumpsterFire)
 
 
 ## Description
@@ -31,7 +31,7 @@ The robot source code can be found in this repository:
 This document describes the interface between the hardware and software of the competition robot for the 2024 Crescendo FRC Season.
 The robot consists of a swerve drive chassis, an elevator mechanism, and an intake.
 The swerve drive uses the Swerve Drive Specialties MK4i module arranged on a square chassis.
-The elevator mechanism, known as the lift, consists of two telescoping lifts that support the Touch It, Own It (TITO) intake mechansim.
+The elevator mechanism, known as the lift, consists of two telescoping lifts that support the Touch It, Own It (TITO) intake mechanism.
 The lift also includes a pair of hooks that can allow the robot to climb the chain in the end game.
 The intake uses horizontal rollers that grab and hold on to the game piece.
 The intake pivots between a retracted position inside the frame perimeter and a deployed position that reaches over the bumper.
@@ -116,6 +116,9 @@ This list should be used to guide trade off decisions to ensure that lower prior
 2. Touch It, Own It (TIOI) Intake
 3. Amplifier Lift
 4. Climber
+5. Other
+
+"Other" development efforts include scoring in the TRAP and utilizing vision to improve teleop performance.
 
 ## Motion Control Rules
 
@@ -153,7 +156,7 @@ Motor controller and sensor software versions are listed elsewhere in this docum
 
 | Python Packages         | Version    |
 |-------------------------|------------|
-| robotpy                 | 2024.2.2.1 |
+| robotpy                 | 2024.2.1.1 |
 | frc6343                 | 0.2        |
  
 Installed Robotpy Modules: commands2, navx, pathplannerlib, phoenix6
@@ -162,57 +165,58 @@ Installed Robotpy Modules: commands2, navx, pathplannerlib, phoenix6
 
 The following table lists all the motor controllers used in the robot.
 
-| Function               | Controller  | FW          | Motor    | CAN Addr | PDP Port | Breaker |
-|------------------------|-------------|-------------|----------|:--------:|:--------:|:-------:|
-| Front Left Drive       | Talon FX    | 2024.1.0.0  | Falcon   |    0     |  _TBD_   |  40 A   |
-| Rear Left Drive        | Talon FX    | 2024.1.0.0  | Falcon   |    1     |  _TBD_   |  40 A   |
-| Front Right Drive      | Talon FX    | 2024.1.0.0  | Falcon   |    2     |  _TBD_   |  40 A   |
-| Rear Right Drive       | Talon FX    | 2024.1.0.0  | Falcon   |    3     |  _TBD_   |  40 A   |
-| Front Left Direction   | Talon FX    | 2024.1.0.0  | Falcon   |    4     |  _TBD_   |  30 A   |
-| Rear Left Direction    | Talon FX    | 2024.1.0.0  | Falcon   |    5     |  _TBD_   |  30 A   |
-| Front Right Direction  | Talon FX    | 2024.1.0.0  | Falcon   |    6     |  _TBD_   |  30 A   |
-| Rear Right Direction   | Talon FX    | 2024.1.0.0  | Falcon   |    7     |  _TBD_   |  30 A   |
-| Lift                   | Talon FX    | 2024.1.0.0  | Falcon   |    15    |  _TBD_   |  40 A   |
-| Intake Pivot           | Talon FX    | 2024.1.0.0  | Falcon   |    16    |  _TBD_   |  40 A   |
-| Intake Feeder          | Talon FX    | 2024.1.0.0  | Falcon   |    17    |  _TBD_   |  30 A   |
+| Function          | Controller  | FW          | Motor    | CAN Addr | PDP Port | Breaker |
+|-------------------|-------------|-------------|----------|:--------:|:--------:|:-------:|
+| Drive Front Left  | Talon FX    | 2024.1.0.0  | Falcon   |  _TBD_   |    13    |  40 A   |
+| Drive Rear Left   | Talon FX    | 2024.1.0.0  | Falcon   |  _TBD_   |    14    |  40 A   |
+| Drive Front Right | Talon FX    | 2024.1.0.0  | Falcon   |  _TBD_   |    12    |  40 A   |
+| Drive Rear Right  | Talon FX    | 2024.1.0.0  | Falcon   |  _TBD_   |    15    |  40 A   |
+| Steer Front Left  | Talon FX    | 2024.1.0.0  | Falcon   |  _TBD_   |    10    |  30 A   |
+| Steer Rear Left   | Talon FX    | 2024.1.0.0  | Falcon   |  _TBD_   |    9     |  30 A   |
+| Steer Front Right | Talon FX    | 2024.1.0.0  | Falcon   |  _TBD_   |    11    |  30 A   |
+| Steer Rear Right  | Talon FX    | 2024.1.0.0  | Falcon   |  _TBD_   |    8     |  30 A   |
+| Lift Right        | Talon FX    | 2024.1.0.0  | Falcon   |  _TBD_   |  _TBD_   |  40 A   |
+| Lift Left         | Talon FX    | 2024.1.0.0  | Falcon   |  _TBD_   |  _TBD_   |  40 A   |
+| Intake Pivot      | Talon FX    | 2024.1.0.0  | Falcon   |  _TBD_   |  _TBD_   |  40 A   |
+| Intake Feeder     | Talon FX    | 2024.1.0.0  | Falcon   |  _TBD_   |  _TBD_   |  40 A   |
 
 
-## Sensors
+## Discrete Sensors
 
 The following table lists all the sensors used in the robot.
 
-| Function                     | Sensor              |     FW     | Associated Motor      | CAN Addr | PDP / VRM    | Breaker |
-|------------------------------|---------------------|:----------:|-----------------------|:--------:|--------------|:-------:|
-| Front Left Swerve Direction  | CANcoder            | 2024.1.0.0 | Front Left Direction  |    10    | VRM 5V/2A    |   ---   |
-| Rear Left Swerve Direction   | CANcoder            | 2024.1.0.0 | Rear Left Direction   |    11    | VRM 5V/2A    |   ---   |
-| Front Right Swerve Direction | CANcoder            | 2024.1.0.0 | Front Right Direction |    12    | VRM 5V/2A    |   ---   |
-| Rear Right Swerve Direction  | CANcoder            | 2024.1.0.0 | Rear Right Direction  |    13    | VRM 5V/2A    |   ---   |
-| Intake Feeder Beam Break     | Adafruit Beam Break |    ---     | Intake Feeder         |   ---    | VRM 5V/500mA |   ---   |
+| Function                 | Sensor              |     FW     | Associated Motor      | CAN Addr | PDP / VRM     |
+|--------------------------|---------------------|:----------:|-----------------------|:--------:|---------------|
+| Steer Front Left Swerve  | CANcoder            | 2024.1.0.0 | Front Left Direction  |    10    | VRM 12V/500mA |
+| Steer Rear Left Swerve   | CANcoder            | 2024.1.0.0 | Rear Left Direction   |    11    | VRM 12V/500mA |
+| Steer Front Right Swerve | CANcoder            | 2024.1.0.0 | Front Right Direction |    12    | VRM 12V/500mA |
+| Steer Rear Right Swerve  | CANcoder            | 2024.1.0.0 | Rear Right Direction  |    13    | VRM 12V/500mA |
+| Intake Feeder Beam Break | Adafruit Beam Break |    ---     | Intake Feeder         |   ---    | VRM 5V/500mA  |
 
 Notes:
-1.  The VRM is powered through a 20 A fuse at a dedicated port of the PDP.
+1.  The VRM is powered through a 20 A breaker at **PDP Port 4**.
 2.  Integrated sensors built into Falcon 500 motors are not included in this list.
 
-## OpenMesh Radio
+## Ethernet
 
-The OpenMesh radio is connected directly to the RoboRIO 2 through an Ethernet cable. The radio is powered from the
-The VRM's 12V, 2A output is connected to a Radio Power Module (RPM) with provides power to the radio through the Ethernet cable.
+A Brainbox SW-005 100Mbps Ethernet switch connects the roboRIO to the OpenMesh radio and the Limelight 3 vision module.
+
+| Device          |     PDP Port     | Breaker/ Fuse |
+|-----------------|:----------------:|:-------------:|
+| Ethernet Switch |        5         |     20 A      |
+| Limelight 3     |      _TBD_       |     20 A      |
+| OpenMesh Radio  | Vbat VRM PCM PWR |     20 A      |
+
+### OpenMesh Radio
+
+The OpenMesh radio is connected directly to the Radio Power Module through an Ethernet cable.
+Similarly, the Radio Power Module is connected directly to Ethernet Switch.
+The PDP's "Vbat VRM PCM PWR" output is connected to a Radio Power Module (RPM) with provides power to the radio through the Ethernet cable.
+
+### Limelight 3
+
+The Limelight vision module os connected directly to Ethernet Switch through an Ethernet cable.
 
 ## Useful Links
 
 [2024 Crescendo Game Resources](https://www.firstinspires.org/resource-library/frc/competition-manual-qa-system)
-
-## Crimp Inspection Log
-
-The following wiring crimps were inspected by someone certified in Basic Controls or an approved mentor.
-
-| No. | Color | Type | Description  | Technician | Inspector | Date |
-|-----|-------|------|--------------|------------|-----------|------|
-|     |       |      |              |            |           |      |
-|     |       |      |              |            |           |      |
-|     |       |      |              |            |           |      |
-
-Colors: K=Black, R=Red, Y=Yellow, B=Blue, W=White, G=Green
-
-Types: WR=Wire Ferrule, PP45=PowerPole 45, BS=Butt Splice, CL=6 AWG Compression Lug, PWM=PWM / DuPont, LNK=3M Link Connector
-
