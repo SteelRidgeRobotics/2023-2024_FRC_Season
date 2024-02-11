@@ -166,20 +166,20 @@ Installed Robotpy Modules: commands2, navx, pathplannerlib, phoenix6
 
 The following table lists all the motor controllers used in the robot.
 
-| Function          | Controller  | FW          | Motor    | CAN Addr | PDP Port | Breaker |
-|-------------------|-------------|-------------|----------|:--------:|:--------:|:-------:|
-| Drive Front Left  | Talon FX    | 2024.1.0.0  | Falcon   |  _TBD_   |    13    |  40 A   |
-| Drive Rear Left   | Talon FX    | 2024.1.0.0  | Falcon   |  _TBD_   |    14    |  40 A   |
-| Drive Front Right | Talon FX    | 2024.1.0.0  | Falcon   |  _TBD_   |    12    |  40 A   |
-| Drive Rear Right  | Talon FX    | 2024.1.0.0  | Falcon   |  _TBD_   |    15    |  40 A   |
-| Steer Front Left  | Talon FX    | 2024.1.0.0  | Falcon   |  _TBD_   |    10    |  30 A   |
-| Steer Rear Left   | Talon FX    | 2024.1.0.0  | Falcon   |  _TBD_   |    9     |  30 A   |
-| Steer Front Right | Talon FX    | 2024.1.0.0  | Falcon   |  _TBD_   |    11    |  30 A   |
-| Steer Rear Right  | Talon FX    | 2024.1.0.0  | Falcon   |  _TBD_   |    8     |  30 A   |
-| Lift Right        | Talon FX    | 2024.1.0.0  | Falcon   |  _TBD_   |  _TBD_   |  40 A   |
-| Lift Left         | Talon FX    | 2024.1.0.0  | Falcon   |  _TBD_   |  _TBD_   |  40 A   |
-| Intake Pivot      | Talon FX    | 2024.1.0.0  | Falcon   |  _TBD_   |  _TBD_   |  40 A   |
-| Intake Feeder     | Talon FX    | 2024.1.0.0  | Falcon   |  _TBD_   |  _TBD_   |  40 A   |
+| Function          | Controller  | FW          | Motor       | CAN Addr | PDP Port | Breaker |
+|-------------------|-------------|-------------|-------------|:--------:|:--------:|:-------:|
+| Drive Front Left  | Talon FX    | 2024.1.0.0  | Kraken X60  |  _TBD_   |    13    |  40 A   |
+| Drive Rear Left   | Talon FX    | 2024.1.0.0  | Kraken X60  |  _TBD_   |    14    |  40 A   |
+| Drive Front Right | Talon FX    | 2024.1.0.0  | Kraken X60  |  _TBD_   |    12    |  40 A   |
+| Drive Rear Right  | Talon FX    | 2024.1.0.0  | Kraken X60  |  _TBD_   |    15    |  40 A   |
+| Steer Front Left  | Talon FX    | 2024.1.0.0  | Kraken X60  |  _TBD_   |    10    |  30 A   |
+| Steer Rear Left   | Talon FX    | 2024.1.0.0  | Kraken X60  |  _TBD_   |    9     |  30 A   |
+| Steer Front Right | Talon FX    | 2024.1.0.0  | Kraken X60  |  _TBD_   |    11    |  30 A   |
+| Steer Rear Right  | Talon FX    | 2024.1.0.0  | Kraken X60  |  _TBD_   |    8     |  30 A   |
+| Lift Right        | Talon FX    | 2024.1.0.0  | Falcon 500  |  _TBD_   |  _TBD_   |  40 A   |
+| Lift Left         | Talon FX    | 2024.1.0.0  | Falcon 500  |  _TBD_   |  _TBD_   |  40 A   |
+| Intake Pivot      | Talon FX    | 2024.1.0.0  | Falcon 500  |  _TBD_   |  _TBD_   |  40 A   |
+| Intake Feeder     | Talon FX    | 2024.1.0.0  | Falcon 500  |  _TBD_   |  _TBD_   |  40 A   |
 
 
 ## Discrete Sensors
