@@ -176,8 +176,8 @@ The following table lists all the motor controllers used in the robot.
 | Direction Rear Left   | Talon FX    | 2024.2.0.0 | Kraken X60  |    6     |    9     |  30 A   |
 | Direction Front Right | Talon FX    | 2024.2.0.0 | Kraken X60  |    7     |    11    |  30 A   |
 | Direction Rear Right  | Talon FX    | 2024.2.0.0 | Kraken X60  |    8     |    8     |  30 A   |
-| Lift Right            | Talon FX    | 2024.2.0.0 | Falcon 500  |    11    |    1     |  40 A   |
-| Lift Left             | Talon FX    | 2024.2.0.0 | Falcon 500  |    12    |    0     |  40 A   |
+| Lift Right            | Talon FX    | 2024.2.0.0 | Kraken X60  |    11    |    1     |  40 A   |
+| Lift Left             | Talon FX    | 2024.2.0.0 | Kraken X60  |    12    |    0     |  40 A   |
 | Pivot                 | Talon FX    | 2024.2.0.0 | Falcon 500  |    9     |    2     |  40 A   |
 | Intake                | Talon FX    | 2024.2.0.0 | Falcon 500  |    10    |    3     |  40 A   |
 
@@ -216,7 +216,7 @@ The PDP's "Vbat VRM PCM PWR" output is connected to a Radio Power Module (RPM) w
 
 ### Limelight 3
 
-The Limelight vision module os connected directly to Ethernet Switch through an Ethernet cable.
+The Limelight vision module is connected directly to Ethernet Switch through an Ethernet cable.
 
 ## Useful Links
 
