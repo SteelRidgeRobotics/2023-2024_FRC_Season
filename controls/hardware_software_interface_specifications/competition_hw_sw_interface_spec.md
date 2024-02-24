@@ -1,6 +1,6 @@
 # Hardware Software Interface Specification
 
-Robot Name: _TBD_
+Robot Name: __Metal Melody__
 
 <!-- TOC -->
 * [Hardware Software Interface Specification](#hardware-software-interface-specification)
@@ -17,6 +17,7 @@ Robot Name: _TBD_
   * [Robot Controllers](#robot-controllers)
   * [Motor Controllers](#motor-controllers)
   * [Discrete Sensors](#discrete-sensors)
+    * [Beam Break Sensor](#beam-break-sensor)
   * [Ethernet](#ethernet)
     * [OpenMesh Radio](#openmesh-radio)
     * [Limelight 3](#limelight-3)
@@ -56,58 +57,41 @@ Game piece handling is managed through three degrees of freedom (DoF).
 
 The lift is an elevator system that supports the intake mechanism and serves as the climber mechanism.
 The lift consists of a pair of telescoping booms that extend vertically.
+Each vertical boom is driven by a motor and a 15.31:1 gearbox.
 The intake is suspended between the booms.
 Each boom hosts a hook that can snag the chain on the stage so the robot can climb at the end of the match.
 
 Each boom is spring-loaded.
 The springs extend each boom to its maximum height with approximately 20 lbs (89 N) of force.
 Each boom is retracted using a 3 mm Dyneema (or equivalent) rope attached to a spindle.
-The two spindles, one for each boom, are mechanically linked together and drive by a single motor.
+The booms are mechanically linked together through a continuous piece of hex shaft located between the gearboxes.
 The total extension force experienced by the motor at the spindles is approximately 180 N.
 
-The method of finding the home position of the lift is _TBD_.
-However, the preferred alternative is to retract the lift while monitoring the motor current.
-When the motor current exceeds a threshold for a specified period of time, the left will be assumed to be in the fully retracted position.
-This will be the home position of the lift.
-The motor controller will need to set a current limit to prevent this homing algorithm from tripping the circuit breaker.
-
-An alternative approach to determining the home position fo the lift through the use of a magnet and Hall effect sensor.
-Also, a mechanical micro switch can also be used.
-The micro switch, magnet and Hall effect sensor are not currently planned to be part of the mechanical design.
-
-_Note: At the time of this writing, the specific motor and gearbox gear ratio is TBD.
-However, the motor will likely be a Falcon 500._
+The home position of the lift is the fully retracted position.
+However, the's starting configuration is the fully extended position.
+A hard stop exists at the lift's home position.
+To prevent the lift from tripping its circuit breakers, a supply current limit is required in case the lift is driven into its hard stop.
 
 #### Intake Pivot
 
 The intake rotates around a pivot at the top of the lift.
-The pivot is driven by a single motor and gearbox.
+The pivot is driven by a single motor and 50:1 gearbox.
 The pivot will rotate the intake to a predetermined rotation position along its range of motion.
 The retracted, or parked, position is at one extreme of the pivot's range of motion where the intake is fully inside the robot's frame perimeter.
 The extended, or deployed, position is at the other extreme of the pivot's range of motion.
 The extended position is used when capturing game pieces directly off the floor.
-
+A secondary retracted position is used when scoring game pieces into the amp.
+A hard stop exists at the fully retracted position.
+To prevent the lift from tripping its circuit breakers, a supply current limit is required in case the lift is driven into its hard stop.
 In the preferred control implementation, the control algorithm can rotate the pivot to an arbitrary angle and hold the intake in that position for the duration of a match. 
-The specific implementation is _TBD_, but something like Phoenix 6 Motion Magic or the WPI ProfiledPID Controller would likely work well.
-
 The home position of the pivot is the fully retracted position. 
 The robot will start the match in the fully retracted position, so the robot code can set this as the home position during robot initialization.
-An incremental quadrature encoder will be used to track the position of the pivot.
-A in match re-homing algorithm is not included in the design, so the motor current must be limited to prevent motor controller brown out / black out.
 
-An alternative position sensor approaches include using an absolute position sensor.
-An alternative approach to homing the pivot would through the use of a micro-switch or a magnet and Hall effect sensor. 
-
-_Note: At the time of this writing, the specific motor and gearbox gear ratio is TBD.
-However, the motor will likely be a Falcon 500 and the gear ratio will likely be 48:1._
 
 #### Intake Feeder
 
-The intake feeder will be driven by a single motor.
-The use of an encoder for speed control is _TBD_.
+The intake feeder will be driven by a single motor and a 5:1 gearbox.
 A beam break sensor will detect when the intake is populated with a game piece.
-
-_Note: At the time of this writing, the specific motor and gearbox gear ratio is TBD._
 
 ## Program Priorities
 
@@ -122,8 +106,6 @@ This list should be used to guide trade off decisions to ensure that lower prior
 "Other" development efforts include scoring in the TRAP and utilizing vision to improve teleop performance.
 
 ## Motion Control Rules
-
-_Note: The high level motion control rules for the robot are under development._
 
 The high level motion control rules describe the allowed interactions between the various robot subsystems.
 
@@ -166,37 +148,45 @@ Installed Robotpy Modules: commands2, navx, pathplannerlib, phoenix6
 
 The following table lists all the motor controllers used in the robot.
 
-| Function              | Controller  | FW         | Motor       | CAN Addr | PDP Port | Breaker |
-|-----------------------|-------------|------------|-------------|:--------:|:--------:|:-------:|
-| Drive Front Left      | Talon FX    | 2024.2.0.0 | Kraken X60  |    1     |    13    |  40 A   |
-| Drive Rear Left       | Talon FX    | 2024.2.0.0 | Kraken X60  |    2     |    14    |  40 A   |
-| Drive Front Right     | Talon FX    | 2024.2.0.0 | Kraken X60  |    3     |    12    |  40 A   |
-| Drive Rear Right      | Talon FX    | 2024.2.0.0 | Kraken X60  |    4     |    15    |  40 A   |
-| Direction Front Left  | Talon FX    | 2024.2.0.0 | Kraken X60  |    5     |    10    |  30 A   |
-| Direction Rear Left   | Talon FX    | 2024.2.0.0 | Kraken X60  |    6     |    9     |  30 A   |
-| Direction Front Right | Talon FX    | 2024.2.0.0 | Kraken X60  |    7     |    11    |  30 A   |
-| Direction Rear Right  | Talon FX    | 2024.2.0.0 | Kraken X60  |    8     |    8     |  30 A   |
-| Lift Right            | Talon FX    | 2024.2.0.0 | Kraken X60  |    11    |    1     |  40 A   |
-| Lift Left             | Talon FX    | 2024.2.0.0 | Kraken X60  |    12    |    0     |  40 A   |
-| Pivot                 | Talon FX    | 2024.2.0.0 | Falcon 500  |    9     |    2     |  40 A   |
-| Intake                | Talon FX    | 2024.2.0.0 | Falcon 500  |    10    |    3     |  40 A   |
+| Function              | Controller  | FW         | Motor                                                                                       | CAN Addr | PDP Port | Breaker |
+|-----------------------|-------------|------------|---------------------------------------------------------------------------------------------|:--------:|:--------:|:-------:|
+| Drive Front Left      | Talon FX    | 2024.2.0.0 | [Kraken X60](https://docs.wcproducts.com/kraken-x60/kraken-x60-motor/overview-and-features) |    1     |    13    |  40 A   |
+| Drive Rear Left       | Talon FX    | 2024.2.0.0 | [Kraken X60](https://docs.wcproducts.com/kraken-x60/kraken-x60-motor/overview-and-features) |    2     |    14    |  40 A   |
+| Drive Front Right     | Talon FX    | 2024.2.0.0 | [Kraken X60](https://docs.wcproducts.com/kraken-x60/kraken-x60-motor/overview-and-features) |    3     |    12    |  40 A   |
+| Drive Rear Right      | Talon FX    | 2024.2.0.0 | [Kraken X60](https://docs.wcproducts.com/kraken-x60/kraken-x60-motor/overview-and-features) |    4     |    15    |  40 A   |
+| Direction Front Left  | Talon FX    | 2024.2.0.0 | [Kraken X60](https://docs.wcproducts.com/kraken-x60/kraken-x60-motor/overview-and-features) |    5     |    10    |  30 A   |
+| Direction Rear Left   | Talon FX    | 2024.2.0.0 | [Kraken X60](https://docs.wcproducts.com/kraken-x60/kraken-x60-motor/overview-and-features) |    6     |    9     |  30 A   |
+| Direction Front Right | Talon FX    | 2024.2.0.0 | [Kraken X60](https://docs.wcproducts.com/kraken-x60/kraken-x60-motor/overview-and-features) |    7     |    11    |  30 A   |
+| Direction Rear Right  | Talon FX    | 2024.2.0.0 | [Kraken X60](https://docs.wcproducts.com/kraken-x60/kraken-x60-motor/overview-and-features) |    8     |    8     |  30 A   |
+| Lift Right            | Talon FX    | 2024.2.0.0 | [Kraken X60](https://docs.wcproducts.com/kraken-x60/kraken-x60-motor/overview-and-features) |    11    |    1     |  40 A   |
+| Lift Left             | Talon FX    | 2024.2.0.0 | [Kraken X60](https://docs.wcproducts.com/kraken-x60/kraken-x60-motor/overview-and-features) |    12    |    0     |  40 A   |
+| Intake Pivot          | Talon FX    | 2024.2.0.0 | [Falcon 500](https://www.vexrobotics.com/217-6515.html#attr-vex_docs_downloads)             |    9     |    3     |  40 A   |
+| Intake Feeder         | Talon FX    | 2024.2.0.0 | [Falcon 500](https://www.vexrobotics.com/217-6515.html#attr-vex_docs_downloads)             |    10    |    2     |  40 A   |
 
 
 ## Discrete Sensors
 
 The following table lists all the sensors used in the robot.
 
-| Function                 | Sensor              |     FW     | Associated Motor      | CAN Addr | PDP / VRM     |
-|--------------------------|---------------------|:----------:|-----------------------|:--------:|---------------|
-| Steer Front Left Swerve  | CANcoder            | 2024.1.0.0 | Front Left Direction  |    10    | VRM 12V/500mA |
-| Steer Rear Left Swerve   | CANcoder            | 2024.1.0.0 | Rear Left Direction   |    11    | VRM 12V/500mA |
-| Steer Front Right Swerve | CANcoder            | 2024.1.0.0 | Front Right Direction |    12    | VRM 12V/500mA |
-| Steer Rear Right Swerve  | CANcoder            | 2024.1.0.0 | Rear Right Direction  |    13    | VRM 12V/500mA |
-| Intake Feeder Beam Break | Adafruit Beam Break |    ---     | Intake Feeder         |   ---    | VRM 5V/500mA  |
+| Function                 | Sensor                                                       |     FW     | Associated Motor      | CAN Addr | PDP / VRM     |
+|--------------------------|--------------------------------------------------------------|:----------:|-----------------------|:--------:|---------------|
+| Steer Front Left Swerve  | [CANcoder](https://store.ctr-electronics.com/cancoder/)      | 2024.1.0.0 | Front Left Direction  |    10    | VRM 12V/500mA |
+| Steer Rear Left Swerve   | [CANcoder](https://store.ctr-electronics.com/cancoder/)      | 2024.1.0.0 | Rear Left Direction   |    11    | VRM 12V/500mA |
+| Steer Front Right Swerve | [CANcoder](https://store.ctr-electronics.com/cancoder/)      | 2024.1.0.0 | Front Right Direction |    12    | VRM 12V/500mA |
+| Steer Rear Right Swerve  | [CANcoder](https://store.ctr-electronics.com/cancoder/)      | 2024.1.0.0 | Rear Right Direction  |    13    | VRM 12V/500mA |
+| Intake Feeder Beam Break | [Adafruit Beam Break](https://www.adafruit.com/product/2168) |    ---     | Intake Feeder         |   ---    | VRM 5V/500mA  |
 
 Notes:
-1.  The VRM is powered through a 20 A breaker at **PDP Port 4**.
-2.  Integrated sensors built into Falcon 500 motors are not included in this list.
+1.  The VRM is powered through a 20 A breaker at **PDP Port 5**.
+2.  Integrated sensors built into Falcon 500 motors are not included in this list. 
+
+### Beam Break Sensor
+ 
+A custom PCB assembly connects the two halves of the beam break sensor to a 5V port of the VRM and the forward limit switch of the intake feeder motor.
+An LED on the PCB illuminates when 5V power is applied to the circuit and the beam is blocked.
+The beam is blocked when a game piece is acquired by the intake.
+
+[Sensor Product Page & Datasheet](https://www.adafruit.com/product/2168)
 
 ## Ethernet
 
@@ -205,7 +195,7 @@ A Brainbox SW-005 100Mbps Ethernet switch connects the roboRIO to the OpenMesh r
 | Device          |     PDP Port     | Breaker/ Fuse |
 |-----------------|:----------------:|:-------------:|
 | Ethernet Switch |        5         |     20 A      |
-| Limelight 3     |      _TBD_       |     20 A      |
+| Limelight 3     |        6         |     20 A      |
 | OpenMesh Radio  | Vbat VRM PCM PWR |     20 A      |
 
 ### OpenMesh Radio
