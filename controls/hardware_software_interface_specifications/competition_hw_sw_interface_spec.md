@@ -160,8 +160,8 @@ The following table lists all the motor controllers used in the robot.
 | Direction Rear Right  | Talon FX    | 2024.2.0.0 | [Kraken X60](https://docs.wcproducts.com/kraken-x60/kraken-x60-motor/overview-and-features) |    8     |    8     |  30 A   |
 | Lift Right            | Talon FX    | 2024.2.0.0 | [Kraken X60](https://docs.wcproducts.com/kraken-x60/kraken-x60-motor/overview-and-features) |    11    |    1     |  40 A   |
 | Lift Left             | Talon FX    | 2024.2.0.0 | [Kraken X60](https://docs.wcproducts.com/kraken-x60/kraken-x60-motor/overview-and-features) |    12    |    0     |  40 A   |
-| Pivot                 | Talon FX    | 2024.2.0.0 | [Falcon 500](https://www.vexrobotics.com/217-6515.html#attr-vex_docs_downloads)             |    9     |    2     |  40 A   |
-| Intake                | Talon FX    | 2024.2.0.0 | [Falcon 500](https://www.vexrobotics.com/217-6515.html#attr-vex_docs_downloads)             |    10    |    3     |  40 A   |
+| Intake Pivot          | Talon FX    | 2024.2.0.0 | [Falcon 500](https://www.vexrobotics.com/217-6515.html#attr-vex_docs_downloads)             |    9     |    3     |  40 A   |
+| Intake Feeder         | Talon FX    | 2024.2.0.0 | [Falcon 500](https://www.vexrobotics.com/217-6515.html#attr-vex_docs_downloads)             |    10    |    2     |  40 A   |
 
 
 ## Discrete Sensors
@@ -177,7 +177,7 @@ The following table lists all the sensors used in the robot.
 | Intake Feeder Beam Break | [Adafruit Beam Break](https://www.adafruit.com/product/2168) |    ---     | Intake Feeder         |   ---    | VRM 5V/500mA  |
 
 Notes:
-1.  The VRM is powered through a 20 A breaker at **PDP Port 4**.
+1.  The VRM is powered through a 20 A breaker at **PDP Port 5**.
 2.  Integrated sensors built into Falcon 500 motors are not included in this list. 
 
 ### Beam Break Sensor
@@ -195,7 +195,7 @@ A Brainbox SW-005 100Mbps Ethernet switch connects the roboRIO to the OpenMesh r
 | Device          |     PDP Port     | Breaker/ Fuse |
 |-----------------|:----------------:|:-------------:|
 | Ethernet Switch |        5         |     20 A      |
-| Limelight 3     |      _TBD_       |     20 A      |
+| Limelight 3     |        6         |     20 A      |
 | OpenMesh Radio  | Vbat VRM PCM PWR |     20 A      |
 
 ### OpenMesh Radio
