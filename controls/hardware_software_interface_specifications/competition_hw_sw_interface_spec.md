@@ -148,33 +148,33 @@ Installed Robotpy Modules: commands2, navx, pathplannerlib, phoenix6
 
 The following table lists all the motor controllers used in the robot.
 
-| Function              | Controller  | FW         | Motor       | CAN Addr | PDP Port | Breaker |
-|-----------------------|-------------|------------|-------------|:--------:|:--------:|:-------:|
-| Drive Front Left      | Talon FX    | 2024.2.0.0 | Kraken X60  |    1     |    13    |  40 A   |
-| Drive Rear Left       | Talon FX    | 2024.2.0.0 | Kraken X60  |    2     |    14    |  40 A   |
-| Drive Front Right     | Talon FX    | 2024.2.0.0 | Kraken X60  |    3     |    12    |  40 A   |
-| Drive Rear Right      | Talon FX    | 2024.2.0.0 | Kraken X60  |    4     |    15    |  40 A   |
-| Direction Front Left  | Talon FX    | 2024.2.0.0 | Kraken X60  |    5     |    10    |  30 A   |
-| Direction Rear Left   | Talon FX    | 2024.2.0.0 | Kraken X60  |    6     |    9     |  30 A   |
-| Direction Front Right | Talon FX    | 2024.2.0.0 | Kraken X60  |    7     |    11    |  30 A   |
-| Direction Rear Right  | Talon FX    | 2024.2.0.0 | Kraken X60  |    8     |    8     |  30 A   |
-| Lift Right            | Talon FX    | 2024.2.0.0 | Kraken X60  |    11    |    1     |  40 A   |
-| Lift Left             | Talon FX    | 2024.2.0.0 | Kraken X60  |    12    |    0     |  40 A   |
-| Pivot                 | Talon FX    | 2024.2.0.0 | Falcon 500  |    9     |    2     |  40 A   |
-| Intake                | Talon FX    | 2024.2.0.0 | Falcon 500  |    10    |    3     |  40 A   |
+| Function              | Controller  | FW         | Motor                                                                                       | CAN Addr | PDP Port | Breaker |
+|-----------------------|-------------|------------|---------------------------------------------------------------------------------------------|:--------:|:--------:|:-------:|
+| Drive Front Left      | Talon FX    | 2024.2.0.0 | [Kraken X60](https://docs.wcproducts.com/kraken-x60/kraken-x60-motor/overview-and-features) |    1     |    13    |  40 A   |
+| Drive Rear Left       | Talon FX    | 2024.2.0.0 | [Kraken X60](https://docs.wcproducts.com/kraken-x60/kraken-x60-motor/overview-and-features) |    2     |    14    |  40 A   |
+| Drive Front Right     | Talon FX    | 2024.2.0.0 | [Kraken X60](https://docs.wcproducts.com/kraken-x60/kraken-x60-motor/overview-and-features) |    3     |    12    |  40 A   |
+| Drive Rear Right      | Talon FX    | 2024.2.0.0 | [Kraken X60](https://docs.wcproducts.com/kraken-x60/kraken-x60-motor/overview-and-features) |    4     |    15    |  40 A   |
+| Direction Front Left  | Talon FX    | 2024.2.0.0 | [Kraken X60](https://docs.wcproducts.com/kraken-x60/kraken-x60-motor/overview-and-features) |    5     |    10    |  30 A   |
+| Direction Rear Left   | Talon FX    | 2024.2.0.0 | [Kraken X60](https://docs.wcproducts.com/kraken-x60/kraken-x60-motor/overview-and-features) |    6     |    9     |  30 A   |
+| Direction Front Right | Talon FX    | 2024.2.0.0 | [Kraken X60](https://docs.wcproducts.com/kraken-x60/kraken-x60-motor/overview-and-features) |    7     |    11    |  30 A   |
+| Direction Rear Right  | Talon FX    | 2024.2.0.0 | [Kraken X60](https://docs.wcproducts.com/kraken-x60/kraken-x60-motor/overview-and-features) |    8     |    8     |  30 A   |
+| Lift Right            | Talon FX    | 2024.2.0.0 | [Kraken X60](https://docs.wcproducts.com/kraken-x60/kraken-x60-motor/overview-and-features) |    11    |    1     |  40 A   |
+| Lift Left             | Talon FX    | 2024.2.0.0 | [Kraken X60](https://docs.wcproducts.com/kraken-x60/kraken-x60-motor/overview-and-features) |    12    |    0     |  40 A   |
+| Pivot                 | Talon FX    | 2024.2.0.0 | [Falcon 500](https://www.vexrobotics.com/217-6515.html#attr-vex_docs_downloads)             |    9     |    2     |  40 A   |
+| Intake                | Talon FX    | 2024.2.0.0 | [Falcon 500](https://www.vexrobotics.com/217-6515.html#attr-vex_docs_downloads)             |    10    |    3     |  40 A   |
 
 
 ## Discrete Sensors
 
 The following table lists all the sensors used in the robot.
 
-| Function                 | Sensor              |     FW     | Associated Motor      | CAN Addr | PDP / VRM     |
-|--------------------------|---------------------|:----------:|-----------------------|:--------:|---------------|
-| Steer Front Left Swerve  | CANcoder            | 2024.1.0.0 | Front Left Direction  |    10    | VRM 12V/500mA |
-| Steer Rear Left Swerve   | CANcoder            | 2024.1.0.0 | Rear Left Direction   |    11    | VRM 12V/500mA |
-| Steer Front Right Swerve | CANcoder            | 2024.1.0.0 | Front Right Direction |    12    | VRM 12V/500mA |
-| Steer Rear Right Swerve  | CANcoder            | 2024.1.0.0 | Rear Right Direction  |    13    | VRM 12V/500mA |
-| Intake Feeder Beam Break | Adafruit Beam Break |    ---     | Intake Feeder         |   ---    | VRM 5V/500mA  |
+| Function                 | Sensor                                                       |     FW     | Associated Motor      | CAN Addr | PDP / VRM     |
+|--------------------------|--------------------------------------------------------------|:----------:|-----------------------|:--------:|---------------|
+| Steer Front Left Swerve  | [CANcoder](https://store.ctr-electronics.com/cancoder/)      | 2024.1.0.0 | Front Left Direction  |    10    | VRM 12V/500mA |
+| Steer Rear Left Swerve   | [CANcoder](https://store.ctr-electronics.com/cancoder/)      | 2024.1.0.0 | Rear Left Direction   |    11    | VRM 12V/500mA |
+| Steer Front Right Swerve | [CANcoder](https://store.ctr-electronics.com/cancoder/)      | 2024.1.0.0 | Front Right Direction |    12    | VRM 12V/500mA |
+| Steer Rear Right Swerve  | [CANcoder](https://store.ctr-electronics.com/cancoder/)      | 2024.1.0.0 | Rear Right Direction  |    13    | VRM 12V/500mA |
+| Intake Feeder Beam Break | [Adafruit Beam Break](https://www.adafruit.com/product/2168) |    ---     | Intake Feeder         |   ---    | VRM 5V/500mA  |
 
 Notes:
 1.  The VRM is powered through a 20 A breaker at **PDP Port 4**.
@@ -185,6 +185,8 @@ Notes:
 A custom PCB assembly connects the two halves of the beam break sensor to a 5V port of the VRM and the forward limit switch of the intake feeder motor.
 An LED on the PCB illuminates when 5V power is applied to the circuit and the beam is blocked.
 The beam is blocked when a game piece is acquired by the intake.
+
+[Sensor Product Page & Datasheet](https://www.adafruit.com/product/2168)
 
 ## Ethernet
 
