@@ -25,7 +25,7 @@ Robot Name: __Metal Melody__
 <!-- TOC -->
 
 ## Software Repository
-The robot source code can be found in this repository: [Competition Robot Code](https://github.com/SteelRidgeRobotics/2024DumpsterFire)
+The robot source code can be found in this repository: [Competition Robot Code](https://github.com/SteelRidgeRobotics/2024MetalMelody)
 
 
 ## Description
