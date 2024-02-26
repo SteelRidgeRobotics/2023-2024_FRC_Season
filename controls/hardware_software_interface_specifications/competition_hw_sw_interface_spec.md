@@ -139,7 +139,7 @@ Motor controller and sensor software versions are listed elsewhere in this docum
 
 | Python Packages         | Version    |
 |-------------------------|------------|
-| robotpy                 | 2024.2.1.1 |
+| robotpy                 | 2024.3.1.0 |
 | frc6343                 | 0.2        |
  
 Installed Robotpy Modules: commands2, navx, pathplannerlib, phoenix6
