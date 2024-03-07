@@ -2,18 +2,18 @@
 from ntcore import NetworkTable, NetworkTableInstance, NetworkTableEntry
 from wpimath.geometry import Translation2d, Translation3d, Pose2d, Pose3d, Rotation2d, Rotation3d
 from wpinet import PortForwarder
-from typing import List, Dict
+from typing import List
 import math
 from wpilib import *
 import time
-from wpilib import Timer
-from wpiutil import json
+import json
+import wpiutil
 import socket
-import errno
-import fcntl
-import os
+from errno import *
+from fcntl import *
+from struct import *
 
-from datetime import timedelta
+
 
 def sanitize_name(name: str) -> str:
     if name == "":
@@ -36,10 +36,10 @@ def to_pose_2d(in_data: List[float]) -> Pose2d:
         Rotation2d(math.radians(in_data[5]))
     )
 
-def get_limelight_nt_table(table_name: str):
+def get_limelight_nt_table(table_name: str) -> NetworkTable:
     return NetworkTableInstance.getDefault().getTable(sanitize_name(table_name))
 
-def get_limelight_nt_table_entry(table_name: str, entry_name: str):
+def get_limelight_nt_table_entry(table_name: str, entry_name: str) -> NetworkTableEntry:
     return get_limelight_nt_table(table_name).getEntry(entry_name)
 
 def get_limelight_nt_double(table_name: str, entry_name: str):
@@ -159,11 +159,12 @@ def extract_bot_pose_entry(in_data: List[float], position: int) -> float:
         return 0.0
     return in_data[position]
 
+
+
 class PoseEstimate:
-    def __init__(self, pose: Pose2d, timestamp_seconds: float, latency: float = 0.0, tag_count: int = 0, tag_span: float = 0.0, avg_tag_dist: float = 0.0, avg_tag_area: float = 0.0):
+    def __init__(self, pose: Pose2d, timestamp_seconds: float = 0.0, latency: float = 0.0, tag_count: int = 0, tag_span: float = 0.0, avg_tag_dist: float = 0.0, avg_tag_area: float = 0.0):
         self.pose = pose
         self.timestamp_seconds = timestamp_seconds
-        timestamp_seconds = timedelta(seconds=0.0)
         self.latency = latency
         self.tag_count = tag_count
         self.tag_span = tag_span
@@ -181,9 +182,15 @@ def get_bot_pose_estimate(limelight_name: str, entry_name: str) -> PoseEstimate:
     tag_dist = extract_bot_pose_entry(pose_array, 9)
     tag_area = extract_bot_pose_entry(pose_array, 10)
 
-    timestamp = Timer.getFPGATimestamp() - (latency / 1000.0)
+    timestamp = ((pose_entry.getLastChange() / 1000000.0) - (latency / 1000.0))
 
     return PoseEstimate(pose, timestamp, latency, tag_count, tag_span, tag_dist, tag_area)
+
+def get_bot_pose_estimate_wpi_blue(limelight_name: str = "") -> PoseEstimate:
+    return get_bot_pose_estimate(limelight_name, "botpose_wpiblue")
+
+def get_bot_pose_estimate_wpi_red(limelight_name: str = "") -> PoseEstimate:
+    return get_bot_pose_estimate(limelight_name, "botpose_wpired")
 
 INVALID_TARGET = 0.0
 
@@ -214,42 +221,6 @@ class SingleTargetingResultClass:
 class RetroreflectiveResultClass(SingleTargetingResultClass):
     def __init__(self):
         super().__init__()
-
-def extract_bot_pose_entry(in_data: List[float], position: int) -> float:
-    if len(in_data) < position + 1:
-        return 0.0
-    return in_data[position]
-
-class PoseEstimate:
-    def __init__(self, pose: Pose2d, timestamp_seconds: float = 0.0, latency: float = 0.0, tag_count: int = 0, tag_span: float = 0.0, avg_tag_dist: float = 0.0, avg_tag_area: float = 0.0):
-        self.pose = pose
-        self.timestamp_seconds = timestamp_seconds
-        self.latency = latency
-        self.tag_count = tag_count
-        self.tag_span = tag_span
-        self.avg_tag_dist = avg_tag_dist
-        self.avg_tag_area = avg_tag_area
-
-def get_bot_pose_estimate(limelight_name: str, entry_name: str) -> PoseEstimate:
-    pose_entry = get_limelight_nt_table_entry(limelight_name, entry_name)
-    pose_array = get_limelight_nt_double_array(limelight_name, entry_name)
-    pose = to_pose_2d(pose_array)
-
-    latency = extract_bot_pose_entry(pose_array, 6)
-    tag_count = int(extract_bot_pose_entry(pose_array, 7))
-    tag_span = extract_bot_pose_entry(pose_array, 8)
-    tag_dist = extract_bot_pose_entry(pose_array, 9)
-    tag_area = extract_bot_pose_entry(pose_array, 10)
-
-    timestamp = time.second_t((pose_entry.getLastChange() / 1000000.0) - (latency / 1000.0))
-
-    return PoseEstimate(pose, timestamp, latency, tag_count, tag_span, tag_dist, tag_area)
-
-def get_bot_pose_estimate_wpi_blue(limelight_name: str = "") -> PoseEstimate:
-    return get_bot_pose_estimate(limelight_name, "botpose_wpiblue")
-
-def get_bot_pose_estimate_wpi_red(limelight_name: str = "") -> PoseEstimate:
-    return get_bot_pose_estimate(limelight_name, "botpose_wpired")
 
 class FiducialResultClass(SingleTargetingResultClass):
     def __init__(self):
@@ -345,54 +316,48 @@ class InternalKeys:
     _key_colorRGB = "cRGB"
     _key_colorHSV = "cHSV"
 
-
-def PhoneHome():
-    global sockfd
-
-    if sockfd == -1:
-        sockfd = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        if sockfd < 0:
-            print("Socket creation failed")
-            return
-
-        servaddr = ('255.255.255.255', 5809)
-
-        # Set socket for broadcast
-        broadcast = 1
-        try:
-            sockfd.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, broadcast)
-        except socket.error as e:
-            print("Error in setting Broadcast option:", e)
-            sockfd.close()
-            sockfd = -1
-            return
-
-        # Set socket to non-blocking
-        try:
-            flags = fcntl.fcntl(sockfd, fcntl.F_GETFL)
-            fcntl.fcntl(sockfd, fcntl.F_SETFL, flags | os.O_NONBLOCK)
-        except IOError as e:
-            print("Error setting socket to non-blocking:", e)
-            sockfd.close()
-            sockfd = -1
-            return
-
-        msg = b"LLPhoneHome"
-        sockfd.sendto(msg, servaddr)
-
+def phone_home():
     try:
-        receiveData, addr = sockfd.recvfrom(1024)
-        if receiveData:
-            received = receiveData.decode('utf-8')
-            print("Received response:", received)
-    except socket.error as e:
-        if e.errno != errno.EWOULDBLOCK and e.errno != errno.EAGAIN:
-            print("Error receiving data:", e)
-            sockfd.close()
-            sockfd = -1
+        # Create socket (same as before)
+        sockfd = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
-# Global variable for the socket
-sockfd = -1
+        # Set broadcast option (same as before)
+        broadcast = 1
+        if sockfd.setsockopt(sockfd, socket.SOL_SOCKET, socket.SO_BROADCAST, broadcast, 1) < 0:
+            raise RuntimeError("Error setting Broadcast option")
+
+        # Set socket to non-blocking (using socket.setblocking)
+        sockfd.setblocking(False)
+
+        # Prepare message and address
+        msg = "LLPhoneHome"
+        servaddr = (socket.inet_pton(socket.AF_INET, "255.255.255.255"), 5809)  # Tuple for address
+
+        # Send message using sendto from socket module
+        sockfd.sendto(sockfd, msg.encode(), 0, servaddr)  # Encode message for sending
+
+        with sockfd:  # Use with statement for resource management
+
+            # Receive data
+            receiveData = b''
+            while True:
+                try:
+                    data, addr = sockfd.recvfrom(sockfd, 1024)
+                    receiveData += data
+                    if not data:
+                        break
+                except BlockingIOError:
+                    break  # No data received (non-blocking)
+
+            if receiveData:
+                # Process received data
+                print(f"Received response: {receiveData.decode()}")
+
+    except (OSError, socket.error) as e:
+        print(f"Error: {e}")
+
+if __name__ == "__main__":
+    phone_home()
 
 def SetupPortForwarding(limelightName):
     portForwarder = PortForwarder.getInstance()
@@ -408,7 +373,7 @@ def SafeJSONAccess(jsonData, key, defaultValue):
     except Exception:
         return defaultValue
 
-def from_json(j, t):
+def from_json(j: wpiutil.json, t: RetroreflectiveResultClass):
     defaultValueVector = [0.0] * 6
     t.m_CAMERATransform6DTARGETSPACE = SafeJSONAccess(j, InternalKeys._key_transformCAMERAPOSE_TARGETSPACE, defaultValueVector)
     t.m_CAMERATransform6DROBOTSPACE = SafeJSONAccess(j, InternalKeys._key_transformCAMERAPOSE_ROBOTSPACE, defaultValueVector)
@@ -424,7 +389,7 @@ def from_json(j, t):
     t.m_TargetAreaNormalized = SafeJSONAccess(j, InternalKeys._key_TargetAreaNormalized, 0.0)
     t.m_TargetCorners = SafeJSONAccess(j, InternalKeys._key_corners, [])
 
-def from_json_FiducialResultClass(j, t):
+def from_json_FiducialResultClass(j: wpiutil.json, t: FiducialResultClass):
     defaultValueVector = [0.0] * 6
     t.m_family = SafeJSONAccess(j, InternalKeys._key_ffamily, "")
     t.m_fiducialID = SafeJSONAccess(j, InternalKeys._key_fiducialID, 0)
@@ -441,7 +406,7 @@ def from_json_FiducialResultClass(j, t):
     t.m_TargetAreaNormalized = SafeJSONAccess(j, InternalKeys._key_TargetAreaNormalized, 0)
     t.m_TargetCorners = SafeJSONAccess(j, InternalKeys._key_corners, [])
 
-def from_json_DetectionResultClass(j, t):
+def from_json_DetectionResultClass(j: wpiutil.json, t: DetectionResultClass):
     t.m_confidence = SafeJSONAccess(j, InternalKeys._key_confidence, 0)
     t.m_classID = SafeJSONAccess(j, InternalKeys._key_classID, 0)
     t.m_className = SafeJSONAccess(j, InternalKeys._key_className, "")
@@ -452,7 +417,7 @@ def from_json_DetectionResultClass(j, t):
     t.m_TargetAreaNormalized = SafeJSONAccess(j, InternalKeys._key_TargetAreaNormalized, 0)
     t.m_TargetCorners = SafeJSONAccess(j, InternalKeys._key_corners, [])
 
-def from_json_ClassificationResultClass(j, t):
+def from_json_ClassificationResultClass(j: wpiutil.json, t: ClassificationResultClass):
     t.m_confidence = SafeJSONAccess(j, InternalKeys._key_confidence, 0)
     t.m_classID = SafeJSONAccess(j, InternalKeys._key_classID, 0)
     t.m_className = SafeJSONAccess(j, InternalKeys._key_className, "")
@@ -463,7 +428,7 @@ def from_json_ClassificationResultClass(j, t):
     t.m_TargetAreaNormalized = SafeJSONAccess(j, InternalKeys._key_TargetAreaNormalized, 0)
     t.m_TargetCorners = SafeJSONAccess(j, InternalKeys._key_corners, [])
 
-def from_json_VisionResultsClass(j, t):
+def from_json_VisionResultsClass(j: wpiutil.json, t: VisionResultsClass):
     t.m_timeStamp = SafeJSONAccess(j, InternalKeys._key_timestamp, 0.0)
     t.m_latencyPipeline = SafeJSONAccess(j, InternalKeys._key_latency_pipeline, 0.0)
     t.m_latencyCapture = SafeJSONAccess(j, InternalKeys._key_latency_capture, 0.0)
@@ -480,14 +445,15 @@ def from_json_VisionResultsClass(j, t):
     t.DetectionResults = SafeJSONAccess(j, "Detector", [])
     t.ClassificationResults = SafeJSONAccess(j, "Detector", [])
 
-def from_json_LimelightResultsClass(j, t):
+def from_json_LimelightResultsClass(j: wpiutil.json, t: LimelightResultsClass):
     t.targetingResults = SafeJSONAccess(j, "Results", VisionResultsClass())
 
 def getLatestResults(limelightName="", profile=False):
     start = time.time()
     jsonString = get_json_dump(limelightName)
+    data = json 
     try:
-        data = wpinet.json.loads(jsonString)
+        data = json.loads(jsonString)
     except Exception as e:
         return LimelightResultsClass()
     
